@@ -1,5 +1,5 @@
 {
-  "version": "5.6",
+  "version": "5.7",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -598,11 +598,152 @@
       "id": "EXP-002S22",
       "title": "Robust model-class posterior aggregation",
       "priority": 55.5,
-      "status": "PENDING",
+      "status": "COMPLETE_FALSIFIED_AT_TRAINING",
       "depends_on": [
         "EXP-002S21"
       ],
-      "rationale": "Evidence ranking selects the wrong represented class; test robust aggregation on separated training and evaluation worlds."
+      "rationale": "Evidence ranking selects the wrong represented class; test robust aggregation on separated training and evaluation worlds.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S22_ROBUST_MODEL_AGGREGATION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s22_robust_pool.py",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "FALSIFIED_AT_TRAINING"
+      },
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S22_TRAINING_RESULT.json",
+      "result_summary": {
+        "training_grid": [
+          {
+            "tau": 0.0,
+            "n": 24,
+            "mean_edge_delta": 0.1721904397754669,
+            "mean_brier_delta": -0.0030072672953561403,
+            "wins": 9,
+            "large_harms": 2,
+            "mean_class_weights": [
+              0.3333333333333333,
+              0.3333333333333333,
+              0.3333333333333333
+            ],
+            "trace_identical_all": true,
+            "dag_count_ok": true,
+            "spend_ok": true,
+            "normalized": true
+          },
+          {
+            "tau": 0.02,
+            "n": 24,
+            "mean_edge_delta": 0.19447339977024938,
+            "mean_brier_delta": -0.0029854669012689843,
+            "wins": 7,
+            "large_harms": 4,
+            "mean_class_weights": [
+              0.31959080028385767,
+              0.3269969284313567,
+              0.35341227128478564
+            ],
+            "trace_identical_all": true,
+            "dag_count_ok": true,
+            "spend_ok": true,
+            "normalized": true
+          },
+          {
+            "tau": 0.05,
+            "n": 24,
+            "mean_edge_delta": 0.22918317929604123,
+            "mean_brier_delta": -0.0028981181859709395,
+            "wins": 7,
+            "large_harms": 7,
+            "mean_class_weights": [
+              0.29898552362231706,
+              0.31648909939806014,
+              0.3845253769796228
+            ],
+            "trace_identical_all": true,
+            "dag_count_ok": true,
+            "spend_ok": true,
+            "normalized": true
+          },
+          {
+            "tau": 0.1,
+            "n": 24,
+            "mean_edge_delta": 0.28933738861111735,
+            "mean_brier_delta": -0.002593270215960226,
+            "wins": 5,
+            "large_harms": 9,
+            "mean_class_weights": [
+              0.26526345493991343,
+              0.29675464392327916,
+              0.4379819011368074
+            ],
+            "trace_identical_all": true,
+            "dag_count_ok": true,
+            "spend_ok": true,
+            "normalized": true
+          },
+          {
+            "tau": 0.25,
+            "n": 24,
+            "mean_edge_delta": 0.46611844984314343,
+            "mean_brier_delta": -0.0006578850194927554,
+            "wins": 4,
+            "large_harms": 9,
+            "mean_class_weights": [
+              0.17665687650734832,
+              0.23125607129700088,
+              0.5920870521956508
+            ],
+            "trace_identical_all": true,
+            "dag_count_ok": true,
+            "spend_ok": true,
+            "normalized": true
+          },
+          {
+            "tau": 0.5,
+            "n": 24,
+            "mean_edge_delta": 0.669462603278583,
+            "mean_brier_delta": 0.0030374255596673054,
+            "wins": 5,
+            "large_harms": 12,
+            "mean_class_weights": [
+              0.08519342511321715,
+              0.1472416168257032,
+              0.7675649580610796
+            ],
+            "trace_identical_all": true,
+            "dag_count_ok": true,
+            "spend_ok": true,
+            "normalized": true
+          },
+          {
+            "tau": 1.0,
+            "n": 24,
+            "mean_edge_delta": 0.8021424489314851,
+            "mean_brier_delta": 0.005884646393588669,
+            "wins": 4,
+            "large_harms": 17,
+            "mean_class_weights": [
+              0.025516133325607693,
+              0.08655249614525495,
+              0.8879313705291375
+            ],
+            "trace_identical_all": true,
+            "dag_count_ok": true,
+            "spend_ok": true,
+            "normalized": true
+          }
+        ]
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S22_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S23",
+      "title": "Heavy-tail nonlinear structural likelihood class",
+      "priority": 55.25,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S22"
+      ],
+      "rationale": "No evidence temperature could rescue the represented class set on training; add a materially different heavy-tail nonlinear likelihood class."
     }
   ],
   "established_findings": [
@@ -623,7 +764,8 @@
     "Execution reproducibility and namespace isolation remain hard scientific invariants; blocked historical worlds are never pooled.",
     "S19 FALSIFIED_ON_CONFIRMATION: residual-aware PPC gate disposition recorded; next direction is explicit model-class uncertainty rather than further hand-engineered abstention thresholds.",
     "S20 FALSIFIED_AT_SCREEN: explicit model-class mixture terminal inference tested at 100% coverage; disposition recorded without post-hoc class-weight tuning.",
-    "S21 diagnostic EVIDENCE_DOMINANCE_FAILURE: evidence-best rate 0.042, oracle-best delta -0.428, selection regret 1.633."
+    "S21 diagnostic EVIDENCE_DOMINANCE_FAILURE: evidence-best rate 0.042, oracle-best delta -0.428, selection regret 1.633.",
+    "S22 FALSIFIED_AT_TRAINING: robust model-class evidence tempering disposition recorded with frozen training/validation/confirmation separation."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
