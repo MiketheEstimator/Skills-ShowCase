@@ -3370,7 +3370,7 @@
       "id": "EXP-002S48",
       "title": "Regime-localized robustness repair for S46 architecture",
       "priority": 49.0,
-      "status": "RUNNING",
+      "status": "COMPLETE_FALSIFIED_ON_VALIDATION",
       "depends_on": [
         "EXP-002S47"
       ],
@@ -3379,20 +3379,16 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s48_hetero_repair.py",
       "runner_commit": "9b5e5fb50e5582eacd150daf2c4f83e054dc7ac8",
       "checkpoint": {
-        "state": "training_passed",
-        "next_stage": "validation",
-        "selected_repair": {
-          "hetero_threshold": 0.4526144527705699,
-          "tight_harm_cut": 0.05,
-          "quantile": 0.5
-        }
+        "state": "complete",
+        "disposition": "FALSIFIED_ON_VALIDATION"
       },
       "training_artifact": "experiments/swarmite-exp002/EXP-002S48_TRAINING_RESULT.json",
       "selected_repair": {
         "hetero_threshold": 0.4526144527705699,
         "tight_harm_cut": 0.05,
         "quantile": 0.5
-      }
+      },
+      "validation_artifact": "experiments/swarmite-exp002/EXP-002S48_VALIDATION_RESULT.json"
     }
   ],
   "established_findings": [
