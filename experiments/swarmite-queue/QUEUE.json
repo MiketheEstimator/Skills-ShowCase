@@ -3370,11 +3370,21 @@
       "id": "EXP-002S48",
       "title": "Regime-localized robustness repair for S46 architecture",
       "priority": 49.0,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S47"
       ],
-      "rationale": "S47 identified breadth-transfer failure; isolate the unsupported regime(s) from prospective breadth results and introduce a materially targeted robustness mechanism rather than globally refitting the successful S46 risk model."
+      "rationale": "S47 identified breadth-transfer failure; isolate the unsupported regime(s) from prospective breadth results and introduce a materially targeted robustness mechanism rather than globally refitting the successful S46 risk model.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S48_HETEROSKEDASTIC_REPAIR_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s48_hetero_repair.py",
+      "runner_commit": "9b5e5fb50e5582eacd150daf2c4f83e054dc7ac8",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "training",
+        "training": "48 linear + 48 heteroskedastic fresh worlds",
+        "validation": "24 + 24 fresh worlds",
+        "confirmation": "48 + 48 held-out worlds"
+      }
     }
   ],
   "established_findings": [
