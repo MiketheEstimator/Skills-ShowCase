@@ -1,0 +1,41 @@
+{
+  "experiment": "EXP-002R",
+  "status": "RUNNING",
+  "stage": "dag_enumeration_verified",
+  "verified_invariants": {
+    "labeled_nodes": 5,
+    "possible_directed_edges_without_self_loops": 20,
+    "enumerated_acyclic_dags": 29281,
+    "enumeration_method": "exhaustive 2^20 directed-edge masks with Kahn acyclicity test"
+  },
+  "historical_regression_targets": {
+    "EXP-002M2": {
+      "n": 48,
+      "budget": "fixed intervention cap; mean realized spend w1=9.71875, w2=9.854166666666666",
+      "edge_delta_w2_minus_w1": -0.09866383531628649,
+      "edge_ci95": [-0.20105308930466795, -0.004018415555396709],
+      "compute_ratio_w2_over_w1": 1.974409878
+    },
+    "EXP-002F": {
+      "n": 24,
+      "budget": 10.0,
+      "edge_delta_two_minus_one": 0.00329643074814454,
+      "edge_ci95": [-0.12404068964723458, 0.12740611740655267],
+      "compute_ratio_two_over_one": 8.953916040009156
+    },
+    "EXP-002J2_corrected": {
+      "n": 96,
+      "edge_delta_w2_minus_w1": -0.0478100546465226,
+      "edge_ci95": [-0.15924005100145414, 0.06549005873872177]
+    }
+  },
+  "unresolved_implementation_fields": [
+    "canonical SCM coefficient/noise generator",
+    "observational sample count and initial-data procedure",
+    "intervention action space and cost function",
+    "exact likelihood/marginal-likelihood formula used for DAG scoring",
+    "designer proposal algorithms and tie-breaking",
+    "historical seed mapping/per-world state"
+  ],
+  "next_action": "Recover implementation fields from repository/history if available; otherwise implement a clean canonical runner under explicit new versioning and regression-test without tuning to historical outputs. Do not pool fresh replication rows with historical J4 n=12 unless exact compatibility is established."
+}
