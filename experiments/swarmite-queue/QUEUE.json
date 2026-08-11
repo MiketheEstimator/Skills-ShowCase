@@ -1,5 +1,5 @@
 {
-  "version": "7.7",
+  "version": "7.8",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -2140,11 +2140,26 @@
       "id": "EXP-002S38",
       "title": "Specialist residual-value diagnostic over S30 anchor",
       "priority": 51.5,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S37"
       ],
-      "rationale": "S37 shows S30 is the only robust global anchor; quantify where specialist posteriors add residual structural value over S30 before attempting conditional residual corrections."
+      "rationale": "S37 shows S30 is the only robust global anchor; quantify where specialist posteriors add residual structural value over S30 before attempting conditional residual corrections.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S38_SPECIALIST_RESIDUAL_VALUE_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s38_residual_diag.py",
+      "runner_commit": "78d13ae4529e91c848c1f10992646c7edb2ab5f6",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "residual_value_diagnostic",
+        "training_seeds": [
+          72201,
+          72248
+        ],
+        "validation_seeds": [
+          72261,
+          72296
+        ]
+      }
     }
   ],
   "established_findings": [
