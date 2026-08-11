@@ -1,5 +1,5 @@
 {
-  "version": "1.3",
+  "version": "1.4",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -11,75 +11,37 @@
     "stop_condition": "explicit_user_stop_only"
   },
   "queue": [
+    {"id":"EXP-002E","title":"Two-step Bayesian proposal lookahead","priority":100,"status":"COMPLETE_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002E_12WORLD_RESULT.json"},
+    {"id":"EXP-002E2","title":"Powered two-step Bayesian replication","priority":99,"status":"COMPLETE_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002E2_48WORLD_RESULT.json"},
     {
-      "id": "EXP-002E",
-      "title": "Two-step Bayesian proposal lookahead",
-      "priority": 100,
-      "status": "COMPLETE_UNRESOLVED",
-      "result_artifact": "experiments/swarmite-exp002/EXP-002E_12WORLD_RESULT.json"
+      "id":"EXP-002F",
+      "title":"RNG-isolated one-step vs two-step ablation",
+      "priority":90,
+      "status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH",
+      "result_artifact":"experiments/swarmite-exp002/EXP-002F_RNG_ISOLATED_RESULT.json",
+      "result":{"edge_delta":0.00329643074814454,"edge_ci95":[-0.12404068964723458,0.12740611740655267],"compute_ratio":8.953916040009156}
     },
     {
-      "id": "EXP-002E2",
-      "title": "Powered two-step Bayesian replication",
-      "priority": 99,
-      "status": "COMPLETE_UNRESOLVED",
-      "result_artifact": "experiments/swarmite-exp002/EXP-002E2_48WORLD_RESULT.json",
-      "result": {
-        "n_worlds": 48,
-        "paired_edge_error_delta": -0.06106721795794153,
-        "paired_edge_error_ci95": [-0.19540931562414832, 0.07233082815876239],
-        "one_step_map": 0.7291666666666666,
-        "two_step_map": 0.8125,
-        "entropy_delta": 0.14645077851476115,
-        "entropy_ci95": [0.015657032491132247, 0.2794508488241899],
-        "decision": "UNRESOLVED_AT_CAP"
-      }
+      "id":"EXP-002K",
+      "title":"Selective lookahead gate",
+      "priority":89,
+      "status":"RUNNING",
+      "hypothesis":"Observable epistemic-state features can identify states where two-step lookahead has positive downstream option value, allowing selective use of deep search to improve causal recovery per unit compute versus always-one-step and always-two-step policies.",
+      "design":"Use the 24 RNG-isolated paired worlds as offline treatment-effect data. Extract only agent-observable initial posterior features (entropy, top mass, top-two gap, edge uncertainty, top-hypothesis disagreement). Train a simple interpretable gate on one half and evaluate on held-out worlds; then prospectively test the selected gate on new worlds under equal experiment budget while accounting for compute.",
+      "primary_metric":"edge error adjusted by compute or Pareto dominance over recovery and compute",
+      "controls":["always_one_step","always_two_step"],
+      "checkpoint":{"state":"offline_feature_extraction_next","source_worlds":24}
     },
     {
-      "id": "EXP-002F",
-      "title": "RNG-isolated one-step vs two-step ablation",
-      "priority": 90,
-      "status": "RUNNING",
-      "depends_on": ["EXP-002E2"],
-      "hypothesis": "After isolating stochastic proposal generation, planning simulations, and real-world observation RNG streams, any remaining performance difference is attributable to lookahead depth rather than incidental RNG consumption.",
-      "design": "Use deterministic per-world/per-step RNG substreams. Proposal-generation randomness must be identical across depth conditions for the same state; planning simulation randomness is isolated and cannot affect future proposals or observations; world-observation randomness is isolated. Compare one-step and two-step under equal total cost.",
-      "primary_metric": "paired edge error",
-      "secondary_metrics": ["true DAG mass", "MAP recovery", "posterior entropy", "compute time"],
-      "stopping_rule": "pilot mechanics at n=6, then matched n>=24; bootstrap paired effect; continue/redirect based on uncertainty and compute-value tradeoff",
-      "checkpoint": {"state": "design_specified", "next_action": "implement isolated RNG streams and run 6-world pilot"}
+      "id":"EXP-002G",
+      "title":"Unconditional three-step or MCTS epistemic search",
+      "priority":80,
+      "status":"SUPERSEDED_BY_EXP-002K",
+      "reason":"EXP-002F found no primary benefit from unconditional two-step depth at ~9x compute; deeper unconditional search is not justified until selective gating is tested."
     },
-    {
-      "id": "EXP-002G",
-      "title": "Three-step or MCTS epistemic search",
-      "priority": 80,
-      "status": "PENDING",
-      "depends_on": ["EXP-002F"],
-      "hypothesis": "Selective multi-step tree search yields additional terminal causal value per compute beyond two-step lookahead.",
-      "budget_rule": "equal_total_cost_plus_compute_accounting"
-    },
-    {
-      "id": "EXP-002H",
-      "title": "Parallel designer proposals plus tree search",
-      "priority": 70,
-      "status": "PENDING",
-      "depends_on": ["EXP-002G"],
-      "hypothesis": "Epistemically diverse proposal generation improves search quality relative to a single proposal generator when tree-search budget is fixed."
-    },
-    {
-      "id": "EXP-002I",
-      "title": "Reward and credit assignment ablation",
-      "priority": 60,
-      "status": "PENDING",
-      "hypothesis": "Counterfactual or trajectory-aware credit can improve policy learning once multi-step downstream value is available.",
-      "compare": ["immediate_ig_cost", "naive_terminal", "leave_one_out", "trajectory_value", "proposal_value"]
-    },
-    {
-      "id": "EXP-002J",
-      "title": "Model misspecification transfer",
-      "priority": 50,
-      "status": "PENDING",
-      "hypothesis": "A controller that succeeds only when its Bayesian world class is correct will degrade under nonlinear, confounded, imperfect-intervention, or nonstationary worlds; model-uncertainty mechanisms should reduce that degradation."
-    }
+    {"id":"EXP-002H","title":"Parallel designer proposals plus tree search","priority":70,"status":"PENDING","depends_on":["EXP-002K"],"hypothesis":"Epistemically diverse proposal generation improves search quality relative to a single proposal generator when search budget is fixed."},
+    {"id":"EXP-002I","title":"Reward and credit assignment ablation","priority":60,"status":"PENDING","hypothesis":"Counterfactual or trajectory-aware credit can improve policy learning once downstream value estimates are available.","compare":["immediate_ig_cost","naive_terminal","leave_one_out","trajectory_value","proposal_value"]},
+    {"id":"EXP-002J","title":"Model misspecification transfer","priority":50,"status":"PENDING","hypothesis":"A controller that succeeds only when its Bayesian world class is correct will degrade under nonlinear, confounded, imperfect-intervention, or nonstationary worlds; model-uncertainty mechanisms should reduce that degradation."}
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
