@@ -1,0 +1,21 @@
+{
+  "experiment":"EXP-002J2",
+  "status":"COMPLETE_MODEL_REPAIR_SUPPORTED_BREADTH_PARTIALLY_RESTORED",
+  "design":"48 nonlinear additive worlds with nonlinear-aware local Bayesian inference using raw-parent plus tanh(parent) features; width1 vs uniform width2",
+  "means":{
+    "width1":{"edge_error":1.350756636601148,"true_mass":0.2342948332883706,"map":0.5416666666666666,"entropy":2.7150351964433717,"spent":9.833333333333334,"seconds":1.346806287765503},
+    "width2":{"edge_error":1.2165263516943334,"true_mass":0.3087645441807286,"map":0.6875,"entropy":2.633872956853362,"spent":9.90625,"seconds":2.4202523678541183}
+  },
+  "paired_width2_minus_width1":{
+    "edge_error":{"delta":-0.13423028490681485,"ci95":[-0.31770148022441586,0.04473870276182388]},
+    "true_mass":{"delta":0.074469710892358,"ci95":[0.016905317907902614,0.13310935388509584]},
+    "map":{"delta":0.14583333333333334,"ci95":[0.0,0.2916666666666667]},
+    "entropy":{"delta":-0.0811622395900094,"ci95":[-0.251996046689538,0.08909909706958122]}
+  },
+  "absolute_model_repair_vs_linear_inference":{
+    "width1_edge_delta":{"delta":-0.26006166767468347,"ci95":[-0.48300073335454885,-0.04114014248820726]},
+    "width2_edge_delta":{"delta":-0.35328708848636176,"ci95":[-0.5600622872900196,-0.14730680100376692]}
+  },
+  "interpretation":"Partial world-model repair significantly improves absolute edge recovery for both width1 and width2 on the identical nonlinear worlds. Once the model is less wrong, width2 again shows higher true-DAG posterior mass with a resolved paired gain, higher MAP recovery, and lower mean edge error, although the edge-error CI still crosses zero. Proposal breadth and world-model adequacy therefore interact rather than contributing independently.",
+  "next":"EXP-002J3 latent-confounder transfer"
+}
