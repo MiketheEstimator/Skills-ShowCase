@@ -1,5 +1,5 @@
 {
-  "version": "8.5",
+  "version": "8.7",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -2696,11 +2696,55 @@
       "id": "EXP-002S42",
       "title": "Topology-aware world-class uncertainty over science posteriors",
       "priority": 50.5,
-      "status": "PENDING",
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED",
       "depends_on": [
         "EXP-002S41"
       ],
-      "rationale": "The frozen scalar credal-width gate failed topology shift; replace scalar disagreement with explicit topology/world-class uncertainty while retaining S30 as anchor."
+      "rationale": "The frozen scalar credal-width gate failed topology shift; replace scalar disagreement with explicit topology/world-class uncertainty while retaining S30 as anchor.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S42_TOPOLOGY_WORLDCLASS_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s42_worldclass.py",
+      "runner_commit": "6960722306b4928b8fea93f7c8b1fd31098d4258",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "TOPOLOGY_WORLDCLASS_SUPPORTED"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S42_RESULT.json",
+      "result_summary": {
+        "training": {
+          "n": 48,
+          "auc_worldclass": 0.7708333333333334,
+          "auc_credal_control": 0.6666666666666666,
+          "auc_gain": 0.10416666666666674,
+          "brier": 0.20730591436037002,
+          "accuracy": 0.6666666666666666,
+          "mean_p_dense_sparse": 0.27878443003854775,
+          "mean_p_dense_dense": 0.5836197670199439,
+          "mechanics_ok": true
+        },
+        "validation": {
+          "n": 48,
+          "auc_worldclass": 0.7847222222222222,
+          "auc_credal_control": 0.6371527777777778,
+          "auc_gain": 0.14756944444444442,
+          "brier": 0.19321877991003836,
+          "accuracy": 0.7291666666666666,
+          "mean_p_dense_sparse": 0.27723377609803274,
+          "mean_p_dense_dense": 0.5742358367760257,
+          "mechanics_ok": true
+        },
+        "disposition": "TOPOLOGY_WORLDCLASS_SUPPORTED"
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S42_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S43",
+      "title": "Class-aware uncertainty decision over S30 anchor",
+      "priority": 50.25,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S42"
+      ],
+      "rationale": "S42 established an explicit observable topology-class posterior that outperforms scalar credal width for density identification; test a preregistered class-aware uncertainty decision while keeping S30 as point anchor."
     }
   ],
   "established_findings": [
@@ -2741,7 +2785,8 @@
     "S38 HETEROGENEOUS_RESIDUAL_VALUE: oracle specialist coverage train 0.833, validation 0.861; mean oracle improvement train 0.511, validation 0.638; safe specialists [].",
     "S39 CREDAL_ABSTENTION_SUPPORTED: mean credal-width threshold 0.269201; confirmation coverage 0.812, hybrid edge delta -0.127, promoted large-harm rate 0.000.",
     "S40 HETEROSKEDASTIC_TRANSFER_SUPPORTED: frozen S39 credal gate under heteroskedastic nonlinear shift; coverage 1.000, hybrid edge delta -0.811, promoted large-harm rate 0.021.",
-    "S41 FALSIFIED_AT_SCREEN: frozen S39 gate under sparse/dense graph shift; coverage 0.833, hybrid edge delta -0.038, promoted large-harm rate 0.000."
+    "S41 FALSIFIED_AT_SCREEN: frozen S39 gate under sparse/dense graph shift; coverage 0.833, hybrid edge delta -0.038, promoted large-harm rate 0.000.",
+    "S42 TOPOLOGY_WORLDCLASS_SUPPORTED: topology class AUC 0.785, credal control AUC 0.637, Brier 0.193, accuracy 0.729."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",

@@ -1,0 +1,25 @@
+{
+  "training": {
+    "n": 48,
+    "auc_worldclass": 0.7708333333333334,
+    "auc_credal_control": 0.6666666666666666,
+    "auc_gain": 0.10416666666666674,
+    "brier": 0.20730591436037002,
+    "accuracy": 0.6666666666666666,
+    "mean_p_dense_sparse": 0.27878443003854775,
+    "mean_p_dense_dense": 0.5836197670199439,
+    "mechanics_ok": true
+  },
+  "validation": {
+    "n": 48,
+    "auc_worldclass": 0.7847222222222222,
+    "auc_credal_control": 0.6371527777777778,
+    "auc_gain": 0.14756944444444442,
+    "brier": 0.19321877991003836,
+    "accuracy": 0.7291666666666666,
+    "mean_p_dense_sparse": 0.27723377609803274,
+    "mean_p_dense_dense": 0.5742358367760257,
+    "mechanics_ok": true
+  },
+  "disposition": "TOPOLOGY_WORLDCLASS_SUPPORTED"
+}
