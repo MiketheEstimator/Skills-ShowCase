@@ -3428,7 +3428,18 @@
         "disposition": "FALSIFIED_AT_TRAINING"
       },
       "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S50_MECHANICS_RESULT.json",
-      "training_artifact": "experiments/swarmite-exp002/EXP-002S50_TRAINING_RESULT.json"
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S50_TRAINING_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S50_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S51",
+      "title": "Residual-process representation diagnostic",
+      "priority": 48.25,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S50"
+      ],
+      "rationale": "S50 falsified bounded evidence-weighted S30/P_HET averaging. Diagnose whether the heteroskedastic breadth problem is posterior point-estimate failure or adjudication failure before changing representation to a latent residual-process model."
     }
   ],
   "established_findings": [
@@ -3477,7 +3488,8 @@
     "S46 CONTINUOUS_RISK_SUPPORTED: continuous observable per-world risk prediction for S30 evaluated prospectively after discrete joint-class S45 failed from over-abstention.",
     "S47 FALSIFIED_AT_SCREEN: frozen S46 continuous-risk S30 architecture evaluated across six balanced prospective world families without refitting.",
     "S48 FALSIFIED_ON_VALIDATION: targeted residual-heteroskedasticity repair tested around the frozen S46/S30 architecture on separated linear-anchor and heteroskedastic worlds.",
-    "S49 FALSIFIED_AT_TRAINING: terminal-only fitted-magnitude heteroskedastic likelihood specialist tested around frozen baseline planning, S30 anchor, and S46 adjudication."
+    "S49 FALSIFIED_AT_TRAINING: terminal-only fitted-magnitude heteroskedastic likelihood specialist tested around frozen baseline planning, S30 anchor, and S46 adjudication.",
+    "S50 FALSIFIED_AT_TRAINING: bounded per-world S30/P_HET model uncertainty tested using cross-fitted observable variance evidence while preserving baseline-only planning and frozen S46 adjudication."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
