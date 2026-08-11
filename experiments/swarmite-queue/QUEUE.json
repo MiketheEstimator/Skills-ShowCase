@@ -1,5 +1,5 @@
 {
-  "version": "1.4",
+  "version": "1.5",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -13,33 +13,21 @@
   "queue": [
     {"id":"EXP-002E","title":"Two-step Bayesian proposal lookahead","priority":100,"status":"COMPLETE_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002E_12WORLD_RESULT.json"},
     {"id":"EXP-002E2","title":"Powered two-step Bayesian replication","priority":99,"status":"COMPLETE_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002E2_48WORLD_RESULT.json"},
+    {"id":"EXP-002F","title":"RNG-isolated one-step vs two-step ablation","priority":90,"status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH","result_artifact":"experiments/swarmite-exp002/EXP-002F_RNG_ISOLATED_RESULT.json","result":{"edge_delta":0.00329643074814454,"edge_ci95":[-0.12404068964723458,0.12740611740655267],"compute_ratio":8.953916040009156}},
+    {"id":"EXP-002K","title":"Selective lookahead gate","priority":89,"status":"COMPLETE_FALSIFIED_FOR_INITIAL_STATE_GATE","result_artifact":"experiments/swarmite-exp002/EXP-002K_SELECTIVE_GATE_RESULT.json"},
     {
-      "id":"EXP-002F",
-      "title":"RNG-isolated one-step vs two-step ablation",
-      "priority":90,
-      "status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH",
-      "result_artifact":"experiments/swarmite-exp002/EXP-002F_RNG_ISOLATED_RESULT.json",
-      "result":{"edge_delta":0.00329643074814454,"edge_ci95":[-0.12404068964723458,0.12740611740655267],"compute_ratio":8.953916040009156}
-    },
-    {
-      "id":"EXP-002K",
-      "title":"Selective lookahead gate",
-      "priority":89,
+      "id":"EXP-002L",
+      "title":"Proposal-margin value-of-computation gate",
+      "priority":88,
       "status":"RUNNING",
-      "hypothesis":"Observable epistemic-state features can identify states where two-step lookahead has positive downstream option value, allowing selective use of deep search to improve causal recovery per unit compute versus always-one-step and always-two-step policies.",
-      "design":"Use the 24 RNG-isolated paired worlds as offline treatment-effect data. Extract only agent-observable initial posterior features (entropy, top mass, top-two gap, edge uncertainty, top-hypothesis disagreement). Train a simple interpretable gate on one half and evaluate on held-out worlds; then prospectively test the selected gate on new worlds under equal experiment budget while accounting for compute.",
-      "primary_metric":"edge error adjusted by compute or Pareto dominance over recovery and compute",
+      "hypothesis":"Deeper lookahead is useful primarily when the best and second-best one-step experiment proposals have similar predicted value. A local proposal-margin gate can retain most of any causal-recovery benefit while invoking two-step search far less often than always-two.",
+      "design":"At each experiment-selection step, compute the normal one-step proposal scores. Define normalized margin = (best - second_best) / max(abs(best), epsilon). Invoke two-step lookahead only when margin < tau; otherwise execute the one-step winner. Tune tau on training worlds, freeze it, then prospectively compare margin-gated, always-one, and always-two under equal experiment budget with compute accounting and RNG isolation.",
+      "primary_metric":"Pareto performance over edge error and compute time",
       "controls":["always_one_step","always_two_step"],
-      "checkpoint":{"state":"offline_feature_extraction_next","source_worlds":24}
+      "checkpoint":{"state":"implementation_next","train_worlds":12,"heldout_worlds":12}
     },
-    {
-      "id":"EXP-002G",
-      "title":"Unconditional three-step or MCTS epistemic search",
-      "priority":80,
-      "status":"SUPERSEDED_BY_EXP-002K",
-      "reason":"EXP-002F found no primary benefit from unconditional two-step depth at ~9x compute; deeper unconditional search is not justified until selective gating is tested."
-    },
-    {"id":"EXP-002H","title":"Parallel designer proposals plus tree search","priority":70,"status":"PENDING","depends_on":["EXP-002K"],"hypothesis":"Epistemically diverse proposal generation improves search quality relative to a single proposal generator when search budget is fixed."},
+    {"id":"EXP-002G","title":"Unconditional three-step or MCTS epistemic search","priority":80,"status":"SUPERSEDED_BY_SELECTIVE_SEARCH","reason":"Unconditional depth failed at ~9x compute; only selective search is justified."},
+    {"id":"EXP-002H","title":"Parallel designer proposals plus selective tree search","priority":70,"status":"PENDING","depends_on":["EXP-002L"],"hypothesis":"Epistemically diverse proposal generation improves selective search quality when deeper search is invoked only under local ambiguity."},
     {"id":"EXP-002I","title":"Reward and credit assignment ablation","priority":60,"status":"PENDING","hypothesis":"Counterfactual or trajectory-aware credit can improve policy learning once downstream value estimates are available.","compare":["immediate_ig_cost","naive_terminal","leave_one_out","trajectory_value","proposal_value"]},
     {"id":"EXP-002J","title":"Model misspecification transfer","priority":50,"status":"PENDING","hypothesis":"A controller that succeeds only when its Bayesian world class is correct will degrade under nonlinear, confounded, imperfect-intervention, or nonstationary worlds; model-uncertainty mechanisms should reduce that degradation."}
   ],
