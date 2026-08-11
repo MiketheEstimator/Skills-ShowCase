@@ -1,0 +1,73 @@
+{
+  "version": "1.0",
+  "mode": "endless_improvement",
+  "status": "ACTIVE",
+  "worker_policy": {
+    "pop_order": "priority_then_created",
+    "on_complete": "evaluate_update_findings_enqueue_successors_then_pop_next",
+    "on_failure": "diagnose_enqueue_materially_different_successor_then_pop_next",
+    "on_runtime_stop": "checkpoint_running_item_and_resume_on_next_watchdog",
+    "drive_policy": "read_only",
+    "stop_condition": "explicit_user_stop_only"
+  },
+  "queue": [
+    {
+      "id": "EXP-002E",
+      "title": "Two-step Bayesian proposal lookahead",
+      "priority": 100,
+      "status": "PENDING",
+      "hypothesis": "Scoring concrete designer proposals by expected downstream terminal value over two experiment steps will outperform one-step proposal scoring under matched total cost.",
+      "success_metric": "paired held-out improvement over strongest static control with uncertainty interval excluding zero on preregistered primary metric",
+      "controls": ["INFOGAIN", "WEAKTIE", "CHEAPEST", "one_step_proposal_judge"],
+      "budget_rule": "equal_total_cost"
+    },
+    {
+      "id": "EXP-002F",
+      "title": "One-step vs two-step matched ablation",
+      "priority": 90,
+      "status": "PENDING",
+      "depends_on": ["EXP-002E"],
+      "hypothesis": "Any benefit in EXP-002E is attributable to lookahead depth rather than implementation changes.",
+      "budget_rule": "equal_total_cost"
+    },
+    {
+      "id": "EXP-002G",
+      "title": "Three-step or MCTS epistemic search",
+      "priority": 80,
+      "status": "PENDING",
+      "depends_on": ["EXP-002F"],
+      "hypothesis": "Selective multi-step tree search yields additional terminal causal value per compute beyond two-step lookahead.",
+      "budget_rule": "equal_total_cost_plus_compute_accounting"
+    },
+    {
+      "id": "EXP-002H",
+      "title": "Parallel designer proposals plus tree search",
+      "priority": 70,
+      "status": "PENDING",
+      "depends_on": ["EXP-002G"],
+      "hypothesis": "Epistemically diverse proposal generation improves search quality relative to a single proposal generator when tree-search budget is fixed."
+    },
+    {
+      "id": "EXP-002I",
+      "title": "Reward and credit assignment ablation",
+      "priority": 60,
+      "status": "PENDING",
+      "hypothesis": "Counterfactual or trajectory-aware credit can improve policy learning once multi-step downstream value is available.",
+      "compare": ["immediate_ig_cost", "naive_terminal", "leave_one_out", "trajectory_value", "proposal_value"]
+    },
+    {
+      "id": "EXP-002J",
+      "title": "Model misspecification transfer",
+      "priority": 50,
+      "status": "PENDING",
+      "hypothesis": "A controller that succeeds only when its Bayesian world class is correct will degrade under nonlinear, confounded, imperfect-intervention, or nonstationary worlds; model-uncertainty mechanisms should reduce that degradation."
+    }
+  ],
+  "dynamic_enqueue_rules": [
+    "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
+    "Falsification never empties the queue; it narrows or redirects it.",
+    "Do not enqueue equivalent retries without a changed causal hypothesis, state representation, reward, search depth, world model, or evaluation design.",
+    "Promote surprising anomalies and control victories into diagnostic experiments.",
+    "Maintain matched resource budgets and preserve all negative results."
+  ]
+}
