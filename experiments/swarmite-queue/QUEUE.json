@@ -1,5 +1,5 @@
 {
-  "version": "6.9",
+  "version": "7.0",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1721,11 +1721,22 @@
       "id": "EXP-002S34",
       "title": "Expanded-class weight attribution diagnostic",
       "priority": 52.5,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S33"
       ],
-      "rationale": "S33 expanded the represented mechanism\u00d7noise classes but failed promotion; diagnose whether predictive weighting, class dilution, or residual model-set insufficiency caused failure before changing temperature or adding classes."
+      "rationale": "S33 expanded the represented mechanism\u00d7noise classes but failed promotion; diagnose whether predictive weighting, class dilution, or residual model-set insufficiency caused failure before changing temperature or adding classes.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S34_EXPANDED_CLASS_WEIGHT_DIAGNOSTIC_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s34_weight_diag.py",
+      "runner_commit": "11150fee536f88f0f078e4bd4c05cbca9ea1c890",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "retrospective_diagnostic",
+        "seeds": [
+          72111,
+          72146
+        ]
+      }
     }
   ],
   "established_findings": [
