@@ -1,5 +1,5 @@
 {
-  "version": "9.2",
+  "version": "9.3",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3363,7 +3363,18 @@
         "disposition": "FALSIFIED_AT_SCREEN"
       },
       "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S47_MECHANICS_RESULT.json",
-      "screen_artifact": "experiments/swarmite-exp002/EXP-002S47_SCREEN_RESULT.json"
+      "screen_artifact": "experiments/swarmite-exp002/EXP-002S47_SCREEN_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S47_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S48",
+      "title": "Regime-localized robustness repair for S46 architecture",
+      "priority": 49.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S47"
+      ],
+      "rationale": "S47 identified breadth-transfer failure; isolate the unsupported regime(s) from prospective breadth results and introduce a materially targeted robustness mechanism rather than globally refitting the successful S46 risk model."
     }
   ],
   "established_findings": [
@@ -3409,7 +3420,8 @@
     "S43 CLASS_AWARE_DECISION_SUPPORTED: class-aware coverage 1.000, hybrid edge delta -0.127, S39 control -0.051, harm rate 0.021.",
     "S44 FALSIFIED_ON_CONFIRMATION: frozen S43 class-aware decision evaluated prospectively under joint topology plus heteroskedastic nonlinear mechanism shift.",
     "S45 FALSIFIED_ON_VALIDATION: explicit joint topology-mechanism/noise latent-class terminal decision evaluated with separated training, validation, and confirmation worlds.",
-    "S46 CONTINUOUS_RISK_SUPPORTED: continuous observable per-world risk prediction for S30 evaluated prospectively after discrete joint-class S45 failed from over-abstention."
+    "S46 CONTINUOUS_RISK_SUPPORTED: continuous observable per-world risk prediction for S30 evaluated prospectively after discrete joint-class S45 failed from over-abstention.",
+    "S47 FALSIFIED_AT_SCREEN: frozen S46 continuous-risk S30 architecture evaluated across six balanced prospective world families without refitting."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
