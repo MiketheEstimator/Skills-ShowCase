@@ -1,5 +1,5 @@
 {
-  "version": "7.0",
+  "version": "7.1",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1721,7 +1721,7 @@
       "id": "EXP-002S34",
       "title": "Expanded-class weight attribution diagnostic",
       "priority": 52.5,
-      "status": "RUNNING",
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED",
       "depends_on": [
         "EXP-002S33"
       ],
@@ -1730,13 +1730,49 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s34_weight_diag.py",
       "runner_commit": "11150fee536f88f0f078e4bd4c05cbca9ea1c890",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "retrospective_diagnostic",
-        "seeds": [
-          72111,
-          72146
-        ]
-      }
+        "state": "complete",
+        "disposition": "PREDICTIVE_WEIGHT_MISALIGNMENT"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S34_RESULT.json",
+      "result_summary": {
+        "n": 36,
+        "mean_score_edge_spearman": -0.21726190476190485,
+        "top_weight_oracle_match_rate": 0.08333333333333333,
+        "represented_class_beats_s30_rate": 1.0,
+        "mean_mixture_regret_vs_oracle": 0.731167958437341,
+        "mean_s30_regret_vs_oracle": 0.6691115841971409,
+        "oracle_class_counts": {
+          "LG": 5,
+          "TG": 0,
+          "TT": 4,
+          "SG": 3,
+          "ST": 16,
+          "AG": 1,
+          "AT": 7
+        },
+        "top_weight_class_counts": {
+          "LG": 10,
+          "TG": 11,
+          "TT": 0,
+          "SG": 8,
+          "ST": 1,
+          "AG": 5,
+          "AT": 1
+        },
+        "mechanics_ok": true,
+        "disposition": "PREDICTIVE_WEIGHT_MISALIGNMENT"
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S34_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S35",
+      "title": "Structural-utility stacking without predictive-score weights",
+      "priority": 52.25,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S34"
+      ],
+      "rationale": "S34 shows represented useful classes exist but predictive CV scores misrank structural utility; test a materially different training-only stacking objective based on terminal structural surrogate, with held-out validation and no truth at deployment."
     }
   ],
   "established_findings": [
@@ -1769,7 +1805,8 @@
     "S30 CONTINUOUS_COMBINATION_SUPPORTED: ADEQ-weighted continuous posterior combination evaluated on separated fresh worlds.",
     "S31 TRANSFER_FALSIFIED: frozen T=5 ADEQ-weighted posterior combination stress-tested on unseen mechanism/noise families.",
     "S32 MECHANISM_NOISE_INTERACTION_OR_MIXED_GAP: frozen S30 architecture factorized across tanh/sin/asinh mechanisms and Gaussian/t7 noise on 120 fresh worlds.",
-    "S33 EXPANDED_MODEL_SET_FALSIFIED: seven-class mechanism\u00d7noise terminal expansion versus frozen S30 on 36 fresh worlds; edge delta vs S30 0.0621, CI [-0.06236321273465108, 0.17679359181349777], Brier -0.0080, harms 4."
+    "S33 EXPANDED_MODEL_SET_FALSIFIED: seven-class mechanism\u00d7noise terminal expansion versus frozen S30 on 36 fresh worlds; edge delta vs S30 0.0621, CI [-0.06236321273465108, 0.17679359181349777], Brier -0.0080, harms 4.",
+    "S34 PREDICTIVE_WEIGHT_MISALIGNMENT: represented-class coverage 1.000, mean predictive-score/structural-utility Spearman -0.217, top-weight/oracle match 0.083, mixture regret vs represented oracle 0.731."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
