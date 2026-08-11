@@ -1,0 +1,20 @@
+{
+  "experiment": "EXP-002K",
+  "status": "COMPLETE_FALSIFIED_FOR_INITIAL_STATE_GATE",
+  "design": "Linear interpretable gate trained on initial posterior features, frozen before prospective evaluation",
+  "prospective_n": 12,
+  "gate_features": ["normalized posterior entropy", "top posterior mass", "top-two gap", "aggregate edge uncertainty", "max node uncertainty", "top-two graph disagreement"],
+  "prospective": {
+    "always_one_edge_error": 1.0445444432148363,
+    "gate_edge_error": 1.0834375556865476,
+    "always_two_edge_error": 1.1842237438110887,
+    "gate_minus_one_delta": 0.03889311247171153,
+    "gate_minus_one_ci95": [-0.05171492636708533, 0.17576103802387955],
+    "gate_minus_two_delta": -0.10078618812454132,
+    "gate_minus_two_ci95": [-0.2971796996559796, 0.058477717251133994],
+    "two_step_invocation_rate": 0.5833333333333334,
+    "mean_compute_seconds": {"one": 0.8906117876370748, "gate": 5.086652477582295, "two": 8.243524670600891}
+  },
+  "interpretation": "Initial posterior state features do not provide a sufficiently reliable treatment-effect gate. The frozen gate was worse than always-one on the prospective primary metric and much more expensive. Depth should instead be gated on local decision ambiguity/value-of-computation at each experiment-selection step.",
+  "next": "EXP-002L proposal-margin value-of-computation gate"
+}
