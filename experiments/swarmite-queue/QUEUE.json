@@ -3172,20 +3172,17 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s46_continuous_risk.py",
       "runner_commit": "a1478f4babededd83810a40a6928b876030b5384",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "training",
-        "training_seeds": [
-          73801,
-          73920
-        ],
-        "validation_seeds": [
-          74001,
-          74060
-        ],
-        "confirmation_seeds": [
-          74101,
-          74220
-        ]
+        "state": "training_frozen",
+        "next_stage": "validation",
+        "selected_rule": {
+          "edge_cut": -0.25,
+          "harm_cut": 0.1
+        }
+      },
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S46_TRAINING_RESULT.json",
+      "selected_rule": {
+        "edge_cut": -0.25,
+        "harm_cut": 0.1
       }
     }
   ],
