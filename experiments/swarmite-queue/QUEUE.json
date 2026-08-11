@@ -3350,7 +3350,7 @@
       "id": "EXP-002S47",
       "title": "Reference breadth confirmation of continuous-risk S30 architecture",
       "priority": 49.25,
-      "status": "RUNNING",
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN",
       "depends_on": [
         "EXP-002S46"
       ],
@@ -3359,22 +3359,11 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s47_breadth.py",
       "runner_commit": "38050626c183a5277a4e552bead29419779d6dd4",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics",
-        "mechanics_seeds": [
-          74301,
-          74306
-        ],
-        "screen_seeds": [
-          74311,
-          74358
-        ],
-        "confirmation_seeds": [
-          74401,
-          74520
-        ],
-        "frozen_anchor": "EXP-002S46_TRAINING_RESULT.json"
-      }
+        "state": "complete",
+        "disposition": "FALSIFIED_AT_SCREEN"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S47_MECHANICS_RESULT.json",
+      "screen_artifact": "experiments/swarmite-exp002/EXP-002S47_SCREEN_RESULT.json"
     }
   ],
   "established_findings": [
