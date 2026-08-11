@@ -1,0 +1,19 @@
+{
+  "experiment":"EXP-002R12",
+  "status":"COMPLETE_FALSIFIED_PREREGISTERED_CRITERIA",
+  "n":6,
+  "seeds":[59001,59002,59003,59004,59005,59006],
+  "mean_rho_one":0.13535353535353534,
+  "mean_rho_terminal_voi":0.0909090909090909,
+  "mean_delta_rho":-0.044444444444444425,
+  "bootstrap95_delta_rho":[-0.4262626262626263,0.3717171717171717],
+  "regret_improved_worlds":4,
+  "mean_edge_regret_one":0.3123904901236528,
+  "mean_edge_regret_terminal_voi":0.1218658220089428,
+  "mean_regret_delta_voi_minus_one":-0.19052466811471,
+  "mean_compute_ratio_vs_one_step":37.718333333333334,
+  "compute_ratio_range":[29.64666666666667,44.72666666666667],
+  "success_criteria":{"mean_rank_alignment_gain_at_least_0.15":false,"regret_improves_at_least_4_of_6":true,"compute_no_more_than_25x":false},
+  "disposition":"Falsified as a full-horizon policy mechanism. Terminal regret improvement is a successor-worthy anomaly, but average rank alignment worsened and compute exceeded the preregistered ceiling in every world.",
+  "world_artifacts":["EXP-002R12_WORLD_59001.json","EXP-002R12_WORLD_59002.json","EXP-002R12_WORLD_59003.json","EXP-002R12_WORLD_59004.json","EXP-002R12_WORLD_59005.json","EXP-002R12_WORLD_59006.json"]
+}
