@@ -1,5 +1,5 @@
 {
-  "version": "8.9",
+  "version": "9.0",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -2872,11 +2872,249 @@
       "id": "EXP-002S44",
       "title": "Joint class-aware decision transfer under topology plus heteroskedastic shift",
       "priority": 50.0,
-      "status": "PENDING",
+      "status": "COMPLETE_FALSIFIED_ON_CONFIRMATION",
       "depends_on": [
         "EXP-002S43"
       ],
-      "rationale": "S43 supported explicit topology-class utility propagation; test the frozen class-aware decision under combined topology and heteroskedastic observation shift before reference promotion."
+      "rationale": "S43 supported explicit topology-class utility propagation; test the frozen class-aware decision under combined topology and heteroskedastic observation shift before reference promotion.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S44_JOINT_TOPOLOGY_HETERO_TRANSFER_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s44_joint_shift.py",
+      "runner_commit": "3b2a65777e2419ddf57f343cf1a3770854ca5dde",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "FALSIFIED_ON_CONFIRMATION"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S44_RESULT.json",
+      "result_summary": {
+        "screen": {
+          "n": 24,
+          "class_aware": {
+            "coverage": 1.0,
+            "n_promoted": 24,
+            "promoted_large_harms": 1,
+            "promoted_large_harm_rate": 0.041666666666666664,
+            "always_s30_mean_edge_delta": -0.7123830295364559,
+            "hybrid_mean_edge_delta": -0.7123830295364559,
+            "bootstrap95_hybrid_edge_delta": [
+              -0.9894502145350491,
+              -0.38166755568794597
+            ],
+            "hybrid_mean_brier_delta": 0.0018335609551290838,
+            "improvement_retained": 1.0,
+            "by_joint_cell": {
+              "dense_asinh": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.3004816233228137,
+                "large_harm_rate": 0.0
+              },
+              "dense_sin": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.23045170946833538,
+                "large_harm_rate": 0.25
+              },
+              "dense_tanh": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.5811557545509463,
+                "large_harm_rate": 0.0
+              },
+              "sparse_asinh": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.9922945864686457,
+                "large_harm_rate": 0.0
+              },
+              "sparse_sin": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -1.1117687631825588,
+                "large_harm_rate": 0.0
+              },
+              "sparse_tanh": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -1.0581457402254355,
+                "large_harm_rate": 0.0
+              }
+            }
+          },
+          "s39_control": {
+            "coverage": 1.0,
+            "n_promoted": 24,
+            "promoted_large_harms": 1,
+            "promoted_large_harm_rate": 0.041666666666666664,
+            "always_s30_mean_edge_delta": -0.7123830295364559,
+            "hybrid_mean_edge_delta": -0.7123830295364559,
+            "bootstrap95_hybrid_edge_delta": [
+              -0.9901264561004701,
+              -0.39368892600036276
+            ],
+            "hybrid_mean_brier_delta": 0.0018335609551290838,
+            "improvement_retained": 1.0,
+            "by_joint_cell": {
+              "dense_asinh": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.3004816233228137,
+                "large_harm_rate": 0.0
+              },
+              "dense_sin": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.23045170946833538,
+                "large_harm_rate": 0.25
+              },
+              "dense_tanh": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.5811557545509463,
+                "large_harm_rate": 0.0
+              },
+              "sparse_asinh": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.9922945864686457,
+                "large_harm_rate": 0.0
+              },
+              "sparse_sin": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -1.1117687631825588,
+                "large_harm_rate": 0.0
+              },
+              "sparse_tanh": {
+                "n": 4,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -1.0581457402254355,
+                "large_harm_rate": 0.0
+              }
+            }
+          },
+          "mechanics_ok": true
+        },
+        "confirmation": {
+          "n": 48,
+          "class_aware": {
+            "coverage": 1.0,
+            "n_promoted": 48,
+            "promoted_large_harms": 2,
+            "promoted_large_harm_rate": 0.041666666666666664,
+            "always_s30_mean_edge_delta": -0.8508756946309902,
+            "hybrid_mean_edge_delta": -0.8508756946309902,
+            "bootstrap95_hybrid_edge_delta": [
+              -1.048643196950944,
+              -0.6492041030945005
+            ],
+            "hybrid_mean_brier_delta": -0.005978545498131308,
+            "improvement_retained": 1.0,
+            "by_joint_cell": {
+              "dense_asinh": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.4835585440660842,
+                "large_harm_rate": 0.125
+              },
+              "dense_sin": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.6896726321784878,
+                "large_harm_rate": 0.125
+              },
+              "dense_tanh": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -1.01670040441845,
+                "large_harm_rate": 0.0
+              },
+              "sparse_asinh": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.9570813962586788,
+                "large_harm_rate": 0.0
+              },
+              "sparse_sin": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -1.2598677515005325,
+                "large_harm_rate": 0.0
+              },
+              "sparse_tanh": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.6983734393637072,
+                "large_harm_rate": 0.0
+              }
+            }
+          },
+          "s39_control": {
+            "coverage": 1.0,
+            "n_promoted": 48,
+            "promoted_large_harms": 2,
+            "promoted_large_harm_rate": 0.041666666666666664,
+            "always_s30_mean_edge_delta": -0.8508756946309902,
+            "hybrid_mean_edge_delta": -0.8508756946309902,
+            "bootstrap95_hybrid_edge_delta": [
+              -1.0527784528914321,
+              -0.6541818613833462
+            ],
+            "hybrid_mean_brier_delta": -0.005978545498131308,
+            "improvement_retained": 1.0,
+            "by_joint_cell": {
+              "dense_asinh": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.4835585440660842,
+                "large_harm_rate": 0.125
+              },
+              "dense_sin": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.6896726321784878,
+                "large_harm_rate": 0.125
+              },
+              "dense_tanh": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -1.01670040441845,
+                "large_harm_rate": 0.0
+              },
+              "sparse_asinh": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.9570813962586788,
+                "large_harm_rate": 0.0
+              },
+              "sparse_sin": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -1.2598677515005325,
+                "large_harm_rate": 0.0
+              },
+              "sparse_tanh": {
+                "n": 8,
+                "coverage": 1.0,
+                "hybrid_mean_edge_delta": -0.6983734393637072,
+                "large_harm_rate": 0.0
+              }
+            }
+          },
+          "mechanics_ok": true
+        },
+        "disposition": "FALSIFIED_ON_CONFIRMATION"
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S44_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S45",
+      "title": "Joint topology-mechanism-noise latent class decision",
+      "priority": 49.75,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S44"
+      ],
+      "rationale": "S44 falsified topology-only utility propagation under compound shift; replace the topology-only class posterior with an explicit joint latent class over topology \u00d7 nonlinear mechanism/noise rather than retuning scalar thresholds or S43 parameters."
     }
   ],
   "established_findings": [
@@ -2919,7 +3157,8 @@
     "S40 HETEROSKEDASTIC_TRANSFER_SUPPORTED: frozen S39 credal gate under heteroskedastic nonlinear shift; coverage 1.000, hybrid edge delta -0.811, promoted large-harm rate 0.021.",
     "S41 FALSIFIED_AT_SCREEN: frozen S39 gate under sparse/dense graph shift; coverage 0.833, hybrid edge delta -0.038, promoted large-harm rate 0.000.",
     "S42 TOPOLOGY_WORLDCLASS_SUPPORTED: topology class AUC 0.785, credal control AUC 0.637, Brier 0.193, accuracy 0.729.",
-    "S43 CLASS_AWARE_DECISION_SUPPORTED: class-aware coverage 1.000, hybrid edge delta -0.127, S39 control -0.051, harm rate 0.021."
+    "S43 CLASS_AWARE_DECISION_SUPPORTED: class-aware coverage 1.000, hybrid edge delta -0.127, S39 control -0.051, harm rate 0.021.",
+    "S44 FALSIFIED_ON_CONFIRMATION: frozen S43 class-aware decision evaluated prospectively under joint topology plus heteroskedastic nonlinear mechanism shift."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
