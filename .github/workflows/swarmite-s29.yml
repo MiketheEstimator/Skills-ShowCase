@@ -1,0 +1,46 @@
+name: Swarmite S29 Direct Model Adequacy
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s29.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Execute preregistered S29 diagnostic
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s29_adequacy as s29
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S29')
+          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S29_DIRECT_MODEL_ADEQUACY_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s29_adequacy.py','runner_commit':'74163e7c6760459d2aab8f251b1e99f90f38bc89','checkpoint':{'state':'protocol_frozen','data':'S27 held-out confirmation seeds 71300-71395','next_stage':'direct_cv_adequacy'}}); qp.write_text(json.dumps(q,indent=2))
+          res=s29.run(); Path('EXP-002S29_RESULT.json').write_text(json.dumps(res,indent=2)); sm=res['summary']; item['result_artifact']='experiments/swarmite-exp002/EXP-002S29_RESULT.json'; item['result_summary']=sm
+          if sm['promising']:
+            item['status']='COMPLETE_DIAGNOSTIC_SUPPORTED'; disposition='DIRECT_ADEQUACY_PROMISING'; title='Fresh-world ADEQ science-posterior selector'; rationale='S29 found direct held-out predictive adequacy discriminative enough to justify a fixed ADEQ>0 selector on entirely fresh train/validation/confirmation worlds.'
+          else:
+            item['status']='COMPLETE_DIAGNOSTIC_FALSIFIED'; disposition='DIRECT_ADEQUACY_NOT_SUPPORTED'; title='Continuous posterior-combination utility screen'; rationale='S29 found per-world hard model selection insufficient even with direct predictive adequacy; replace hard selection with decision-theoretic continuous combination of baseline and robust terminal posteriors.'
+          item['checkpoint']={'state':'complete','disposition':disposition}
+          if not any(x.get('id')=='EXP-002S30' for x in q['queue']): q['queue'].append({'id':'EXP-002S30','title':title,'priority':53.5,'status':'PENDING','depends_on':['EXP-002S29'],'rationale':rationale})
+          finding=f"S29 {disposition}: direct CV adequacy AUC {sm['auc']:.3f}, zero-boundary balanced accuracy {sm['balanced_accuracy_zero']:.3f}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          q['version']='6.4'; qp.write_text(json.dumps(q,indent=2))
+          lines=['# EXP-002S29 Evaluation','',f'**Disposition:** {disposition}','',f"AUC: {sm['auc']:.4f}",f"Balanced accuracy at ADEQ>0: {sm['balanced_accuracy_zero']:.4f}",f"Spearman ADEQ vs edge delta: {sm['spearman_ADEQ_edge_delta']:.4f}",'','## By regime']
+          for reg,v in sm['by_regime'].items(): lines.append(f"- **{reg}**: median ADEQ {v['median_ADEQ']:.3f}, beneficial {v['beneficial']}/{v['n']}, FP {v['zero_rule_fp']}, FN {v['zero_rule_fn']}")
+          lines += ['','## Next',rationale]; Path('EXP-002S29_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S29_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
+          PY
+      - name: Persist result
+        run: |
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-exp002/EXP-002S29_* experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Complete EXP-002S29 direct model adequacy diagnostic'
+          git push
