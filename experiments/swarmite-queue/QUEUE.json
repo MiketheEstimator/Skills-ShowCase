@@ -1,5 +1,5 @@
 {
-  "version": "9.3",
+  "version": "9.4",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3388,7 +3388,18 @@
         "tight_harm_cut": 0.05,
         "quantile": 0.5
       },
-      "validation_artifact": "experiments/swarmite-exp002/EXP-002S48_VALIDATION_RESULT.json"
+      "validation_artifact": "experiments/swarmite-exp002/EXP-002S48_VALIDATION_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S48_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S49",
+      "title": "Explicit heteroskedastic terminal likelihood specialist",
+      "priority": 48.75,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S48"
+      ],
+      "rationale": "The localized observable variance gate did not prospectively repair breadth transfer; add a materially different heteroskedastic terminal likelihood specialist while preserving baseline-only planning and S30 as anchor."
     }
   ],
   "established_findings": [
@@ -3435,7 +3446,8 @@
     "S44 FALSIFIED_ON_CONFIRMATION: frozen S43 class-aware decision evaluated prospectively under joint topology plus heteroskedastic nonlinear mechanism shift.",
     "S45 FALSIFIED_ON_VALIDATION: explicit joint topology-mechanism/noise latent-class terminal decision evaluated with separated training, validation, and confirmation worlds.",
     "S46 CONTINUOUS_RISK_SUPPORTED: continuous observable per-world risk prediction for S30 evaluated prospectively after discrete joint-class S45 failed from over-abstention.",
-    "S47 FALSIFIED_AT_SCREEN: frozen S46 continuous-risk S30 architecture evaluated across six balanced prospective world families without refitting."
+    "S47 FALSIFIED_AT_SCREEN: frozen S46 continuous-risk S30 architecture evaluated across six balanced prospective world families without refitting.",
+    "S48 FALSIFIED_ON_VALIDATION: targeted residual-heteroskedasticity repair tested around the frozen S46/S30 architecture on separated linear-anchor and heteroskedastic worlds."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
