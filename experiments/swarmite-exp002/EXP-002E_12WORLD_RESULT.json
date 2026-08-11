@@ -1,0 +1,59 @@
+{
+  "experiment": "EXP-002E",
+  "status": "COMPLETE_UNRESOLVED",
+  "design": "paired one-step vs two-step Bayesian proposal lookahead",
+  "n_worlds": 12,
+  "budget": 10.0,
+  "primary_metric": "edge_error (lower is better)",
+  "means": {
+    "one_step": {
+      "edge_error": 1.3403250861887883,
+      "true_mass": 0.23705622231398796,
+      "map": 0.6666666666666666,
+      "entropy": 3.1680351278838894,
+      "spent": 9.916666666666666,
+      "steps": 9.666666666666666
+    },
+    "two_step": {
+      "edge_error": 1.1448479776172338,
+      "true_mass": 0.2765896726127429,
+      "map": 0.8333333333333334,
+      "entropy": 3.251013121898404,
+      "spent": 9.833333333333334,
+      "steps": 9.333333333333334
+    }
+  },
+  "paired_two_minus_one": {
+    "edge_error": {
+      "mean": -0.19547710857155445,
+      "median": -0.09739221393914277,
+      "ci95": [-0.4760304581159513, 0.06607695896693293],
+      "wins_two": 7,
+      "ties": 0
+    },
+    "true_mass": {
+      "mean": 0.03953345029875497,
+      "median": 0.039319950290963884,
+      "ci95": [-0.04430167597266752, 0.13096378502683645],
+      "wins_two": 7,
+      "ties": 0
+    },
+    "map": {
+      "mean": 0.16666666666666666,
+      "median": 0.0,
+      "ci95": [-0.16666666666666666, 0.5],
+      "wins_two": 3,
+      "ties": 8
+    },
+    "entropy": {
+      "mean": 0.0829779940145145,
+      "median": -0.05400604458517222,
+      "ci95": [-0.14492754338068647, 0.3497265478860357],
+      "wins_two": 6,
+      "ties": 0
+    }
+  },
+  "decision": "UNRESOLVED",
+  "rationale": "Mean edge error and exact-MAP recovery favor two-step, but the preregistered paired bootstrap 95% CI for edge-error difference includes zero.",
+  "next_experiment": "EXP-002E2 powered replication with atomic checkpointing; target >=36 additional matched worlds or sequential stopping when CI excludes zero / practical-equivalence band."
+}
