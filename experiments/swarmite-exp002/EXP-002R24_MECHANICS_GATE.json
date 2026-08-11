@@ -1,0 +1,1 @@
+{"experiment":"EXP-002R24","stage":"mechanics_gate","seeds":[65301,65302,65303,65304],"passes":true,"checks":{"finite":true,"dag_support":29281,"deterministic_replay":true,"spend_max":15,"prior_hash_unchanged":true},"disposition":"Prospective screen 65311-65322 unlocked after persistence."}
