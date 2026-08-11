@@ -1,5 +1,5 @@
 {
-  "version": "7.8",
+  "version": "7.9",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -2140,7 +2140,7 @@
       "id": "EXP-002S38",
       "title": "Specialist residual-value diagnostic over S30 anchor",
       "priority": 51.5,
-      "status": "RUNNING",
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED",
       "depends_on": [
         "EXP-002S37"
       ],
@@ -2149,17 +2149,245 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s38_residual_diag.py",
       "runner_commit": "78d13ae4529e91c848c1f10992646c7edb2ab5f6",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "residual_value_diagnostic",
-        "training_seeds": [
-          72201,
-          72248
-        ],
-        "validation_seeds": [
-          72261,
-          72296
-        ]
-      }
+        "state": "complete",
+        "disposition": "HETEROGENEOUS_RESIDUAL_VALUE"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S38_RESULT.json",
+      "result_summary": {
+        "training": {
+          "specialists": {
+            "TG": {
+              "mean_edge_delta": 0.5092505269335607,
+              "win_rate": 0.125,
+              "mean_improvement_when_win": 0.45060176887606235,
+              "mean_harm_when_loss": 0.6463722834777925,
+              "large_harm_rate": 0.4791666666666667,
+              "p90_harm_among_losses": 1.252102094860961,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": 0.2541199005062966,
+                "tanh_t7": 1.0020805585419004,
+                "sin_gaussian": 0.15642144003908776,
+                "sin_t7": 0.5149317407204654,
+                "asinh_gaussian": 0.5665196560035337,
+                "asinh_t7": 0.5614298657900803
+              }
+            },
+            "TT": {
+              "mean_edge_delta": 0.08196156635610187,
+              "win_rate": 0.6041666666666666,
+              "mean_improvement_when_win": 0.3963588238755553,
+              "mean_harm_when_loss": 0.8120295303938944,
+              "large_harm_rate": 0.20833333333333334,
+              "p90_harm_among_losses": 1.9234460222603595,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": 0.02447206846695396,
+                "tanh_t7": -0.12669176679929353,
+                "sin_gaussian": 0.15901895925887144,
+                "sin_t7": -0.18513443118798617,
+                "asinh_gaussian": 0.5130076861560809,
+                "asinh_t7": 0.10709688224198463
+              }
+            },
+            "SG": {
+              "mean_edge_delta": 0.5647239763729561,
+              "win_rate": 0.1875,
+              "mean_improvement_when_win": 0.6918824720071263,
+              "mean_harm_when_loss": 0.8547100798452828,
+              "large_harm_rate": 0.5208333333333334,
+              "p90_harm_among_losses": 1.8048935465118339,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": 0.12575876761347726,
+                "tanh_t7": 1.094108566571392,
+                "sin_gaussian": -0.0059265686595918465,
+                "sin_t7": 0.3981310376476812,
+                "asinh_gaussian": 0.6267641712433663,
+                "asinh_t7": 1.149507883821412
+              }
+            },
+            "ST": {
+              "mean_edge_delta": -0.13689259093796938,
+              "win_rate": 0.5625,
+              "mean_improvement_when_win": 0.7082235494746347,
+              "mean_harm_when_loss": 0.5976757843234574,
+              "large_harm_rate": 0.20833333333333334,
+              "p90_harm_among_losses": 1.2765080744692323,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": -0.33857494040940167,
+                "tanh_t7": -0.23623322904199837,
+                "sin_gaussian": -0.12448492554653984,
+                "sin_t7": -0.6651155186324512,
+                "asinh_gaussian": 0.2624132969381906,
+                "asinh_t7": 0.28063977106438415
+              }
+            },
+            "AG": {
+              "mean_edge_delta": 0.24312867817548786,
+              "win_rate": 0.22916666666666666,
+              "mean_improvement_when_win": 0.15179719934162475,
+              "mean_harm_when_loss": 0.3605390741940889,
+              "large_harm_rate": 0.14583333333333334,
+              "p90_harm_among_losses": 0.6635609200139815,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": 0.1306712721107379,
+                "tanh_t7": 0.5038644997818484,
+                "sin_gaussian": 0.0943197264272525,
+                "sin_t7": 0.3778566971170904,
+                "asinh_gaussian": 0.2098758557715489,
+                "asinh_t7": 0.14218401784444917
+              }
+            },
+            "AT": {
+              "mean_edge_delta": 0.16878635541028175,
+              "win_rate": 0.5,
+              "mean_improvement_when_win": 0.5217460717956299,
+              "mean_harm_when_loss": 0.8593187826161935,
+              "large_harm_rate": 0.20833333333333334,
+              "p90_harm_among_losses": 2.108974766658413,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": 0.18941115582150336,
+                "tanh_t7": -0.12683464228517133,
+                "sin_gaussian": 0.2744752838090297,
+                "sin_t7": 0.22198278529806698,
+                "asinh_gaussian": 0.4587649986534497,
+                "asinh_t7": -0.0050814488351879905
+              }
+            }
+          },
+          "oracle_coverage": 0.8333333333333334,
+          "mean_oracle_improvement": 0.5105532939788127,
+          "oracle_class_counts": {
+            "TG": 0,
+            "TT": 6,
+            "SG": 1,
+            "ST": 20,
+            "AG": 7,
+            "AT": 14
+          }
+        },
+        "validation": {
+          "specialists": {
+            "TG": {
+              "mean_edge_delta": 0.42286789340638803,
+              "win_rate": 0.19444444444444445,
+              "mean_improvement_when_win": 0.26422545692839605,
+              "mean_harm_when_loss": 0.5887180124527154,
+              "large_harm_rate": 0.4722222222222222,
+              "p90_harm_among_losses": 1.1382391727743117,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": 0.5985498805145393,
+                "tanh_t7": 0.39627217191642855,
+                "sin_gaussian": 0.35957158496512864,
+                "sin_t7": 0.2225043635199663,
+                "asinh_gaussian": 0.3318107191372077,
+                "asinh_t7": 0.6284986403850579
+              }
+            },
+            "TT": {
+              "mean_edge_delta": -0.03503502206024334,
+              "win_rate": 0.6111111111111112,
+              "mean_improvement_when_win": 0.559450829437602,
+              "mean_harm_when_loss": 0.7890469609613202,
+              "large_harm_rate": 0.19444444444444445,
+              "p90_harm_among_losses": 1.8347201349721884,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": 0.1775588147705809,
+                "tanh_t7": -0.35576257076804785,
+                "sin_gaussian": 0.11557222475736284,
+                "sin_t7": -0.0729961160504115,
+                "asinh_gaussian": 0.47531054178720605,
+                "asinh_t7": -0.5498930268581504
+              }
+            },
+            "SG": {
+              "mean_edge_delta": 0.33960392066148487,
+              "win_rate": 0.3055555555555556,
+              "mean_improvement_when_win": 0.4991387833511746,
+              "mean_harm_when_loss": 0.7086507104270551,
+              "large_harm_rate": 0.3333333333333333,
+              "p90_harm_among_losses": 1.362205989304894,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": 0.5639348377442742,
+                "tanh_t7": 0.38769553263916107,
+                "sin_gaussian": 0.22986771665684133,
+                "sin_t7": -0.10557512492832433,
+                "asinh_gaussian": 0.48187401081109565,
+                "asinh_t7": 0.4798265510458614
+              }
+            },
+            "ST": {
+              "mean_edge_delta": -0.2565427476398533,
+              "win_rate": 0.75,
+              "mean_improvement_when_win": 0.651980628253771,
+              "mean_harm_when_loss": 0.9297708942019002,
+              "large_harm_rate": 0.19444444444444445,
+              "p90_harm_among_losses": 1.7993120909552545,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": 0.12320274540829453,
+                "tanh_t7": -0.6778906922883531,
+                "sin_gaussian": 0.026244560402293244,
+                "sin_t7": -0.7462637076694568,
+                "asinh_gaussian": 0.3556129615078339,
+                "asinh_t7": -0.6201623531997315
+              }
+            },
+            "AG": {
+              "mean_edge_delta": 0.23030644288913374,
+              "win_rate": 0.1388888888888889,
+              "mean_improvement_when_win": 0.22384724786920213,
+              "mean_harm_when_loss": 0.3035570381727363,
+              "large_harm_rate": 0.1388888888888889,
+              "p90_harm_among_losses": 0.5597164766118468,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": 0.272969080418716,
+                "tanh_t7": 0.24993416661175508,
+                "sin_gaussian": 0.11702189753476251,
+                "sin_t7": 0.22472361880844005,
+                "asinh_gaussian": 0.15039443317047355,
+                "asinh_t7": 0.36679546079065545
+              }
+            },
+            "AT": {
+              "mean_edge_delta": 0.07646612725432218,
+              "win_rate": 0.5833333333333334,
+              "mean_improvement_when_win": 0.5264361774904904,
+              "mean_harm_when_loss": 0.9205293538970599,
+              "large_harm_rate": 0.2222222222222222,
+              "p90_harm_among_losses": 1.8196044305518053,
+              "by_cell_mean_delta": {
+                "tanh_gaussian": 0.1375822393857701,
+                "tanh_t7": -0.1780406375360067,
+                "sin_gaussian": 0.2030958619059091,
+                "sin_t7": 0.16009614983486276,
+                "asinh_gaussian": 0.5716111112748141,
+                "asinh_t7": -0.43554796133941615
+              }
+            }
+          },
+          "oracle_coverage": 0.8611111111111112,
+          "mean_oracle_improvement": 0.6380092005324426,
+          "oracle_class_counts": {
+            "TG": 0,
+            "TT": 4,
+            "SG": 6,
+            "ST": 12,
+            "AG": 4,
+            "AT": 10
+          }
+        },
+        "safe_specialists": [],
+        "disposition": "HETEROGENEOUS_RESIDUAL_VALUE"
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S38_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S39",
+      "title": "Credal science posterior from specialist disagreement",
+      "priority": 51.25,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S38"
+      ],
+      "rationale": "S38 shows substantial but heterogeneous specialist value with no independently safe specialist; preserve S30 as point estimate and test whether specialist disagreement improves uncertainty calibration/abstention rather than shifting the point posterior."
     }
   ],
   "established_findings": [
@@ -2196,7 +2424,8 @@
     "S34 PREDICTIVE_WEIGHT_MISALIGNMENT: represented-class coverage 1.000, mean predictive-score/structural-utility Spearman -0.217, top-weight/oracle match 0.083, mixture regret vs represented oracle 0.731.",
     "S35 STRUCTURAL_STACKING_FALSIFIED_VALIDATION: frozen training-only structural stack; edge delta vs S30 0.0024, CI [-0.08652042734333419, 0.09892142080733121], Brier -0.0011, harms 2.",
     "S36 MODEL_SET_INSUFFICIENCY: exact training minimax worst-cell delta 0.0591, validation minimax 0.0336, training oracle coverage 1.000, validation oracle coverage 1.000.",
-    "S37 ANCHOR_ONLY_SAFE: S30-anchor exact minimax worst-cell delta train 0.0000, validation 0.0000; S30 weights train 1.000, validation 1.000."
+    "S37 ANCHOR_ONLY_SAFE: S30-anchor exact minimax worst-cell delta train 0.0000, validation 0.0000; S30 weights train 1.000, validation 1.000.",
+    "S38 HETEROGENEOUS_RESIDUAL_VALUE: oracle specialist coverage train 0.833, validation 0.861; mean oracle improvement train 0.511, validation 0.638; safe specialists []."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
