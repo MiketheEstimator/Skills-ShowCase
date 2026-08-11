@@ -3163,11 +3163,30 @@
       "id": "EXP-002S46",
       "title": "Continuous observable harm-risk prediction for terminal S30",
       "priority": 49.5,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S45"
       ],
-      "rationale": "S45 falsified the hand-specified six-class ontology; replace discrete world classes with a continuous preregistered risk model over observable topology evidence, mechanism predictive scores, credal width, and posterior diagnostics, trained only on fresh training worlds."
+      "rationale": "S45 falsified the hand-specified six-class ontology; replace discrete world classes with a continuous preregistered risk model over observable topology evidence, mechanism predictive scores, credal width, and posterior diagnostics, trained only on fresh training worlds.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S46_CONTINUOUS_RISK_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s46_continuous_risk.py",
+      "runner_commit": "a1478f4babededd83810a40a6928b876030b5384",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "training",
+        "training_seeds": [
+          73801,
+          73920
+        ],
+        "validation_seeds": [
+          74001,
+          74060
+        ],
+        "confirmation_seeds": [
+          74101,
+          74220
+        ]
+      }
     }
   ],
   "established_findings": [
