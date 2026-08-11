@@ -1,5 +1,5 @@
 {
-  "version": "1.6",
+  "version": "1.7",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -11,26 +11,27 @@
     "stop_condition": "explicit_user_stop_only"
   },
   "queue": [
-    {"id":"EXP-002E","title":"Two-step Bayesian proposal lookahead","priority":100,"status":"COMPLETE_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002E_12WORLD_RESULT.json"},
-    {"id":"EXP-002E2","title":"Powered two-step Bayesian replication","priority":99,"status":"COMPLETE_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002E2_48WORLD_RESULT.json"},
-    {"id":"EXP-002F","title":"RNG-isolated one-step vs two-step ablation","priority":90,"status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH","result_artifact":"experiments/swarmite-exp002/EXP-002F_RNG_ISOLATED_RESULT.json"},
-    {"id":"EXP-002K","title":"Initial-state selective lookahead gate","priority":89,"status":"COMPLETE_FALSIFIED","result_artifact":"experiments/swarmite-exp002/EXP-002K_SELECTIVE_GATE_RESULT.json"},
-    {"id":"EXP-002L","title":"Proposal-margin value-of-computation gate","priority":88,"status":"COMPLETE_FALSIFIED","result_artifact":"experiments/swarmite-exp002/EXP-002L_MARGIN_GATE_RESULT.json"},
+    {"id":"EXP-002E","status":"COMPLETE_UNRESOLVED"},
+    {"id":"EXP-002E2","status":"COMPLETE_UNRESOLVED"},
+    {"id":"EXP-002F","status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH"},
+    {"id":"EXP-002K","status":"COMPLETE_FALSIFIED"},
+    {"id":"EXP-002L","status":"COMPLETE_FALSIFIED","result_artifact":"experiments/swarmite-exp002/EXP-002L_MARGIN_GATE_RESULT.json"},
+    {"id":"EXP-002M","title":"Breadth-vs-depth progressive proposal widening","priority":87,"status":"COMPLETE_PROMISING_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002M_BREADTH_N24_RESULT.json"},
     {
-      "id":"EXP-002M",
-      "title":"Breadth-vs-depth progressive proposal widening",
-      "priority":87,
+      "id":"EXP-002M2",
+      "title":"Powered width-1 vs width-2 proposal replication",
+      "priority":86,
       "status":"RUNNING",
-      "hypothesis":"Given that extra lookahead depth has not improved the primary metric, allocating additional compute to a wider, epistemically diverse root proposal set will improve causal recovery more efficiently than deeper search.",
-      "design":"At each step generate 1, 2, or 4 independent five-designer proposal sets using isolated proposal RNG streams, deduplicate concrete interventions, score all retained proposals with the same one-step expected-gain evaluator, and choose the best. Compare width-1, width-2, and width-4 under equal experiment budget with compute accounting and RNG-isolated observations.",
-      "primary_metric":"Pareto performance over edge error and compute time",
-      "controls":["width_1_current_one_step","always_two_step_depth"],
-      "checkpoint":{"state":"implementation_next","pilot_worlds":6,"then_matched_n":24}
+      "hypothesis":"The n=24 width-2 recovery advantage reflects a real benefit of moderate proposal breadth rather than sampling noise.",
+      "design":"Continue the identical RNG-isolated width-1 vs width-2 implementation on 24 new unseen worlds, aggregate to total n=48, and bootstrap paired edge-error difference with compute accounting.",
+      "primary_metric":"paired width-2 minus width-1 edge error",
+      "stopping_rule":"complete at total n=48 or earlier if CI excludes zero",
+      "checkpoint":{"starting_n":24,"next_seed":20280025}
     },
-    {"id":"EXP-002G","title":"Unconditional three-step or MCTS epistemic search","priority":80,"status":"SUPERSEDED_BY_BREADTH_FIRST","reason":"Unconditional depth and two depth-gating schemes failed to justify compute."},
-    {"id":"EXP-002H","title":"Parallel designer proposals plus selective search","priority":70,"status":"PENDING","depends_on":["EXP-002M"],"hypothesis":"If breadth helps, learn how to allocate proposal-generation effort across epistemically distinct designers rather than uniformly widening all of them."},
-    {"id":"EXP-002I","title":"Reward and credit assignment ablation","priority":60,"status":"PENDING","hypothesis":"Counterfactual or trajectory-aware credit can improve policy learning once proposal-value estimates are available.","compare":["immediate_ig_cost","naive_terminal","leave_one_out","trajectory_value","proposal_value"]},
-    {"id":"EXP-002J","title":"Model misspecification transfer","priority":50,"status":"PENDING","hypothesis":"A controller that succeeds only when its Bayesian world class is correct will degrade under nonlinear, confounded, imperfect-intervention, or nonstationary worlds; model-uncertainty mechanisms should reduce that degradation."}
+    {"id":"EXP-002G","priority":80,"status":"SUPERSEDED_BY_BREADTH_FIRST"},
+    {"id":"EXP-002H","title":"Adaptive proposal-allocation swarm","priority":70,"status":"PENDING","depends_on":["EXP-002M2"],"hypothesis":"If moderate breadth survives replication, allocating the second proposal set selectively across epistemically distinct designers will outperform uniform width-2 at equal proposal-generation compute."},
+    {"id":"EXP-002I","title":"Reward and credit assignment ablation","priority":60,"status":"PENDING"},
+    {"id":"EXP-002J","title":"Model misspecification transfer","priority":50,"status":"PENDING"}
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
