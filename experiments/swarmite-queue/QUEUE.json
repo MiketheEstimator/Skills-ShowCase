@@ -3444,11 +3444,10 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s51_residual_diagnostic.py",
       "runner_commit": "ef8e88e2bff52e3bfab3e7779bd1e1e0d56d7739",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics",
-        "mechanics": "2 linear + 2 heteroskedastic",
-        "diagnostic": "48 linear + 48 heteroskedastic"
-      }
+        "state": "mechanics_passed",
+        "next_stage": "diagnostic_panel"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S51_MECHANICS_RESULT.json"
     }
   ],
   "established_findings": [
