@@ -1,5 +1,5 @@
 {
-  "version": "9.5",
+  "version": "9.6",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3415,11 +3415,22 @@
       "id": "EXP-002S50",
       "title": "Explicit world-model mixture terminal inference",
       "priority": 48.5,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S49"
       ],
-      "rationale": "S49 falsified fitted-magnitude heteroskedastic family evidence. Redirect to explicit model-class uncertainty that mixes distinct terminal world models rather than another variance threshold or likelihood tweak."
+      "rationale": "S49 falsified fitted-magnitude heteroskedastic family evidence. Redirect to explicit model-class uncertainty that mixes distinct terminal world models rather than another variance threshold or likelihood tweak.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S50_WORLD_MODEL_MIXTURE_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s50_world_model_mixture.py",
+      "runner_commit": "b02425dd854a60e72b1579c2a4079fe86e34116d",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "training": "48 + 48",
+        "validation": "24 + 24",
+        "confirmation": "48 + 48"
+      }
     }
   ],
   "established_findings": [
