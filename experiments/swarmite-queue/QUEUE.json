@@ -3415,7 +3415,7 @@
       "id": "EXP-002S50",
       "title": "Explicit world-model mixture terminal inference",
       "priority": 48.5,
-      "status": "RUNNING",
+      "status": "COMPLETE_FALSIFIED_AT_TRAINING",
       "depends_on": [
         "EXP-002S49"
       ],
@@ -3424,10 +3424,11 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s50_world_model_mixture.py",
       "runner_commit": "b02425dd854a60e72b1579c2a4079fe86e34116d",
       "checkpoint": {
-        "state": "mechanics_passed",
-        "next_stage": "training"
+        "state": "complete",
+        "disposition": "FALSIFIED_AT_TRAINING"
       },
-      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S50_MECHANICS_RESULT.json"
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S50_MECHANICS_RESULT.json",
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S50_TRAINING_RESULT.json"
     }
   ],
   "established_findings": [
