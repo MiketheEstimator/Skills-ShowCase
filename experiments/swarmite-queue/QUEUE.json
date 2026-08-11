@@ -1,5 +1,5 @@
 {
-  "version": "1.5",
+  "version": "1.6",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -13,22 +13,23 @@
   "queue": [
     {"id":"EXP-002E","title":"Two-step Bayesian proposal lookahead","priority":100,"status":"COMPLETE_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002E_12WORLD_RESULT.json"},
     {"id":"EXP-002E2","title":"Powered two-step Bayesian replication","priority":99,"status":"COMPLETE_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002E2_48WORLD_RESULT.json"},
-    {"id":"EXP-002F","title":"RNG-isolated one-step vs two-step ablation","priority":90,"status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH","result_artifact":"experiments/swarmite-exp002/EXP-002F_RNG_ISOLATED_RESULT.json","result":{"edge_delta":0.00329643074814454,"edge_ci95":[-0.12404068964723458,0.12740611740655267],"compute_ratio":8.953916040009156}},
-    {"id":"EXP-002K","title":"Selective lookahead gate","priority":89,"status":"COMPLETE_FALSIFIED_FOR_INITIAL_STATE_GATE","result_artifact":"experiments/swarmite-exp002/EXP-002K_SELECTIVE_GATE_RESULT.json"},
+    {"id":"EXP-002F","title":"RNG-isolated one-step vs two-step ablation","priority":90,"status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH","result_artifact":"experiments/swarmite-exp002/EXP-002F_RNG_ISOLATED_RESULT.json"},
+    {"id":"EXP-002K","title":"Initial-state selective lookahead gate","priority":89,"status":"COMPLETE_FALSIFIED","result_artifact":"experiments/swarmite-exp002/EXP-002K_SELECTIVE_GATE_RESULT.json"},
+    {"id":"EXP-002L","title":"Proposal-margin value-of-computation gate","priority":88,"status":"COMPLETE_FALSIFIED","result_artifact":"experiments/swarmite-exp002/EXP-002L_MARGIN_GATE_RESULT.json"},
     {
-      "id":"EXP-002L",
-      "title":"Proposal-margin value-of-computation gate",
-      "priority":88,
+      "id":"EXP-002M",
+      "title":"Breadth-vs-depth progressive proposal widening",
+      "priority":87,
       "status":"RUNNING",
-      "hypothesis":"Deeper lookahead is useful primarily when the best and second-best one-step experiment proposals have similar predicted value. A local proposal-margin gate can retain most of any causal-recovery benefit while invoking two-step search far less often than always-two.",
-      "design":"At each experiment-selection step, compute the normal one-step proposal scores. Define normalized margin = (best - second_best) / max(abs(best), epsilon). Invoke two-step lookahead only when margin < tau; otherwise execute the one-step winner. Tune tau on training worlds, freeze it, then prospectively compare margin-gated, always-one, and always-two under equal experiment budget with compute accounting and RNG isolation.",
+      "hypothesis":"Given that extra lookahead depth has not improved the primary metric, allocating additional compute to a wider, epistemically diverse root proposal set will improve causal recovery more efficiently than deeper search.",
+      "design":"At each step generate 1, 2, or 4 independent five-designer proposal sets using isolated proposal RNG streams, deduplicate concrete interventions, score all retained proposals with the same one-step expected-gain evaluator, and choose the best. Compare width-1, width-2, and width-4 under equal experiment budget with compute accounting and RNG-isolated observations.",
       "primary_metric":"Pareto performance over edge error and compute time",
-      "controls":["always_one_step","always_two_step"],
-      "checkpoint":{"state":"implementation_next","train_worlds":12,"heldout_worlds":12}
+      "controls":["width_1_current_one_step","always_two_step_depth"],
+      "checkpoint":{"state":"implementation_next","pilot_worlds":6,"then_matched_n":24}
     },
-    {"id":"EXP-002G","title":"Unconditional three-step or MCTS epistemic search","priority":80,"status":"SUPERSEDED_BY_SELECTIVE_SEARCH","reason":"Unconditional depth failed at ~9x compute; only selective search is justified."},
-    {"id":"EXP-002H","title":"Parallel designer proposals plus selective tree search","priority":70,"status":"PENDING","depends_on":["EXP-002L"],"hypothesis":"Epistemically diverse proposal generation improves selective search quality when deeper search is invoked only under local ambiguity."},
-    {"id":"EXP-002I","title":"Reward and credit assignment ablation","priority":60,"status":"PENDING","hypothesis":"Counterfactual or trajectory-aware credit can improve policy learning once downstream value estimates are available.","compare":["immediate_ig_cost","naive_terminal","leave_one_out","trajectory_value","proposal_value"]},
+    {"id":"EXP-002G","title":"Unconditional three-step or MCTS epistemic search","priority":80,"status":"SUPERSEDED_BY_BREADTH_FIRST","reason":"Unconditional depth and two depth-gating schemes failed to justify compute."},
+    {"id":"EXP-002H","title":"Parallel designer proposals plus selective search","priority":70,"status":"PENDING","depends_on":["EXP-002M"],"hypothesis":"If breadth helps, learn how to allocate proposal-generation effort across epistemically distinct designers rather than uniformly widening all of them."},
+    {"id":"EXP-002I","title":"Reward and credit assignment ablation","priority":60,"status":"PENDING","hypothesis":"Counterfactual or trajectory-aware credit can improve policy learning once proposal-value estimates are available.","compare":["immediate_ig_cost","naive_terminal","leave_one_out","trajectory_value","proposal_value"]},
     {"id":"EXP-002J","title":"Model misspecification transfer","priority":50,"status":"PENDING","hypothesis":"A controller that succeeds only when its Bayesian world class is correct will degrade under nonlinear, confounded, imperfect-intervention, or nonstationary worlds; model-uncertainty mechanisms should reduce that degradation."}
   ],
   "dynamic_enqueue_rules": [
