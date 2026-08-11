@@ -3110,11 +3110,30 @@
       "id": "EXP-002S45",
       "title": "Joint topology-mechanism-noise latent class decision",
       "priority": 49.75,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S44"
       ],
-      "rationale": "S44 falsified topology-only utility propagation under compound shift; replace the topology-only class posterior with an explicit joint latent class over topology \u00d7 nonlinear mechanism/noise rather than retuning scalar thresholds or S43 parameters."
+      "rationale": "S44 falsified topology-only utility propagation under compound shift; replace the topology-only class posterior with an explicit joint latent class over topology \u00d7 nonlinear mechanism/noise rather than retuning scalar thresholds or S43 parameters.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S45_JOINT_LATENT_CLASS_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s45_joint_latent.py",
+      "runner_commit": "e6d1f308dc5aada09d1ac06f1bf37bafb5566c0b",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "training",
+        "training_seeds": [
+          73501,
+          73572
+        ],
+        "validation_seeds": [
+          73601,
+          73636
+        ],
+        "confirmation_seeds": [
+          73701,
+          73772
+        ]
+      }
     }
   ],
   "established_findings": [
