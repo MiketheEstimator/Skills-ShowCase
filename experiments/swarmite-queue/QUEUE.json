@@ -1,5 +1,5 @@
 {
-  "version": "5.4",
+  "version": "5.5",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -514,11 +514,50 @@
       "id": "EXP-002S20",
       "title": "Explicit model-class uncertainty / mixture terminal inference",
       "priority": 56.0,
-      "status": "PENDING",
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN",
       "depends_on": [
         "EXP-002S19"
       ],
-      "rationale": "Residual-aware abstention failed; replace hand-engineered thresholding with explicit uncertainty over linear/nonlinear/noise model classes."
+      "rationale": "Residual-aware abstention failed; replace hand-engineered thresholding with explicit uncertainty over linear/nonlinear/noise model classes.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S20_MODEL_CLASS_MIXTURE_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s20_mixture.py",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "screen_falsification"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S20_MECHANICS_RESULT.json",
+      "screen_artifact": "experiments/swarmite-exp002/EXP-002S20_SCREEN_RESULT.json",
+      "result_summary": {
+        "n": 12,
+        "mean_edge_delta_mix_vs_control": 0.9557135772928874,
+        "mean_brier_delta_mix_vs_control": 0.017399801850496596,
+        "mean_edge_delta_mix_vs_fixed": 1.2249807646738191,
+        "mean_brier_delta_mix_vs_fixed": 0.0056725515068689015,
+        "wins_mix_vs_control": 0,
+        "large_harms_mix_vs_control": 10,
+        "mean_class_weights": [
+          0.008009599252305724,
+          0.07035143299608315,
+          0.9216389677516111
+        ],
+        "dag_count_ok": true,
+        "spend_ok": true,
+        "trace_identical_all": true,
+        "planning_reconstruction_ok": true,
+        "posteriors_normalized": true,
+        "weights_valid": true
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S20_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S21",
+      "title": "Model-class mixture evidence-dominance diagnostic",
+      "priority": 55.75,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S20"
+      ],
+      "rationale": "S20 did not promote; diagnose model-class evidence domination and shared likelihood misspecification before adding any new model class."
     }
   ],
   "established_findings": [
@@ -537,7 +576,8 @@
     "S18 showed that adding worst-edge disagreement and entropy-ratio signals did not resolve the compound-shift calibration failure: fresh validation retained mean edge improvement 0.495 with 22/24 wins and zero large harms, but Brier delta +0.00628 still failed the +0.005 guardrail.",
     "Posterior-disagreement geometry alone is now deprioritized; S19 tests whether observable posterior-predictive residual mismatch can identify the remaining model-shift-sensitive cases.",
     "Execution reproducibility and namespace isolation remain hard scientific invariants; blocked historical worlds are never pooled.",
-    "S19 FALSIFIED_ON_CONFIRMATION: residual-aware PPC gate disposition recorded; next direction is explicit model-class uncertainty rather than further hand-engineered abstention thresholds."
+    "S19 FALSIFIED_ON_CONFIRMATION: residual-aware PPC gate disposition recorded; next direction is explicit model-class uncertainty rather than further hand-engineered abstention thresholds.",
+    "S20 FALSIFIED_AT_SCREEN: explicit model-class mixture terminal inference tested at 100% coverage; disposition recorded without post-hoc class-weight tuning."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
