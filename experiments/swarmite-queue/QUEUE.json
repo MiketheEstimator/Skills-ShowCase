@@ -1,5 +1,5 @@
 {
-  "version": "7.3",
+  "version": "7.4",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1818,11 +1818,26 @@
       "id": "EXP-002S36",
       "title": "Global stacking transfer-failure diagnostic",
       "priority": 52.0,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S35"
       ],
-      "rationale": "Training-optimized global structural weights failed fresh validation; diagnose training-distribution instability versus irreducible per-world heterogeneity before any adaptive stacking."
+      "rationale": "Training-optimized global structural weights failed fresh validation; diagnose training-distribution instability versus irreducible per-world heterogeneity before any adaptive stacking.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S36_GLOBAL_STACK_FAILURE_DIAGNOSTIC_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s36_stack_diag.py",
+      "runner_commit": "acbdc70d34eb50278333d9ba8c1fed6911654f0d",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "exact_lp_diagnostic",
+        "training_seeds": [
+          72201,
+          72248
+        ],
+        "validation_seeds": [
+          72261,
+          72296
+        ]
+      }
     }
   ],
   "established_findings": [
