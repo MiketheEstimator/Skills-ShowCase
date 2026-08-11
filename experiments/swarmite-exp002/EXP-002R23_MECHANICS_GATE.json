@@ -1,0 +1,1 @@
+{"experiment":"EXP-002R23","stage":"mechanics_gate","seeds":[65101,65102,65103,65104],"passes":true,"checks":{"finite_family_scores_and_posteriors":true,"dag_support":29281,"budget_max":15,"deterministic_replay":true,"ground_truth_not_used_for_action_selection":true},"disposition":"Prospective screen seeds 65111-65122 unlocked only after this persisted gate."}
