@@ -1,5 +1,5 @@
 {
-  "version": "9.1",
+  "version": "9.2",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3343,7 +3343,18 @@
         "risk_brier": 0.02386986062428253,
         "constant_prevalence_brier": 0.0475206611570248,
         "mechanics_ok": true
-      }
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S46_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S47",
+      "title": "Reference breadth confirmation of continuous-risk S30 architecture",
+      "priority": 49.25,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S46"
+      ],
+      "rationale": "S46 supported continuous observable risk adjudication around S30; broaden to mixed linear, nonlinear, heavy-tail, heteroskedastic, effect-size, and topology shifts with frozen coefficients and rule before reference promotion."
     }
   ],
   "established_findings": [
@@ -3388,7 +3399,8 @@
     "S42 TOPOLOGY_WORLDCLASS_SUPPORTED: topology class AUC 0.785, credal control AUC 0.637, Brier 0.193, accuracy 0.729.",
     "S43 CLASS_AWARE_DECISION_SUPPORTED: class-aware coverage 1.000, hybrid edge delta -0.127, S39 control -0.051, harm rate 0.021.",
     "S44 FALSIFIED_ON_CONFIRMATION: frozen S43 class-aware decision evaluated prospectively under joint topology plus heteroskedastic nonlinear mechanism shift.",
-    "S45 FALSIFIED_ON_VALIDATION: explicit joint topology-mechanism/noise latent-class terminal decision evaluated with separated training, validation, and confirmation worlds."
+    "S45 FALSIFIED_ON_VALIDATION: explicit joint topology-mechanism/noise latent-class terminal decision evaluated with separated training, validation, and confirmation worlds.",
+    "S46 CONTINUOUS_RISK_SUPPORTED: continuous observable per-world risk prediction for S30 evaluated prospectively after discrete joint-class S45 failed from over-abstention."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
