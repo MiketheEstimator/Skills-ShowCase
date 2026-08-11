@@ -1,5 +1,5 @@
 {
-  "version": "1.7",
+  "version": "1.8",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -15,23 +15,28 @@
     {"id":"EXP-002E2","status":"COMPLETE_UNRESOLVED"},
     {"id":"EXP-002F","status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH"},
     {"id":"EXP-002K","status":"COMPLETE_FALSIFIED"},
-    {"id":"EXP-002L","status":"COMPLETE_FALSIFIED","result_artifact":"experiments/swarmite-exp002/EXP-002L_MARGIN_GATE_RESULT.json"},
-    {"id":"EXP-002M","title":"Breadth-vs-depth progressive proposal widening","priority":87,"status":"COMPLETE_PROMISING_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002M_BREADTH_N24_RESULT.json"},
+    {"id":"EXP-002L","status":"COMPLETE_FALSIFIED"},
+    {"id":"EXP-002M","status":"COMPLETE_PROMISING_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002M_BREADTH_N24_RESULT.json"},
+    {"id":"EXP-002M2","title":"Powered width-1 vs width-2 proposal replication","priority":86,"status":"COMPLETE_SUPPORTED","result_artifact":"experiments/swarmite-exp002/EXP-002M2_BREADTH_N48_RESULT.json"},
     {
-      "id":"EXP-002M2",
-      "title":"Powered width-1 vs width-2 proposal replication",
-      "priority":86,
+      "id":"EXP-002H",
+      "title":"Adaptive proposal-allocation swarm",
+      "priority":85,
       "status":"RUNNING",
-      "hypothesis":"The n=24 width-2 recovery advantage reflects a real benefit of moderate proposal breadth rather than sampling noise.",
-      "design":"Continue the identical RNG-isolated width-1 vs width-2 implementation on 24 new unseen worlds, aggregate to total n=48, and bootstrap paired edge-error difference with compute accounting.",
-      "primary_metric":"paired width-2 minus width-1 edge error",
-      "stopping_rule":"complete at total n=48 or earlier if CI excludes zero",
-      "checkpoint":{"starting_n":24,"next_seed":20280025}
+      "hypothesis":"The width-2 benefit is concentrated in resampling particular epistemic designer families. Allocating the second proposal-generation budget to the highest-value designer subsets can retain or improve width-2 recovery while using less compute than uniformly duplicating all five designers.",
+      "design":"Instrument proposal source identity. Compare baseline five-designer set plus one independently resampled proposal from INFOGAIN, FALSIFY, CHEAPEST, RIVAL, or WEAKTIE, and selected low-cost subsets. Use shallow one-step scoring, RNG-isolated observations, equal intervention budget, and compute accounting. Screen on matched worlds, then power the best allocation against uniform width-2.",
+      "primary_metric":"Pareto performance over edge error and compute time",
+      "control":"uniform width-2",
+      "checkpoint":{"state":"individual_designer_resampling_implementation_next","pilot_worlds":6}
     },
-    {"id":"EXP-002G","priority":80,"status":"SUPERSEDED_BY_BREADTH_FIRST"},
-    {"id":"EXP-002H","title":"Adaptive proposal-allocation swarm","priority":70,"status":"PENDING","depends_on":["EXP-002M2"],"hypothesis":"If moderate breadth survives replication, allocating the second proposal set selectively across epistemically distinct designers will outperform uniform width-2 at equal proposal-generation compute."},
+    {"id":"EXP-002G","status":"SUPERSEDED_BY_BREADTH_FIRST"},
     {"id":"EXP-002I","title":"Reward and credit assignment ablation","priority":60,"status":"PENDING"},
     {"id":"EXP-002J","title":"Model misspecification transfer","priority":50,"status":"PENDING"}
+  ],
+  "established_findings": [
+    "Unconditional two-step search does not improve the primary metric after RNG isolation and costs roughly 9x compute.",
+    "Initial-state and local-margin depth gates failed to justify deeper search.",
+    "Moderate proposal breadth (two independent five-designer root sets) improves edge recovery over width-1 at n=48, with paired CI excluding zero, and raises exact MAP recovery at roughly 2x compute."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
