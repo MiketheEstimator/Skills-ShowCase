@@ -1,0 +1,21 @@
+name: Swarmite S39 Run
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s39-run.yml']
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Execute EXP-002S39
+        working-directory: experiments/swarmite-exp002
+        run: python swarmite_exp002_s39_credal.py | tee EXP-002S39_RESULT.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EXP-002S39_RESULT
+          path: experiments/swarmite-exp002/EXP-002S39_RESULT.json
