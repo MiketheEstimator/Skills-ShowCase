@@ -1,0 +1,16 @@
+{
+  "meta_train": {
+    "selected_role": "novel",
+    "role_reward_means": {"info": 1.6943199213817244,"falsify": 1.59764977984699,"cheap": 1.70366222354152,"novel": 1.7537308353081658},
+    "role_counts": {"info": 171,"falsify": 39,"cheap": 192,"novel": 1966},
+    "performance": {"accuracy": 0.9654814814814815,"efficiency": 1.6664050315299583,"steps": 15.786666666666667}
+  },
+  "held_out": {
+    "random": {"accuracy": 0.9124444444444444,"efficiency": 0.949079592973547,"steps": 19.82},
+    "info": {"accuracy": 0.9500000000000001,"efficiency": 1.6653139911323322,"steps": 16.6},
+    "falsify": {"accuracy": 0.9482222222222222,"efficiency": 1.6032993964706659,"steps": 18.02},
+    "cheap": {"accuracy": 0.9484444444444444,"efficiency": 1.6273715685591177,"steps": 17.63},
+    "adaptive_frozen": {"accuracy": 0.9717777777777777,"efficiency": 1.6698447364053308,"steps": 15.41},
+    "novel": {"accuracy": 0.9717777777777777,"efficiency": 1.6698447364053308,"steps": 15.41}
+  }
+}
