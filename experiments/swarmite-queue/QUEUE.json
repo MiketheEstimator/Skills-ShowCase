@@ -1,5 +1,5 @@
 {
-  "version": "9.4",
+  "version": "9.5",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3395,11 +3395,22 @@
       "id": "EXP-002S49",
       "title": "Explicit heteroskedastic terminal likelihood specialist",
       "priority": 48.75,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S48"
       ],
-      "rationale": "The localized observable variance gate did not prospectively repair breadth transfer; add a materially different heteroskedastic terminal likelihood specialist while preserving baseline-only planning and S30 as anchor."
+      "rationale": "The localized observable variance gate did not prospectively repair breadth transfer; add a materially different heteroskedastic terminal likelihood specialist while preserving baseline-only planning and S30 as anchor.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S49_HETEROSKEDASTIC_LIKELIHOOD_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s49_hetero_likelihood.py",
+      "runner_commit": "c31af7c3511638a91b14e22384ad5b9976ecfad6",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "training": "48 + 48",
+        "validation": "24 + 24",
+        "confirmation": "48 + 48"
+      }
     }
   ],
   "established_findings": [
