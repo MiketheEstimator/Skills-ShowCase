@@ -1,5 +1,5 @@
 {
-  "version": "1.9",
+  "version": "2.0",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -18,16 +18,17 @@
     {"id":"EXP-002L","status":"COMPLETE_FALSIFIED"},
     {"id":"EXP-002M","status":"COMPLETE_PROMISING_UNRESOLVED"},
     {"id":"EXP-002M2","status":"COMPLETE_SUPPORTED","result_artifact":"experiments/swarmite-exp002/EXP-002M2_BREADTH_N48_RESULT.json"},
+    {"id":"EXP-002H","title":"Adaptive proposal-allocation swarm","priority":85,"status":"COMPLETE_NO_SIMPLE_ROLE_PRUNING","result_artifact":"experiments/swarmite-exp002/EXP-002H_SOURCE_ATTRIBUTION_RESULT.json"},
     {
-      "id":"EXP-002H",
-      "title":"Adaptive proposal-allocation swarm",
-      "priority":85,
+      "id":"EXP-002N",
+      "title":"Adaptive breadth value-of-computation gate",
+      "priority":84,
       "status":"RUNNING",
-      "result_artifact":"experiments/swarmite-exp002/EXP-002H_ALLOCATION_SCREEN.json",
-      "established_input":"Uniform width-2 breadth is supported across combined n=72 matched worlds; naive CHEAPEST-only second-sample allocation is harmful at n=24.",
-      "hypothesis":"The width-2 gain depends on state-conditioned interactions among epistemically distinct proposal sources rather than one globally best extra designer.",
-      "next_design":"Instrument source-tagged uniform width-2 runs. For every selected intervention record whether it originated from baseline set, extra set, or both; record designer identity, duplicate rate, and current posterior state. Use these traces to define reduced second-set subsets, then test them prospectively against uniform width-2.",
-      "checkpoint":{"state":"source_tagging_implementation_next","target_trace_worlds":24}
+      "hypothesis":"The supported width-2 benefit can be retained with less than 2x compute by spawning the second epistemic swarm only when the first swarm exhibits low proposal diversity or ambiguous top proposal values.",
+      "design":"Generate and score the baseline five-designer proposal set first. Observable gate features: number of unique concrete proposals, normalized margin between top two expected-gain scores, score dispersion, posterior entropy, and edge uncertainty. Compare simple preregistered gates and select on training worlds; freeze the simplest non-dominated gate and prospectively compare against always-width1 and always-width2 under identical intervention budgets and RNG-isolated observations.",
+      "primary_metric":"Pareto performance over edge error and inference compute",
+      "controls":["always_width1","always_width2"],
+      "checkpoint":{"state":"implementation_next","train_worlds":12,"prospective_worlds":24}
     },
     {"id":"EXP-002G","status":"SUPERSEDED_BY_BREADTH_FIRST"},
     {"id":"EXP-002I","title":"Reward and credit assignment ablation","priority":60,"status":"PENDING"},
@@ -37,7 +38,7 @@
     "Unconditional two-step search does not improve the primary metric after RNG isolation and costs roughly 9x compute.",
     "Initial-state and local-margin depth gates failed to justify deeper search.",
     "Uniform width-2 proposal breadth improves edge recovery over width-1 across combined n=72 matched worlds, with bootstrap CI excluding zero, at roughly 2x compute.",
-    "CHEAPEST-only second-sample allocation does not explain the breadth benefit and is harmful at n=24."
+    "The width-2 gain is a portfolio effect: extra-only proposals supply about 45% of selected actions and useful contributions are distributed across FALSIFY, INFOGAIN, CHEAPEST and WEAKTIE. No simple role-pruning rule improves reliably on the full portfolio; RIVAL is behaviorally redundant in the observed prospective block."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
