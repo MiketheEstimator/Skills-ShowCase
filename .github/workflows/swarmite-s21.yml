@@ -1,0 +1,46 @@
+name: Swarmite S21 Diagnostic
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s21.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Execute frozen diagnostic
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python swarmite_exp002_s21_diagnostic.py $(seq 70051 70074) > EXP-002S21_RESULT.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'
+          q=json.loads(qp.read_text()); out=json.loads(Path('EXP-002S21_RESULT.json').read_text()); sm=out['summary']
+          item=next(x for x in q['queue'] if x['id']=='EXP-002S21')
+          item.update({'status':'COMPLETE_DIAGNOSTIC_SUPPORTED','protocol':'experiments/swarmite-exp002/EXP-002S21_EVIDENCE_DOMINANCE_DIAGNOSTIC_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s21_diagnostic.py','result_artifact':'experiments/swarmite-exp002/EXP-002S21_RESULT.json','result_summary':sm,'checkpoint':{'state':'complete','disposition':sm['disposition']}})
+          if not any(x.get('id')=='EXP-002S22' for x in q['queue']):
+              if sm['disposition']=='EVIDENCE_DOMINANCE_FAILURE':
+                  title='Robust model-class posterior aggregation'; rationale='Evidence ranking selects the wrong represented class; test robust aggregation on separated training and evaluation worlds.'
+              elif sm['disposition']=='SHARED_MODEL_CLASS_FAILURE':
+                  title='Heavy-tail nonlinear structural likelihood class'; rationale='All represented classes remain inadequate; add a nonlinear heavy-tail likelihood class while preserving baseline planning.'
+              else:
+                  title='Model-class failure decomposition'; rationale='Failure is mixed; separate evidence-combination error from missing-class error before changing terminal inference.'
+              q['queue'].append({'id':'EXP-002S22','title':title,'priority':55.5,'status':'PENDING','depends_on':['EXP-002S21'],'rationale':rationale})
+          q['version']='5.6'; q['established_findings'].append(f"S21 diagnostic {sm['disposition']}: evidence-best rate {sm['selected_class_best_rate']:.3f}, oracle-best delta {sm['mean_oracle_best_delta_vs_control']:.3f}, selection regret {sm['mean_selection_regret']:.3f}.")
+          qp.write_text(json.dumps(q,indent=2))
+          Path('EXP-002S21_EVALUATION.md').write_text(f"# EXP-002S21 Evaluation\n\n**Disposition:** {sm['disposition']}\n\n- Evidence-selected class truth-best rate: {sm['selected_class_best_rate']:.3f}\n- Mean oracle-best class edge delta vs control: {sm['mean_oracle_best_delta_vs_control']:.6f}\n- Mean selection regret: {sm['mean_selection_regret']:.6f}\n- Mean mixture regret: {sm['mean_mixture_regret']:.6f}\n- Mean class weights: {sm['mean_class_weights']}\n- Selected class counts: {sm['selected_class_counts']}\n- Best class counts: {sm['best_class_counts']}\n- Mean dominant density error: {sm['mean_dominant_density_error']:.6f}\n- Tanh-weight / mixture-harm correlation: {sm['tanh_weight_vs_mixture_harm_r']:.6f}\n\n## Next\n{next(x['rationale'] for x in q['queue'] if x['id']=='EXP-002S22')}\n")
+          item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S21_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
+          PY
+      - name: Persist result
+        run: |
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-exp002/EXP-002S21_* experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Complete EXP-002S21 diagnostic'
+          git push
