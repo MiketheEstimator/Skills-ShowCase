@@ -3350,11 +3350,31 @@
       "id": "EXP-002S47",
       "title": "Reference breadth confirmation of continuous-risk S30 architecture",
       "priority": 49.25,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S46"
       ],
-      "rationale": "S46 supported continuous observable risk adjudication around S30; broaden to mixed linear, nonlinear, heavy-tail, heteroskedastic, effect-size, and topology shifts with frozen coefficients and rule before reference promotion."
+      "rationale": "S46 supported continuous observable risk adjudication around S30; broaden to mixed linear, nonlinear, heavy-tail, heteroskedastic, effect-size, and topology shifts with frozen coefficients and rule before reference promotion.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S47_REFERENCE_BREADTH_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s47_breadth.py",
+      "runner_commit": "38050626c183a5277a4e552bead29419779d6dd4",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics_seeds": [
+          74301,
+          74306
+        ],
+        "screen_seeds": [
+          74311,
+          74358
+        ],
+        "confirmation_seeds": [
+          74401,
+          74520
+        ],
+        "frozen_anchor": "EXP-002S46_TRAINING_RESULT.json"
+      }
     }
   ],
   "established_findings": [
