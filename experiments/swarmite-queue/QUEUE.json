@@ -1,5 +1,5 @@
 {
-  "version": "5.9",
+  "version": "6.0",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -817,11 +817,73 @@
       "id": "EXP-002S25",
       "title": "Heterogeneous mechanism/noise transfer",
       "priority": 54.75,
-      "status": "PENDING",
+      "status": "COMPLETE_TRANSFER_NOT_SUPPORTED",
       "depends_on": [
         "EXP-002S24"
       ],
-      "rationale": "S24 transferred without retuning; test the frozen S23 inference across per-world heterogeneous mechanism families and tail thicknesses."
+      "rationale": "S24 transferred without retuning; test the frozen S23 inference across per-world heterogeneous mechanism families and tail thicknesses.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S25_HETEROGENEOUS_SHIFT_TRANSFER_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s25_heterogeneous.py",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "FALSIFIED_AT_SCREEN"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S25_MECHANICS_RESULT.json",
+      "screen_artifact": "experiments/swarmite-exp002/EXP-002S25_SCREEN_RESULT.json",
+      "result_summary": {
+        "n": 16,
+        "mean_edge_delta": -0.38270488334087327,
+        "mean_brier_delta": 0.00436268159109896,
+        "wins": 11,
+        "large_harms": 3,
+        "by_regime": {
+          "linear_gaussian": {
+            "n": 4,
+            "mean_edge_delta": 0.5979370031976948,
+            "mean_brier_delta": 0.04562491480274012,
+            "wins": 2,
+            "large_harms": 2
+          },
+          "tanh_t3": {
+            "n": 4,
+            "mean_edge_delta": 0.19130195286110396,
+            "mean_brier_delta": 0.03788891951837746,
+            "wins": 2,
+            "large_harms": 1
+          },
+          "softsign_t5": {
+            "n": 4,
+            "mean_edge_delta": -1.3665704821500193,
+            "mean_brier_delta": -0.03826035207380773,
+            "wins": 4,
+            "large_harms": 0
+          },
+          "arctan_laplace": {
+            "n": 4,
+            "mean_edge_delta": -0.9534880072722726,
+            "mean_brier_delta": -0.027802755882914015,
+            "wins": 3,
+            "large_harms": 0
+          }
+        },
+        "trace_identical_all": true,
+        "dag_count_ok": true,
+        "spend_ok": true,
+        "planning_reconstruction_ok": true,
+        "scores_finite": true,
+        "posterior_normalized": true
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S25_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S26",
+      "title": "Heterogeneous transfer regime diagnostic",
+      "priority": 54.5,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S25"
+      ],
+      "rationale": "S25 failed heterogeneous transfer; isolate the failing regime and mechanism before changing the supported S23/S24 inference."
     }
   ],
   "established_findings": [
@@ -845,7 +907,8 @@
     "S21 diagnostic EVIDENCE_DOMINANCE_FAILURE: evidence-best rate 0.042, oracle-best delta -0.428, selection regret 1.633.",
     "S22 FALSIFIED_AT_TRAINING: robust model-class evidence tempering disposition recorded with frozen training/validation/confirmation separation.",
     "S23 SUPPORTED: tanh-parent Student-t robust quasi-evidence terminal inference tested under unchanged baseline planning.",
-    "S24 TRANSFER_SUPPORTED: frozen S23 robust likelihood tested under softsign + t5 unseen shift without retuning."
+    "S24 TRANSFER_SUPPORTED: frozen S23 robust likelihood tested under softsign + t5 unseen shift without retuning.",
+    "S25 FALSIFIED_AT_SCREEN: frozen S23 robust terminal inference evaluated across four heterogeneous mechanism/noise regimes."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",

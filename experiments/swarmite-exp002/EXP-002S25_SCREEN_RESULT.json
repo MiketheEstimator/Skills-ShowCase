@@ -1,0 +1,1635 @@
+{
+  "rows": [
+    {
+      "seed": 70804,
+      "regime": "linear_gaussian",
+      "dag_mask": 134401,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "FALSIFY",
+          0,
+          2.0,
+          1
+        ],
+        [
+          "RIVAL",
+          0,
+          2.0,
+          2
+        ],
+        [
+          "INFOGAIN",
+          1,
+          -2.0,
+          3
+        ],
+        [
+          "INFOGAIN",
+          0,
+          2.0,
+          4
+        ],
+        [
+          "WEAKTIE",
+          2,
+          2.0,
+          6
+        ],
+        [
+          "INFOGAIN",
+          4,
+          -2.0,
+          9
+        ],
+        [
+          "WEAKTIE",
+          2,
+          -2.0,
+          11
+        ],
+        [
+          "WEAKTIE",
+          2,
+          -2.0,
+          13
+        ],
+        [
+          "WEAKTIE",
+          0,
+          -2.0,
+          14
+        ],
+        [
+          "INFOGAIN",
+          0,
+          -2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 0.9999999999999999,
+      "treatment": {
+        "edge_error": 1.5705570446295731,
+        "true_mass": 0.20648129496373385,
+        "map": 1,
+        "entropy": 3.2055120532833774,
+        "brier": 0.025805628030241327
+      },
+      "fixed_s5": {
+        "edge_error": 0.848610551686889,
+        "true_mass": 0.5201750693784442,
+        "map": 1,
+        "entropy": 2.2009706015509813,
+        "brier": 0.006493734316224645
+      },
+      "control": {
+        "edge_error": 1.6711529386216548,
+        "true_mass": 0.20419159636014056,
+        "map": 1,
+        "entropy": 3.9895859953310673,
+        "brier": 0.018100697884732106,
+        "spend": 15,
+        "posterior_sum": 1.0
+      },
+      "edge_delta": -0.10059589399208169,
+      "brier_delta": 0.0077049301455092215,
+      "edge_delta_vs_s5": 0.7219464929426841,
+      "large_harm": 0
+    },
+    {
+      "seed": 70805,
+      "regime": "tanh_t3",
+      "dag_mask": 393218,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "INFOGAIN",
+          2,
+          2.0,
+          2
+        ],
+        [
+          "WEAKTIE",
+          2,
+          2.0,
+          4
+        ],
+        [
+          "FALSIFY",
+          3,
+          2.0,
+          6
+        ],
+        [
+          "CHEAPEST",
+          1,
+          -1.0,
+          7
+        ],
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          8
+        ],
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          9
+        ],
+        [
+          "INFOGAIN",
+          2,
+          2.0,
+          11
+        ],
+        [
+          "CHEAPEST",
+          0,
+          -1.0,
+          12
+        ],
+        [
+          "FALSIFY",
+          0,
+          2.0,
+          13
+        ],
+        [
+          "FALSIFY",
+          0,
+          2.0,
+          14
+        ],
+        [
+          "INFOGAIN",
+          1,
+          -2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 1.0,
+      "treatment": {
+        "edge_error": 3.797359354444155,
+        "true_mass": 0.0021188109782317418,
+        "map": 0,
+        "entropy": 5.076693490428591,
+        "brier": 0.11201004060263435
+      },
+      "fixed_s5": {
+        "edge_error": 2.6810178161761202,
+        "true_mass": 0.02990095208159517,
+        "map": 0,
+        "entropy": 5.120962277276424,
+        "brier": 0.05244708187509632
+      },
+      "control": {
+        "edge_error": 3.463460953270395,
+        "true_mass": 0.011317140624397565,
+        "map": 0,
+        "entropy": 7.121781207626248,
+        "brier": 0.060665602476083366,
+        "spend": 15,
+        "posterior_sum": 1.0
+      },
+      "edge_delta": 0.33389840117376,
+      "brier_delta": 0.051344438126550984,
+      "edge_delta_vs_s5": 1.1163415382680348,
+      "large_harm": 0
+    },
+    {
+      "seed": 70806,
+      "regime": "softsign_t5",
+      "dag_mask": 1544,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "WEAKTIE",
+          1,
+          2.0,
+          1
+        ],
+        [
+          "INFOGAIN",
+          1,
+          -2.0,
+          2
+        ],
+        [
+          "RIVAL",
+          1,
+          -2.0,
+          3
+        ],
+        [
+          "RIVAL",
+          1,
+          -2.0,
+          4
+        ],
+        [
+          "INFOGAIN",
+          1,
+          -2.0,
+          5
+        ],
+        [
+          "RIVAL",
+          1,
+          -2.0,
+          6
+        ],
+        [
+          "WEAKTIE",
+          1,
+          2.0,
+          7
+        ],
+        [
+          "FALSIFY",
+          1,
+          -2.0,
+          8
+        ],
+        [
+          "FALSIFY",
+          1,
+          2.0,
+          9
+        ],
+        [
+          "RIVAL",
+          1,
+          -2.0,
+          10
+        ],
+        [
+          "RIVAL",
+          1,
+          2.0,
+          11
+        ],
+        [
+          "CHEAPEST",
+          0,
+          -1.0,
+          12
+        ],
+        [
+          "INFOGAIN",
+          1,
+          -2.0,
+          13
+        ],
+        [
+          "INFOGAIN",
+          1,
+          -2.0,
+          14
+        ],
+        [
+          "RIVAL",
+          1,
+          2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 0.9999999999999998,
+      "treatment": {
+        "edge_error": 2.9475591068178737,
+        "true_mass": 0.0030430505202216737,
+        "map": 0,
+        "entropy": 4.43159716443625,
+        "brier": 0.08666446292341093
+      },
+      "fixed_s5": {
+        "edge_error": 5.197446115465708,
+        "true_mass": 1.9567991074321725e-05,
+        "map": 0,
+        "entropy": 4.536833871946353,
+        "brier": 0.188480557055119
+      },
+      "control": {
+        "edge_error": 5.4916089068159355,
+        "true_mass": 0.00015691855015952984,
+        "map": 0,
+        "entropy": 6.729345035439134,
+        "brier": 0.16915133863254836,
+        "spend": 15,
+        "posterior_sum": 1.0
+      },
+      "edge_delta": -2.544049799998062,
+      "brier_delta": -0.08248687570913743,
+      "edge_delta_vs_s5": -2.2498870086478346,
+      "large_harm": 0
+    },
+    {
+      "seed": 70807,
+      "regime": "arctan_laplace",
+      "dag_mask": 33536,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "FALSIFY",
+          3,
+          2.0,
+          2
+        ],
+        [
+          "WEAKTIE",
+          3,
+          2.0,
+          4
+        ],
+        [
+          "INFOGAIN",
+          4,
+          -2.0,
+          7
+        ],
+        [
+          "WEAKTIE",
+          3,
+          2.0,
+          9
+        ],
+        [
+          "WEAKTIE",
+          3,
+          -2.0,
+          11
+        ],
+        [
+          "RIVAL",
+          3,
+          -2.0,
+          13
+        ],
+        [
+          "CHEAPEST",
+          1,
+          1.0,
+          14
+        ],
+        [
+          "RIVAL",
+          1,
+          -2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 1.0000000000000002,
+      "treatment": {
+        "edge_error": 2.0483981504686324,
+        "true_mass": 0.11810666176880945,
+        "map": 1,
+        "entropy": 4.335931820030276,
+        "brier": 0.03233599808865971
+      },
+      "fixed_s5": {
+        "edge_error": 3.279644754159518,
+        "true_mass": 0.004938090952878269,
+        "map": 0,
+        "entropy": 3.2042095737757403,
+        "brier": 0.10955345198659232
+      },
+      "control": {
+        "edge_error": 3.629461033100351,
+        "true_mass": 0.006606327048639285,
+        "map": 0,
+        "entropy": 5.196708346696515,
+        "brier": 0.09908579725828606,
+        "spend": 15,
+        "posterior_sum": 0.9999999999999998
+      },
+      "edge_delta": -1.5810628826317186,
+      "brier_delta": -0.06674979916962635,
+      "edge_delta_vs_s5": -1.2312466036908858,
+      "large_harm": 0
+    },
+    {
+      "seed": 70808,
+      "regime": "linear_gaussian",
+      "dag_mask": 88,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "FALSIFY",
+          0,
+          2.0,
+          1
+        ],
+        [
+          "FALSIFY",
+          2,
+          -2.0,
+          3
+        ],
+        [
+          "RIVAL",
+          4,
+          2.0,
+          6
+        ],
+        [
+          "RIVAL",
+          2,
+          2.0,
+          8
+        ],
+        [
+          "CHEAPEST",
+          0,
+          -1.0,
+          9
+        ],
+        [
+          "FALSIFY",
+          4,
+          -2.0,
+          12
+        ],
+        [
+          "INFOGAIN",
+          0,
+          2.0,
+          13
+        ],
+        [
+          "FALSIFY",
+          0,
+          2.0,
+          14
+        ],
+        [
+          "FALSIFY",
+          0,
+          2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 1.0000000000000002,
+      "treatment": {
+        "edge_error": 4.390821495366322,
+        "true_mass": 0.0006399529891342699,
+        "map": 0,
+        "entropy": 4.186457281979633,
+        "brier": 0.15234666227486343
+      },
+      "fixed_s5": {
+        "edge_error": 2.34549832044182,
+        "true_mass": 0.047655740950763574,
+        "map": 0,
+        "entropy": 3.4965512514538837,
+        "brier": 0.05552641583931252
+      },
+      "control": {
+        "edge_error": 3.003892789026281,
+        "true_mass": 0.02150636785484921,
+        "map": 0,
+        "entropy": 5.492692672677723,
+        "brier": 0.05922508978984446,
+        "spend": 15,
+        "posterior_sum": 1.0
+      },
+      "edge_delta": 1.3869287063400408,
+      "brier_delta": 0.09312157248501897,
+      "edge_delta_vs_s5": 2.045323174924502,
+      "large_harm": 1
+    },
+    {
+      "seed": 70809,
+      "regime": "tanh_t3",
+      "dag_mask": 34892,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "RIVAL",
+          4,
+          2.0,
+          3
+        ],
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          4
+        ],
+        [
+          "INFOGAIN",
+          4,
+          2.0,
+          7
+        ],
+        [
+          "FALSIFY",
+          2,
+          -2.0,
+          9
+        ],
+        [
+          "WEAKTIE",
+          0,
+          2.0,
+          10
+        ],
+        [
+          "INFOGAIN",
+          4,
+          -2.0,
+          13
+        ],
+        [
+          "CHEAPEST",
+          1,
+          1.0,
+          14
+        ],
+        [
+          "CHEAPEST",
+          1,
+          1.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 1.0000000000000002,
+      "treatment": {
+        "edge_error": 3.650175719274068,
+        "true_mass": 0.005124440517648729,
+        "map": 0,
+        "entropy": 4.139294657834617,
+        "brier": 0.12002256281579182
+      },
+      "fixed_s5": {
+        "edge_error": 4.6783637115334376,
+        "true_mass": 7.1098523041126e-07,
+        "map": 0,
+        "entropy": 2.8379365923529534,
+        "brier": 0.19018516419642856
+      },
+      "control": {
+        "edge_error": 5.234680923821285,
+        "true_mass": 7.470702399099238e-05,
+        "map": 0,
+        "entropy": 5.778700544895605,
+        "brier": 0.1714812600787242,
+        "spend": 15,
+        "posterior_sum": 1.0
+      },
+      "edge_delta": -1.5845052045472174,
+      "brier_delta": -0.05145869726293237,
+      "edge_delta_vs_s5": -1.0281879922593697,
+      "large_harm": 0
+    },
+    {
+      "seed": 70810,
+      "regime": "softsign_t5",
+      "dag_mask": 544768,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "INFOGAIN",
+          3,
+          2.0,
+          2
+        ],
+        [
+          "RIVAL",
+          3,
+          -2.0,
+          4
+        ],
+        [
+          "FALSIFY",
+          4,
+          2.0,
+          7
+        ],
+        [
+          "FALSIFY",
+          3,
+          -2.0,
+          9
+        ],
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          10
+        ],
+        [
+          "WEAKTIE",
+          4,
+          -2.0,
+          13
+        ],
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          14
+        ],
+        [
+          "CHEAPEST",
+          1,
+          -1.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 1.0000000000000002,
+      "treatment": {
+        "edge_error": 2.319546566775632,
+        "true_mass": 0.04933533491034234,
+        "map": 0,
+        "entropy": 4.568614494791351,
+        "brier": 0.04609998318476548
+      },
+      "fixed_s5": {
+        "edge_error": 2.463526337340747,
+        "true_mass": 0.05129911451028212,
+        "map": 0,
+        "entropy": 4.362777952585484,
+        "brier": 0.056662688754700395
+      },
+      "control": {
+        "edge_error": 3.145664145341444,
+        "true_mass": 0.016145408262178983,
+        "map": 0,
+        "entropy": 6.06462518516074,
+        "brier": 0.06682492920636364,
+        "spend": 15,
+        "posterior_sum": 0.9999999999999999
+      },
+      "edge_delta": -0.8261175785658117,
+      "brier_delta": -0.020724946021598162,
+      "edge_delta_vs_s5": -0.14397977056511513,
+      "large_harm": 0
+    },
+    {
+      "seed": 70811,
+      "regime": "arctan_laplace",
+      "dag_mask": 786432,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          1
+        ],
+        [
+          "INFOGAIN",
+          2,
+          2.0,
+          3
+        ],
+        [
+          "WEAKTIE",
+          2,
+          2.0,
+          5
+        ],
+        [
+          "FALSIFY",
+          2,
+          2.0,
+          7
+        ],
+        [
+          "FALSIFY",
+          2,
+          2.0,
+          9
+        ],
+        [
+          "FALSIFY",
+          3,
+          2.0,
+          11
+        ],
+        [
+          "WEAKTIE",
+          3,
+          -2.0,
+          13
+        ],
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          14
+        ],
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 1.0,
+      "treatment": {
+        "edge_error": 2.5751011018690417,
+        "true_mass": 0.07050120907479317,
+        "map": 1,
+        "entropy": 5.327855340041363,
+        "brier": 0.03957223787410206
+      },
+      "fixed_s5": {
+        "edge_error": 2.9500522752410547,
+        "true_mass": 0.028688148225417005,
+        "map": 0,
+        "entropy": 4.1602000315733925,
+        "brier": 0.07768796525759887
+      },
+      "control": {
+        "edge_error": 3.6793230629095266,
+        "true_mass": 0.011442738289705538,
+        "map": 0,
+        "entropy": 6.683337997824179,
+        "brier": 0.07787296816216582,
+        "spend": 15,
+        "posterior_sum": 1.0
+      },
+      "edge_delta": -1.1042219610404849,
+      "brier_delta": -0.038300730288063765,
+      "edge_delta_vs_s5": -0.374951173372013,
+      "large_harm": 0
+    },
+    {
+      "seed": 70812,
+      "regime": "linear_gaussian",
+      "dag_mask": 49408,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "FALSIFY",
+          3,
+          2.0,
+          2
+        ],
+        [
+          "RIVAL",
+          3,
+          2.0,
+          4
+        ],
+        [
+          "WEAKTIE",
+          3,
+          2.0,
+          6
+        ],
+        [
+          "WEAKTIE",
+          3,
+          -2.0,
+          8
+        ],
+        [
+          "RIVAL",
+          2,
+          2.0,
+          10
+        ],
+        [
+          "WEAKTIE",
+          1,
+          2.0,
+          11
+        ],
+        [
+          "WEAKTIE",
+          1,
+          2.0,
+          12
+        ],
+        [
+          "RIVAL",
+          2,
+          -2.0,
+          14
+        ],
+        [
+          "INFOGAIN",
+          1,
+          2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 0.9999999999999999,
+      "treatment": {
+        "edge_error": 0.5811565193340051,
+        "true_mass": 0.5517905702026311,
+        "map": 1,
+        "entropy": 2.27267949823264,
+        "brier": 0.0014813207721901178
+      },
+      "fixed_s5": {
+        "edge_error": 0.18969716404254644,
+        "true_mass": 0.8524393205831111,
+        "map": 1,
+        "entropy": 0.8948066724237288,
+        "brier": 0.00014978510652560744
+      },
+      "control": {
+        "edge_error": 0.9544344649495614,
+        "true_mass": 0.3620374387152096,
+        "map": 1,
+        "entropy": 3.3768747563150256,
+        "brier": 0.003353670846814034,
+        "spend": 15,
+        "posterior_sum": 0.9999999999999999
+      },
+      "edge_delta": -0.3732779456155563,
+      "brier_delta": -0.001872350074623916,
+      "edge_delta_vs_s5": 0.3914593552914587,
+      "large_harm": 0
+    },
+    {
+      "seed": 70813,
+      "regime": "tanh_t3",
+      "dag_mask": 393729,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "RIVAL",
+          2,
+          -2.0,
+          2
+        ],
+        [
+          "CHEAPEST",
+          0,
+          -1.0,
+          3
+        ],
+        [
+          "RIVAL",
+          3,
+          2.0,
+          5
+        ],
+        [
+          "INFOGAIN",
+          0,
+          -2.0,
+          6
+        ],
+        [
+          "FALSIFY",
+          3,
+          2.0,
+          8
+        ],
+        [
+          "WEAKTIE",
+          3,
+          -2.0,
+          10
+        ],
+        [
+          "WEAKTIE",
+          4,
+          -2.0,
+          13
+        ],
+        [
+          "INFOGAIN",
+          0,
+          -2.0,
+          14
+        ],
+        [
+          "INFOGAIN",
+          0,
+          -2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 0.9999999999999999,
+      "treatment": {
+        "edge_error": 2.9438790803331814,
+        "true_mass": 0.015468821078782459,
+        "map": 0,
+        "entropy": 3.5211666595831166,
+        "brier": 0.08681094200757773
+      },
+      "fixed_s5": {
+        "edge_error": 2.8048365381796927,
+        "true_mass": 0.016442011072452172,
+        "map": 0,
+        "entropy": 4.465542397556868,
+        "brier": 0.06706323859146056
+      },
+      "control": {
+        "edge_error": 3.0989451487506763,
+        "true_mass": 0.012044190811612478,
+        "map": 0,
+        "entropy": 5.968837689854753,
+        "brier": 0.06152523127496521,
+        "spend": 15,
+        "posterior_sum": 1.0
+      },
+      "edge_delta": -0.15506606841749493,
+      "brier_delta": 0.025285710732612522,
+      "edge_delta_vs_s5": 0.13904254215348866,
+      "large_harm": 0
+    },
+    {
+      "seed": 70814,
+      "regime": "softsign_t5",
+      "dag_mask": 163840,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "RIVAL",
+          4,
+          2.0,
+          3
+        ],
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          4
+        ],
+        [
+          "CHEAPEST",
+          1,
+          -1.0,
+          5
+        ],
+        [
+          "WEAKTIE",
+          4,
+          2.0,
+          8
+        ],
+        [
+          "WEAKTIE",
+          4,
+          -2.0,
+          11
+        ],
+        [
+          "RIVAL",
+          1,
+          -2.0,
+          12
+        ],
+        [
+          "INFOGAIN",
+          1,
+          2.0,
+          13
+        ],
+        [
+          "WEAKTIE",
+          1,
+          -2.0,
+          14
+        ],
+        [
+          "WEAKTIE",
+          1,
+          2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 1.0,
+      "treatment": {
+        "edge_error": 2.672001773768361,
+        "true_mass": 0.013667231712882215,
+        "map": 0,
+        "entropy": 4.741782206092875,
+        "brier": 0.06878457390728972
+      },
+      "fixed_s5": {
+        "edge_error": 2.5852725767164597,
+        "true_mass": 0.00851176370114946,
+        "map": 0,
+        "entropy": 3.525274359462291,
+        "brier": 0.08137498261756528
+      },
+      "control": {
+        "edge_error": 3.436020657533778,
+        "true_mass": 0.004298659923741502,
+        "map": 0,
+        "entropy": 6.236950920841452,
+        "brier": 0.08218622843465263,
+        "spend": 15,
+        "posterior_sum": 0.9999999999999998
+      },
+      "edge_delta": -0.7640188837654174,
+      "brier_delta": -0.013401654527362916,
+      "edge_delta_vs_s5": 0.08672919705190107,
+      "large_harm": 0
+    },
+    {
+      "seed": 70815,
+      "regime": "arctan_laplace",
+      "dag_mask": 525825,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "FALSIFY",
+          2,
+          -2.0,
+          2
+        ],
+        [
+          "RIVAL",
+          4,
+          -2.0,
+          5
+        ],
+        [
+          "CHEAPEST",
+          0,
+          -1.0,
+          6
+        ],
+        [
+          "INFOGAIN",
+          0,
+          -2.0,
+          7
+        ],
+        [
+          "INFOGAIN",
+          0,
+          2.0,
+          8
+        ],
+        [
+          "FALSIFY",
+          0,
+          2.0,
+          9
+        ],
+        [
+          "CHEAPEST",
+          1,
+          1.0,
+          10
+        ],
+        [
+          "CHEAPEST",
+          0,
+          -1.0,
+          11
+        ],
+        [
+          "WEAKTIE",
+          4,
+          2.0,
+          14
+        ],
+        [
+          "WEAKTIE",
+          0,
+          -2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 0.9999999999999999,
+      "treatment": {
+        "edge_error": 2.289938693415798,
+        "true_mass": 0.14394810974003633,
+        "map": 0,
+        "entropy": 2.9870362211246975,
+        "brier": 0.058917949421917304
+      },
+      "fixed_s5": {
+        "edge_error": 2.2812330469447204,
+        "true_mass": 0.08422579532115677,
+        "map": 0,
+        "entropy": 3.440507442079326,
+        "brier": 0.05241448445277537
+      },
+      "control": {
+        "edge_error": 2.219738990264333,
+        "true_mass": 0.0801072671297452,
+        "map": 1,
+        "entropy": 5.0440403613469265,
+        "brier": 0.029691921283433655,
+        "spend": 15,
+        "posterior_sum": 0.9999999999999999
+      },
+      "edge_delta": 0.07019970315146473,
+      "brier_delta": 0.02922602813848365,
+      "edge_delta_vs_s5": 0.008705646471077522,
+      "large_harm": 0
+    },
+    {
+      "seed": 70816,
+      "regime": "linear_gaussian",
+      "dag_mask": 2050,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "WEAKTIE",
+          2,
+          2.0,
+          2
+        ],
+        [
+          "RIVAL",
+          0,
+          2.0,
+          3
+        ],
+        [
+          "WEAKTIE",
+          0,
+          -2.0,
+          4
+        ],
+        [
+          "WEAKTIE",
+          0,
+          -2.0,
+          5
+        ],
+        [
+          "CHEAPEST",
+          0,
+          -1.0,
+          6
+        ],
+        [
+          "RIVAL",
+          1,
+          2.0,
+          7
+        ],
+        [
+          "RIVAL",
+          1,
+          2.0,
+          8
+        ],
+        [
+          "WEAKTIE",
+          0,
+          2.0,
+          9
+        ],
+        [
+          "FALSIFY",
+          3,
+          2.0,
+          11
+        ],
+        [
+          "FALSIFY",
+          3,
+          2.0,
+          13
+        ],
+        [
+          "WEAKTIE",
+          0,
+          2.0,
+          14
+        ],
+        [
+          "INFOGAIN",
+          1,
+          -2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 1.0000000000000002,
+      "treatment": {
+        "edge_error": 3.7156699786312246,
+        "true_mass": 0.018405807891572864,
+        "map": 0,
+        "entropy": 4.846774786670304,
+        "brier": 0.10390526732359169
+      },
+      "fixed_s5": {
+        "edge_error": 1.6556637762803055,
+        "true_mass": 0.1334857399588966,
+        "map": 0,
+        "entropy": 3.5940400489706317,
+        "brier": 0.018901729935250435
+      },
+      "control": {
+        "edge_error": 2.2369768325728483,
+        "true_mass": 0.0644093444629224,
+        "map": 0,
+        "entropy": 5.412447929233495,
+        "brier": 0.020359760668535502,
+        "spend": 15,
+        "posterior_sum": 1.0000000000000002
+      },
+      "edge_delta": 1.4786931460583763,
+      "brier_delta": 0.0835455066550562,
+      "edge_delta_vs_s5": 2.060006202350919,
+      "large_harm": 1
+    },
+    {
+      "seed": 70817,
+      "regime": "tanh_t3",
+      "dag_mask": 262346,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "RIVAL",
+          1,
+          2.0,
+          1
+        ],
+        [
+          "WEAKTIE",
+          1,
+          -2.0,
+          2
+        ],
+        [
+          "WEAKTIE",
+          1,
+          -2.0,
+          3
+        ],
+        [
+          "WEAKTIE",
+          4,
+          -2.0,
+          6
+        ],
+        [
+          "WEAKTIE",
+          1,
+          -2.0,
+          7
+        ],
+        [
+          "CHEAPEST",
+          1,
+          1.0,
+          8
+        ],
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          9
+        ],
+        [
+          "INFOGAIN",
+          4,
+          2.0,
+          12
+        ],
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          13
+        ],
+        [
+          "CHEAPEST",
+          0,
+          -1.0,
+          14
+        ],
+        [
+          "CHEAPEST",
+          1,
+          -1.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 1.0000000000000002,
+      "treatment": {
+        "edge_error": 5.456673048203875,
+        "true_mass": 0.0047280400669037805,
+        "map": 0,
+        "entropy": 4.160634452828923,
+        "brier": 0.19153356117455694
+      },
+      "fixed_s5": {
+        "edge_error": 1.708823769635726,
+        "true_mass": 0.23586618336508944,
+        "map": 1,
+        "entropy": 3.7317739512039765,
+        "brier": 0.0224225087868229
+      },
+      "control": {
+        "edge_error": 3.285792364968507,
+        "true_mass": 0.029243802622999845,
+        "map": 0,
+        "entropy": 6.029825817036057,
+        "brier": 0.06514933469727825,
+        "spend": 15,
+        "posterior_sum": 1.0
+      },
+      "edge_delta": 2.170880683235368,
+      "brier_delta": 0.1263842264772787,
+      "edge_delta_vs_s5": 3.747849278568149,
+      "large_harm": 1
+    },
+    {
+      "seed": 70818,
+      "regime": "softsign_t5",
+      "dag_mask": 409632,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "WEAKTIE",
+          0,
+          -2.0,
+          1
+        ],
+        [
+          "FALSIFY",
+          1,
+          2.0,
+          2
+        ],
+        [
+          "WEAKTIE",
+          0,
+          -2.0,
+          3
+        ],
+        [
+          "FALSIFY",
+          1,
+          -2.0,
+          4
+        ],
+        [
+          "FALSIFY",
+          1,
+          2.0,
+          5
+        ],
+        [
+          "CHEAPEST",
+          1,
+          -1.0,
+          6
+        ],
+        [
+          "FALSIFY",
+          1,
+          2.0,
+          7
+        ],
+        [
+          "INFOGAIN",
+          1,
+          -2.0,
+          8
+        ],
+        [
+          "RIVAL",
+          1,
+          2.0,
+          9
+        ],
+        [
+          "CHEAPEST",
+          0,
+          1.0,
+          10
+        ],
+        [
+          "RIVAL",
+          1,
+          -2.0,
+          11
+        ],
+        [
+          "WEAKTIE",
+          3,
+          2.0,
+          13
+        ],
+        [
+          "INFOGAIN",
+          2,
+          -2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 0.9999999999999999,
+      "treatment": {
+        "edge_error": 4.548332966404187,
+        "true_mass": 0.001743163479201147,
+        "map": 0,
+        "entropy": 4.533670382948499,
+        "brier": 0.15136464916614806
+      },
+      "fixed_s5": {
+        "edge_error": 5.681001977133213,
+        "true_mass": 0.0003089868238352525,
+        "map": 0,
+        "entropy": 5.2666622383832,
+        "brier": 0.19852520300654103
+      },
+      "control": {
+        "edge_error": 5.880428632674974,
+        "true_mass": 7.572059318808136e-05,
+        "map": 0,
+        "entropy": 6.868213562531789,
+        "brier": 0.18779258120328046,
+        "spend": 15,
+        "posterior_sum": 1.0
+      },
+      "edge_delta": -1.3320956662707868,
+      "brier_delta": -0.036427932037132404,
+      "edge_delta_vs_s5": -1.1326690107290256,
+      "large_harm": 0
+    },
+    {
+      "seed": 70819,
+      "regime": "arctan_laplace",
+      "dag_mask": 1536,
+      "dag_count": 29281,
+      "spend": 15,
+      "action_trace": [
+        [
+          "INFOGAIN",
+          2,
+          2.0,
+          2
+        ],
+        [
+          "RIVAL",
+          4,
+          -2.0,
+          5
+        ],
+        [
+          "RIVAL",
+          2,
+          -2.0,
+          7
+        ],
+        [
+          "FALSIFY",
+          2,
+          -2.0,
+          9
+        ],
+        [
+          "INFOGAIN",
+          2,
+          -2.0,
+          11
+        ],
+        [
+          "INFOGAIN",
+          2,
+          2.0,
+          13
+        ],
+        [
+          "FALSIFY",
+          2,
+          -2.0,
+          15
+        ]
+      ],
+      "trace_identical": true,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "posterior_sum": 1.0,
+      "treatment": {
+        "edge_error": 2.5137374020137324,
+        "true_mass": 0.09400659107448214,
+        "map": 1,
+        "entropy": 5.331760189758976,
+        "brier": 0.0332847021383991
+      },
+      "fixed_s5": {
+        "edge_error": 3.7707808539652565,
+        "true_mass": 0.005948920924171567,
+        "map": 0,
+        "entropy": 5.386964036221063,
+        "brier": 0.09015720556570682
+      },
+      "control": {
+        "edge_error": 3.712604290582084,
+        "true_mass": 0.01293334912643348,
+        "map": 0,
+        "entropy": 6.767561064834149,
+        "brier": 0.0686712243508487,
+        "spend": 15,
+        "posterior_sum": 0.9999999999999999
+      },
+      "edge_delta": -1.1988668885683516,
+      "brier_delta": -0.0353865222124496,
+      "edge_delta_vs_s5": -1.2570434519515241,
+      "large_harm": 0
+    }
+  ],
+  "summary": {
+    "n": 16,
+    "mean_edge_delta": -0.38270488334087327,
+    "mean_brier_delta": 0.00436268159109896,
+    "wins": 11,
+    "large_harms": 3,
+    "by_regime": {
+      "linear_gaussian": {
+        "n": 4,
+        "mean_edge_delta": 0.5979370031976948,
+        "mean_brier_delta": 0.04562491480274012,
+        "wins": 2,
+        "large_harms": 2
+      },
+      "tanh_t3": {
+        "n": 4,
+        "mean_edge_delta": 0.19130195286110396,
+        "mean_brier_delta": 0.03788891951837746,
+        "wins": 2,
+        "large_harms": 1
+      },
+      "softsign_t5": {
+        "n": 4,
+        "mean_edge_delta": -1.3665704821500193,
+        "mean_brier_delta": -0.03826035207380773,
+        "wins": 4,
+        "large_harms": 0
+      },
+      "arctan_laplace": {
+        "n": 4,
+        "mean_edge_delta": -0.9534880072722726,
+        "mean_brier_delta": -0.027802755882914015,
+        "wins": 3,
+        "large_harms": 0
+      }
+    },
+    "trace_identical_all": true,
+    "dag_count_ok": true,
+    "spend_ok": true,
+    "planning_reconstruction_ok": true,
+    "scores_finite": true,
+    "posterior_normalized": true
+  }
+}
