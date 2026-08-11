@@ -3110,7 +3110,7 @@
       "id": "EXP-002S45",
       "title": "Joint topology-mechanism-noise latent class decision",
       "priority": 49.75,
-      "status": "RUNNING",
+      "status": "COMPLETE_FALSIFIED_ON_VALIDATION",
       "depends_on": [
         "EXP-002S44"
       ],
@@ -3119,9 +3119,8 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s45_joint_latent.py",
       "runner_commit": "e6d1f308dc5aada09d1ac06f1bf37bafb5566c0b",
       "checkpoint": {
-        "state": "training_frozen",
-        "next_stage": "validation",
-        "selected_T": 0.05
+        "state": "complete",
+        "disposition": "FALSIFIED_ON_VALIDATION"
       },
       "training_artifact": "experiments/swarmite-exp002/EXP-002S45_TRAINING_RESULT.json",
       "selected_T": 0.05,
@@ -3156,7 +3155,8 @@
           "mean_edge_delta": -0.4649673649162451,
           "large_harm_rate": 0.08333333333333333
         }
-      }
+      },
+      "validation_artifact": "experiments/swarmite-exp002/EXP-002S45_VALIDATION_RESULT.json"
     }
   ],
   "established_findings": [
