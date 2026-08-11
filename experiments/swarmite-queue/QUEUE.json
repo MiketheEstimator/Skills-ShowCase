@@ -1,5 +1,5 @@
 {
-  "version": "6.8",
+  "version": "6.9",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1586,7 +1586,7 @@
       "id": "EXP-002S33",
       "title": "Mechanism-noise interaction model-class expansion screen",
       "priority": 52.75,
-      "status": "RUNNING",
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN",
       "depends_on": [
         "EXP-002S32"
       ],
@@ -1595,29 +1595,137 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s33_expand.py",
       "runner_commit": "1135b6c6d8ee87159a102b56d04680496c5550ff",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics_gate",
-        "mechanics_seeds": [
-          72101,
-          72102,
-          72103,
-          72104
+        "state": "complete",
+        "disposition": "EXPANDED_MODEL_SET_FALSIFIED"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S33_MECHANICS_RESULT.json",
+      "screen_artifact": "experiments/swarmite-exp002/EXP-002S33_SCREEN_RESULT.json",
+      "result_summary": {
+        "n": 36,
+        "mean_edge_delta_vs_s30": 0.0620563742402,
+        "bootstrap95_edge_delta_vs_s30": [
+          -0.06236321273465108,
+          0.17679359181349777
         ],
-        "screen_seeds": [
-          72111,
-          72146
-        ],
-        "classes": [
-          "LG",
-          "TG",
-          "TT",
-          "SG",
-          "ST",
-          "AG",
-          "AT"
-        ],
-        "T": 5.0
-      }
+        "mean_brier_delta_vs_s30": -0.007961245011502515,
+        "large_harms_vs_s30": 4,
+        "mean_edge_delta_vs_baseline": 0.12370570961946507,
+        "wins_vs_s30": 14,
+        "mechanics_ok": true,
+        "by_cell": {
+          "tanh_gaussian": {
+            "n": 6,
+            "mean_edge_delta_vs_s30": -0.10606875746030127,
+            "mean_edge_delta_vs_baseline": -0.10983058752717552,
+            "mean_brier_delta_vs_s30": -0.009586204167620908,
+            "mean_weights": {
+              "LG": 0.22923722888370682,
+              "TG": 0.2617147429825544,
+              "TT": 0.0007468272832615817,
+              "SG": 0.2706488645843415,
+              "ST": 0.0005005989081701361,
+              "AG": 0.23441233795470864,
+              "AT": 0.002739399403256818
+            }
+          },
+          "tanh_t7": {
+            "n": 6,
+            "mean_edge_delta_vs_s30": 0.10854944111309599,
+            "mean_edge_delta_vs_baseline": 0.00958544924776065,
+            "mean_brier_delta_vs_s30": -0.00967546838877134,
+            "mean_weights": {
+              "LG": 0.3048388194690258,
+              "TG": 0.20732106155766097,
+              "TT": 0.043770585755038525,
+              "SG": 0.19959809579856888,
+              "ST": 0.03827686675188769,
+              "AG": 0.17866397658973932,
+              "AT": 0.027530594078078716
+            }
+          },
+          "sin_gaussian": {
+            "n": 6,
+            "mean_edge_delta_vs_s30": -0.011866543533942009,
+            "mean_edge_delta_vs_baseline": 0.2667423673868379,
+            "mean_brier_delta_vs_s30": -0.010160586063642153,
+            "mean_weights": {
+              "LG": 0.22463003434336015,
+              "TG": 0.23415787283773914,
+              "TT": 0.03773311763873144,
+              "SG": 0.2637062366432622,
+              "ST": 0.025835385580092973,
+              "AG": 0.19185017258668322,
+              "AT": 0.022087180370130886
+            }
+          },
+          "sin_t7": {
+            "n": 6,
+            "mean_edge_delta_vs_s30": -0.028217773262360673,
+            "mean_edge_delta_vs_baseline": -0.07386387217131407,
+            "mean_brier_delta_vs_s30": -0.01634313045301514,
+            "mean_weights": {
+              "LG": 0.19485841014859762,
+              "TG": 0.22940450047364616,
+              "TT": 0.05653878043880856,
+              "SG": 0.1657182931563927,
+              "ST": 0.10674246577349396,
+              "AG": 0.1981840696746752,
+              "AT": 0.0485534803343858
+            }
+          },
+          "asinh_gaussian": {
+            "n": 6,
+            "mean_edge_delta_vs_s30": 0.10317143568605906,
+            "mean_edge_delta_vs_baseline": 0.07974245391072317,
+            "mean_brier_delta_vs_s30": -0.003980738107943231,
+            "mean_weights": {
+              "LG": 0.21677778000023576,
+              "TG": 0.3098171534589034,
+              "TT": 0.008642410263215992,
+              "SG": 0.1525074921392395,
+              "ST": 0.00518450989652589,
+              "AG": 0.29711702275989693,
+              "AT": 0.00995363148198245
+            }
+          },
+          "asinh_t7": {
+            "n": 6,
+            "mean_edge_delta_vs_s30": 0.3067704428986489,
+            "mean_edge_delta_vs_baseline": 0.569858446869958,
+            "mean_brier_delta_vs_s30": 0.0019786571119776927,
+            "mean_weights": {
+              "LG": 0.17941273180992193,
+              "TG": 0.2660154050552003,
+              "TT": 0.07628299277819243,
+              "SG": 0.09017873678002473,
+              "ST": 0.007407457209163613,
+              "AG": 0.2720076358712765,
+              "AT": 0.10869504049622042
+            }
+          }
+        },
+        "mean_weights": {
+          "LG": 0.22495916744247468,
+          "TG": 0.2514051227276174,
+          "TT": 0.03728578569287475,
+          "SG": 0.19039295318363825,
+          "ST": 0.030657880686555703,
+          "AG": 0.22870586923949665,
+          "AT": 0.03659322102734252
+        },
+        "promote": false
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S33_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S34",
+      "title": "Expanded-class weight attribution diagnostic",
+      "priority": 52.5,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S33"
+      ],
+      "rationale": "S33 expanded the represented mechanism\u00d7noise classes but failed promotion; diagnose whether predictive weighting, class dilution, or residual model-set insufficiency caused failure before changing temperature or adding classes."
     }
   ],
   "established_findings": [
@@ -1649,7 +1757,8 @@
     "S29 DIRECT_ADEQUACY_NOT_SUPPORTED: direct CV adequacy AUC 0.697, zero-boundary balanced accuracy 0.680.",
     "S30 CONTINUOUS_COMBINATION_SUPPORTED: ADEQ-weighted continuous posterior combination evaluated on separated fresh worlds.",
     "S31 TRANSFER_FALSIFIED: frozen T=5 ADEQ-weighted posterior combination stress-tested on unseen mechanism/noise families.",
-    "S32 MECHANISM_NOISE_INTERACTION_OR_MIXED_GAP: frozen S30 architecture factorized across tanh/sin/asinh mechanisms and Gaussian/t7 noise on 120 fresh worlds."
+    "S32 MECHANISM_NOISE_INTERACTION_OR_MIXED_GAP: frozen S30 architecture factorized across tanh/sin/asinh mechanisms and Gaussian/t7 noise on 120 fresh worlds.",
+    "S33 EXPANDED_MODEL_SET_FALSIFIED: seven-class mechanism\u00d7noise terminal expansion versus frozen S30 on 36 fresh worlds; edge delta vs S30 0.0621, CI [-0.06236321273465108, 0.17679359181349777], Brier -0.0080, harms 4."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
