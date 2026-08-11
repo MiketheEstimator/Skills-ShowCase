@@ -1,0 +1,21 @@
+{
+  "experiment":"EXP-002R13",
+  "status":"COMPLETE_FALSIFIED_PREREGISTERED_CRITERIA",
+  "n":12,
+  "seeds":[60001,60002,60003,60004,60005,60006,60007,60008,60009,60010,60011,60012],
+  "mean_edge_delta_treatment_minus_control":-0.1328626303419339,
+  "bootstrap95_edge_delta":[-0.45891222609841936,0.16030125877648796],
+  "wins":5,
+  "ties":4,
+  "losses":3,
+  "mean_brier_delta":-0.004355796477643569,
+  "mean_true_mass_delta":0.02303820623544416,
+  "map_net_delta":3,
+  "mean_control_regret":0.6221153118059354,
+  "mean_treatment_regret":0.4892526814640014,
+  "regret_improved_worlds":5,
+  "mean_compute_ratio_vs_one_step_audit":6.6225,
+  "max_compute_ratio":8.2,
+  "success_criteria":{"mean_edge_delta_le_-0.10":true,"wins_at_least_8_of_12":false,"mean_brier_delta_le_0.005":true,"compute_le_10x":true},
+  "disposition":"Falsified by preregistration because only 5/12 worlds were strict edge-error wins and the paired uncertainty interval crosses zero, despite favorable mean edge error, Brier, true-mass, MAP and bounded compute. Treatment-effect heterogeneity is the next uncertainty."
+}
