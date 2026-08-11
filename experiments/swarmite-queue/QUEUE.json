@@ -1,5 +1,5 @@
 {
-  "version": "6.2",
+  "version": "6.3",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1052,11 +1052,129 @@
       "id": "EXP-002S28",
       "title": "Selector error representation diagnostic",
       "priority": 54.0,
-      "status": "PENDING",
+      "status": "COMPLETE_DIAGNOSTIC_FALSIFIED",
       "depends_on": [
         "EXP-002S27"
       ],
-      "rationale": "S27 prospectively falsified the frozen one-dimensional PPC-tail selector; diagnose false robust/baseline selections using preregistered multivariate observable features before any new selector is trained."
+      "rationale": "S27 prospectively falsified the frozen one-dimensional PPC-tail selector; diagnose false robust/baseline selections using preregistered multivariate observable features before any new selector is trained.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S28_SELECTOR_REPRESENTATION_DIAGNOSTIC_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s28_selector_diag.py",
+      "runner_commit": "4723b3c69aef075af9e9ebab621e9e2931cc5c0f",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "MULTIVARIATE_REPRESENTATION_NOT_SUPPORTED"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S28_RESULT.json",
+      "result_summary": {
+        "n": 96,
+        "single_feature_auc": {
+          "D_robust": 0.3382352941176471,
+          "log_tail": 0.6418067226890757,
+          "PPC_nonlinear": 0.37289915966386555
+        },
+        "tail_only_cv": {
+          "auc": 0.3167016806722689,
+          "balanced_accuracy": 0.5,
+          "tp": 68,
+          "tn": 0,
+          "fp": 28,
+          "fn": 0
+        },
+        "multivariate_cv": {
+          "auc": 0.5199579831932774,
+          "balanced_accuracy": 0.47058823529411764,
+          "tp": 64,
+          "tn": 0,
+          "fp": 28,
+          "fn": 4
+        },
+        "auc_gain": 0.20325630252100846,
+        "regime_errors": {
+          "arctan_laplace": {
+            "n": 24,
+            "beneficial": 18,
+            "false_negative": 3,
+            "false_positive": 6
+          },
+          "linear_gaussian": {
+            "n": 24,
+            "beneficial": 9,
+            "false_negative": 0,
+            "false_positive": 15
+          },
+          "softsign_t5": {
+            "n": 24,
+            "beneficial": 18,
+            "false_negative": 0,
+            "false_positive": 6
+          },
+          "tanh_t3": {
+            "n": 24,
+            "beneficial": 23,
+            "false_negative": 1,
+            "false_positive": 1
+          }
+        },
+        "feature_groups": {
+          "beneficial": {
+            "D_robust": {
+              "median": 1.6819008684895587,
+              "mean": 1.8762401056810438
+            },
+            "log_tail": {
+              "median": 1.4360235373929564,
+              "mean": 1.7920078230674705
+            },
+            "PPC_nonlinear": {
+              "median": 0.03095640549916228,
+              "mean": 0.03699047602946857
+            }
+          },
+          "not_beneficial": {
+            "D_robust": {
+              "median": 2.4583922438792327,
+              "mean": 2.4073922773256884
+            },
+            "log_tail": {
+              "median": 1.1727196835394986,
+              "mean": 1.474229709469141
+            },
+            "PPC_nonlinear": {
+              "median": 0.04558092606218076,
+              "mean": 0.045954132078194
+            }
+          }
+        },
+        "feature_corr": [
+          [
+            1.0,
+            0.26956606179740517,
+            0.23640210153321292
+          ],
+          [
+            0.26956606179740517,
+            1.0,
+            0.13260007093657775
+          ],
+          [
+            0.23640210153321295,
+            0.13260007093657772,
+            0.9999999999999998
+          ]
+        ],
+        "promising_representation": false
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S28_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S29",
+      "title": "Direct predictive model-adequacy score diagnostic",
+      "priority": 53.75,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S28"
+      ],
+      "rationale": "S28 did not show enough incremental selector information in posterior disagreement plus residual summaries; test a materially different observable model-adequacy representation rather than tuning classifiers or thresholds."
     }
   ],
   "established_findings": [
@@ -1083,7 +1201,8 @@
     "S24 TRANSFER_SUPPORTED: frozen S23 robust likelihood tested under softsign + t5 unseen shift without retuning.",
     "S25 FALSIFIED_AT_SCREEN: frozen S23 robust terminal inference evaluated across four heterogeneous mechanism/noise regimes.",
     "S26 REGIME_SPECIFIC_SELECTOR_JUSTIFIED: 24 fresh worlds per regime resolved heterogeneous transfer effects for frozen S23 inference.",
-    "S27 FROZEN_SELECTOR_FAILED_CONFIRMATION: frozen PPC-tail full-coverage selector tested baseline versus robust terminal inference on separated training/validation/confirmation worlds."
+    "S27 FROZEN_SELECTOR_FAILED_CONFIRMATION: frozen PPC-tail full-coverage selector tested baseline versus robust terminal inference on separated training/validation/confirmation worlds.",
+    "S28 MULTIVARIATE_REPRESENTATION_NOT_SUPPORTED: tail-only CV AUC 0.317; multivariate CV AUC 0.520; gain 0.203."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",

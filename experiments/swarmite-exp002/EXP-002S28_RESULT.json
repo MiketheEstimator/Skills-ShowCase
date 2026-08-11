@@ -1,0 +1,99 @@
+{
+  "n": 96,
+  "single_feature_auc": {
+    "D_robust": 0.3382352941176471,
+    "log_tail": 0.6418067226890757,
+    "PPC_nonlinear": 0.37289915966386555
+  },
+  "tail_only_cv": {
+    "auc": 0.3167016806722689,
+    "balanced_accuracy": 0.5,
+    "tp": 68,
+    "tn": 0,
+    "fp": 28,
+    "fn": 0
+  },
+  "multivariate_cv": {
+    "auc": 0.5199579831932774,
+    "balanced_accuracy": 0.47058823529411764,
+    "tp": 64,
+    "tn": 0,
+    "fp": 28,
+    "fn": 4
+  },
+  "auc_gain": 0.20325630252100846,
+  "regime_errors": {
+    "arctan_laplace": {
+      "n": 24,
+      "beneficial": 18,
+      "false_negative": 3,
+      "false_positive": 6
+    },
+    "linear_gaussian": {
+      "n": 24,
+      "beneficial": 9,
+      "false_negative": 0,
+      "false_positive": 15
+    },
+    "softsign_t5": {
+      "n": 24,
+      "beneficial": 18,
+      "false_negative": 0,
+      "false_positive": 6
+    },
+    "tanh_t3": {
+      "n": 24,
+      "beneficial": 23,
+      "false_negative": 1,
+      "false_positive": 1
+    }
+  },
+  "feature_groups": {
+    "beneficial": {
+      "D_robust": {
+        "median": 1.6819008684895587,
+        "mean": 1.8762401056810438
+      },
+      "log_tail": {
+        "median": 1.4360235373929564,
+        "mean": 1.7920078230674705
+      },
+      "PPC_nonlinear": {
+        "median": 0.03095640549916228,
+        "mean": 0.03699047602946857
+      }
+    },
+    "not_beneficial": {
+      "D_robust": {
+        "median": 2.4583922438792327,
+        "mean": 2.4073922773256884
+      },
+      "log_tail": {
+        "median": 1.1727196835394986,
+        "mean": 1.474229709469141
+      },
+      "PPC_nonlinear": {
+        "median": 0.04558092606218076,
+        "mean": 0.045954132078194
+      }
+    }
+  },
+  "feature_corr": [
+    [
+      1.0,
+      0.26956606179740517,
+      0.23640210153321292
+    ],
+    [
+      0.26956606179740517,
+      1.0,
+      0.13260007093657775
+    ],
+    [
+      0.23640210153321295,
+      0.13260007093657772,
+      0.9999999999999998
+    ]
+  ],
+  "promising_representation": false
+}
