@@ -1,0 +1,30 @@
+{
+  "benchmark": "swarmite_benchmark_v2",
+  "experiment": "EXP-002R2",
+  "engine_path": "experiments/swarmite-exp002/swarmite_benchmark_v2.py",
+  "engine_git_blob_sha": "339e622169411861592d9c0e5abd4beadc6f2ac7",
+  "frozen_parameters": {
+    "N": 5,
+    "dag_count": 29281,
+    "edge_prior": "uniform over exact DAG support via marginal likelihood",
+    "tau2": 4.0,
+    "obs_n": 30,
+    "budget": 15,
+    "costs": [1, 1, 2, 2, 3],
+    "eig_sims_per_candidate": 3,
+    "world_edge_probability": 0.35,
+    "edge_weight_abs_range": [0.4, 0.9],
+    "intervention_setpoints": [-2, -1, 1, 2]
+  },
+  "rng_namespaces": [
+    "v2|world",
+    "v2|obs",
+    "v2|proposal|seed|step|swarm",
+    "v2|planner|seed|step|candidate",
+    "v2|env|seed|step|target|setpoint"
+  ],
+  "mechanics_seeds": [3000, 3001, 3002, 3003],
+  "screen_seeds": [4000, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010, 4011],
+  "frozen_after_mechanics": true,
+  "historical_tuning_used": false
+}
