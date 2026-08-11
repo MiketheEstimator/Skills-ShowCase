@@ -3379,11 +3379,19 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s48_hetero_repair.py",
       "runner_commit": "9b5e5fb50e5582eacd150daf2c4f83e054dc7ac8",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "training",
-        "training": "48 linear + 48 heteroskedastic fresh worlds",
-        "validation": "24 + 24 fresh worlds",
-        "confirmation": "48 + 48 held-out worlds"
+        "state": "training_passed",
+        "next_stage": "validation",
+        "selected_repair": {
+          "hetero_threshold": 0.4526144527705699,
+          "tight_harm_cut": 0.05,
+          "quantile": 0.5
+        }
+      },
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S48_TRAINING_RESULT.json",
+      "selected_repair": {
+        "hetero_threshold": 0.4526144527705699,
+        "tight_harm_cut": 0.05,
+        "quantile": 0.5
       }
     }
   ],
