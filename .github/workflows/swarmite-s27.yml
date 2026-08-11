@@ -1,0 +1,66 @@
+name: Swarmite S27 Observable Selector
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s27.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Execute frozen S27 stages
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json,csv
+          from pathlib import Path
+          import swarmite_exp002_s27_selector as s27
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S27')
+          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S27_OBSERVABLE_SELECTOR_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s27_selector.py','runner_commit':'be1c3dfc033eb1dfba3c3173d66c944f0eb710c1','checkpoint':{'state':'protocol_frozen','next_stage':'training','training_seeds':[71100,71147],'validation_seeds':[71200,71247],'confirmation_seeds':[71300,71395]}}); qp.write_text(json.dumps(q,indent=2))
+          train=s27.generate(range(71100,71148)); grid=s27.training_grid(train); t=s27.select_threshold(grid)
+          Path('EXP-002S27_TRAINING_RESULT.json').write_text(json.dumps({'rows':train,'grid':grid,'selected_threshold':t},indent=2))
+          with open('EXP-002S27_TRAINING_GRID.csv','w',newline='') as f:
+            w=csv.writer(f); w.writerow(['threshold','qualifies','mean_edge_delta','brier_delta','large_harms','linear_edge','linear_brier','tanh_edge','softsign_edge','arctan_edge'])
+            for x in grid:
+              sm=x['summary']; by=sm['by_regime']; w.writerow([x['threshold'],x['qualifies'],sm['mean_edge_delta'],sm['mean_brier_delta'],sm['large_harms'],by['linear_gaussian']['mean_edge_delta'],by['linear_gaussian']['mean_brier_delta'],by['tanh_t3']['mean_edge_delta'],by['softsign_t5']['mean_edge_delta'],by['arctan_laplace']['mean_edge_delta']])
+          item['training_artifact']='experiments/swarmite-exp002/EXP-002S27_TRAINING_RESULT.json'; item['training_grid']='experiments/swarmite-exp002/EXP-002S27_TRAINING_GRID.csv'; item['selected_threshold']=t
+          if t is None:
+            item['status']='COMPLETE_FALSIFIED_AT_TRAINING'; item['checkpoint']={'state':'complete','disposition':'NO_FROZEN_THRESHOLD_QUALIFIED'}; disposition='NO_FROZEN_THRESHOLD_QUALIFIED'; final=None
+          else:
+            valrows=s27.apply(s27.generate(range(71200,71248)),t); valsm=s27.summarize(valrows,seed=22728); valpass=s27.qualifies_validation(valsm); Path('EXP-002S27_VALIDATION_RESULT.json').write_text(json.dumps({'threshold':t,'rows':valrows,'summary':valsm,'passes':valpass},indent=2)); item['validation_artifact']='experiments/swarmite-exp002/EXP-002S27_VALIDATION_RESULT.json'
+            if not valpass:
+              item['status']='COMPLETE_FALSIFIED_ON_VALIDATION'; item['checkpoint']={'state':'complete','disposition':'FROZEN_SELECTOR_FAILED_VALIDATION'}; disposition='FROZEN_SELECTOR_FAILED_VALIDATION'; final=valsm
+            else:
+              confrows=s27.apply(s27.generate(range(71300,71396)),t); confsm=s27.summarize(confrows,seed=22729); confpass=s27.qualifies_confirmation(confsm); Path('EXP-002S27_CONFIRMATION_RESULT.json').write_text(json.dumps({'threshold':t,'rows':confrows,'summary':confsm,'passes':confpass},indent=2)); item['result_artifact']='experiments/swarmite-exp002/EXP-002S27_CONFIRMATION_RESULT.json'; item['result_summary']=confsm
+              if confpass: item['status']='COMPLETE_SUPPORTED'; disposition='OBSERVABLE_SELECTOR_SUPPORTED'
+              else: item['status']='COMPLETE_FALSIFIED_ON_CONFIRMATION'; disposition='FROZEN_SELECTOR_FAILED_CONFIRMATION'
+              item['checkpoint']={'state':'complete','disposition':disposition}; final=confsm
+          if not any(x.get('id')=='EXP-002S28' for x in q['queue']):
+            if disposition=='OBSERVABLE_SELECTOR_SUPPORTED':
+              title='Adaptive science-posterior selector transfer to unseen mechanism family'; rationale='S27 supported full-coverage observable posterior selection; test frozen selector without retuning on an unseen mechanism/noise family before treating it as the reference architecture.'
+            else:
+              title='Selector error representation diagnostic'; rationale='S27 prospectively falsified the frozen one-dimensional PPC-tail selector; diagnose false robust/baseline selections using preregistered multivariate observable features before any new selector is trained.'
+            q['queue'].append({'id':'EXP-002S28','title':title,'priority':54.0,'status':'PENDING','depends_on':['EXP-002S27'],'rationale':rationale})
+          finding=f"S27 {disposition}: frozen PPC-tail full-coverage selector tested baseline versus robust terminal inference on separated training/validation/confirmation worlds."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          q['version']='6.2'; qp.write_text(json.dumps(q,indent=2))
+          lines=['# EXP-002S27 Evaluation','',f'**Disposition:** {disposition}', '', f'**Selected threshold:** {t}']
+          if final is not None:
+            lines += ['',f"Overall edge delta: {final['mean_edge_delta']:.6f}; CI {final['bootstrap95_edge_delta']}; Brier {final['mean_brier_delta']:.6f}; large harms {final['large_harms']}.",'','## By regime']
+            for reg,v in final['by_regime'].items(): lines.append(f"- **{reg}**: edge {v['mean_edge_delta']:.6f}, CI {v['bootstrap95_edge_delta']}, Brier {v['mean_brier_delta']:.6f}, robust selected {v['robust_selected']}/{v['n']}, harms {v['large_harms']}")
+          lines += ['','## Next',next(x['rationale'] for x in q['queue'] if x['id']=='EXP-002S28')]
+          Path('EXP-002S27_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S27_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
+          PY
+      - name: Persist result
+        run: |
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-exp002/EXP-002S27_* experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Run EXP-002S27 observable selector'
+          git push
