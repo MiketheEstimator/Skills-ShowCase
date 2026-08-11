@@ -1,5 +1,5 @@
 {
-  "version": "7.9",
+  "version": "8.1",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -2383,11 +2383,96 @@
       "id": "EXP-002S39",
       "title": "Credal science posterior from specialist disagreement",
       "priority": 51.25,
-      "status": "PENDING",
+      "status": "COMPLETE_SUPPORTED",
       "depends_on": [
         "EXP-002S38"
       ],
-      "rationale": "S38 shows substantial but heterogeneous specialist value with no independently safe specialist; preserve S30 as point estimate and test whether specialist disagreement improves uncertainty calibration/abstention rather than shifting the point posterior."
+      "rationale": "S38 shows substantial but heterogeneous specialist value with no independently safe specialist; preserve S30 as point estimate and test whether specialist disagreement improves uncertainty calibration/abstention rather than shifting the point posterior.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S39_CREDAL_DISAGREEMENT_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s39_credal.py",
+      "runner_commit": "38e838524c9a44d486247a09eeee7ca1d4836a37",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "CREDAL_ABSTENTION_SUPPORTED"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S39_RESULT.json",
+      "result_summary": {
+        "disposition": "CREDAL_ABSTENTION_SUPPORTED",
+        "selected": {
+          "score": "mean_credal_width",
+          "quantile": 0.9,
+          "threshold": 0.2692013432171404,
+          "metrics": {
+            "n": 48,
+            "n_promoted": 43,
+            "coverage": 0.8958333333333334,
+            "promoted_large_harms": 0,
+            "promoted_large_harm_rate": 0.0,
+            "always_s30_mean_edge_delta": -0.058372385162664193,
+            "hybrid_mean_edge_delta": -0.09399625037437205,
+            "bootstrap95_hybrid_edge_delta": [
+              -0.17840054428192334,
+              -0.02541878635295991
+            ],
+            "hybrid_mean_brier_delta": -0.0016124914510812181,
+            "improvement_retained": 1.6102862699962686
+          },
+          "eligible": true
+        },
+        "validation": {
+          "score": "mean_credal_width",
+          "threshold": 0.2692013432171404,
+          "metrics": {
+            "n": 36,
+            "n_promoted": 34,
+            "coverage": 0.9444444444444444,
+            "promoted_large_harms": 1,
+            "promoted_large_harm_rate": 0.029411764705882353,
+            "always_s30_mean_edge_delta": -0.09548293276433609,
+            "hybrid_mean_edge_delta": -0.09146794306871858,
+            "bootstrap95_hybrid_edge_delta": [
+              -0.1957944285396266,
+              0.020681328432231038
+            ],
+            "hybrid_mean_brier_delta": -0.0026576516051202504,
+            "improvement_retained": 0.9579507082639889
+          },
+          "mechanics_ok": true,
+          "passed": true
+        },
+        "confirmation": {
+          "score": "mean_credal_width",
+          "threshold": 0.2692013432171404,
+          "metrics": {
+            "n": 48,
+            "n_promoted": 39,
+            "coverage": 0.8125,
+            "promoted_large_harms": 0,
+            "promoted_large_harm_rate": 0.0,
+            "always_s30_mean_edge_delta": -0.15625018415948633,
+            "hybrid_mean_edge_delta": -0.12666483545583385,
+            "bootstrap95_hybrid_edge_delta": [
+              -0.23623404754767893,
+              -0.04087332716269085
+            ],
+            "hybrid_mean_brier_delta": -0.0021867216106267596,
+            "improvement_retained": 0.8106539914637516
+          },
+          "mechanics_ok": true,
+          "passed": true
+        }
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S39_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S40",
+      "title": "Credal abstention transfer under unseen heteroskedastic mechanism shift",
+      "priority": 51.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S39"
+      ],
+      "rationale": "S39 supported specialist disagreement as uncertainty while preserving S30 point inference; freeze the gate and test transfer under a new heteroskedastic nonlinear world family before architectural promotion."
     }
   ],
   "established_findings": [
@@ -2425,7 +2510,8 @@
     "S35 STRUCTURAL_STACKING_FALSIFIED_VALIDATION: frozen training-only structural stack; edge delta vs S30 0.0024, CI [-0.08652042734333419, 0.09892142080733121], Brier -0.0011, harms 2.",
     "S36 MODEL_SET_INSUFFICIENCY: exact training minimax worst-cell delta 0.0591, validation minimax 0.0336, training oracle coverage 1.000, validation oracle coverage 1.000.",
     "S37 ANCHOR_ONLY_SAFE: S30-anchor exact minimax worst-cell delta train 0.0000, validation 0.0000; S30 weights train 1.000, validation 1.000.",
-    "S38 HETEROGENEOUS_RESIDUAL_VALUE: oracle specialist coverage train 0.833, validation 0.861; mean oracle improvement train 0.511, validation 0.638; safe specialists []."
+    "S38 HETEROGENEOUS_RESIDUAL_VALUE: oracle specialist coverage train 0.833, validation 0.861; mean oracle improvement train 0.511, validation 0.638; safe specialists [].",
+    "S39 CREDAL_ABSTENTION_SUPPORTED: mean credal-width threshold 0.269201; confirmation coverage 0.812, hybrid edge delta -0.127, promoted large-harm rate 0.000."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
