@@ -1,5 +1,5 @@
 {
-  "version": "5.7",
+  "version": "5.8",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -739,11 +739,50 @@
       "id": "EXP-002S23",
       "title": "Heavy-tail nonlinear structural likelihood class",
       "priority": 55.25,
-      "status": "PENDING",
+      "status": "COMPLETE_SUPPORTED",
       "depends_on": [
         "EXP-002S22"
       ],
-      "rationale": "No evidence temperature could rescue the represented class set on training; add a materially different heavy-tail nonlinear likelihood class."
+      "rationale": "No evidence temperature could rescue the represented class set on training; add a materially different heavy-tail nonlinear likelihood class.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S23_HEAVY_TAIL_NONLINEAR_LIKELIHOOD_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s23_robust_likelihood.py",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "SUPPORTED"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S23_MECHANICS_RESULT.json",
+      "screen_artifact": "experiments/swarmite-exp002/EXP-002S23_SCREEN_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S23_CONFIRMATION_RESULT.json",
+      "result_summary": {
+        "n": 36,
+        "mean_edge_delta": -1.6801529962786748,
+        "mean_brier_delta": -0.056813778320873594,
+        "mean_edge_delta_vs_s5": -1.3751503052762557,
+        "mean_brier_delta_vs_s5": -0.06984928366231817,
+        "wins": 33,
+        "large_harms": 1,
+        "trace_identical_all": true,
+        "dag_count_ok": true,
+        "spend_ok": true,
+        "planning_reconstruction_ok": true,
+        "scores_finite": true,
+        "posterior_normalized": true,
+        "bootstrap95_edge_delta": [
+          -2.1500444470377946,
+          -1.2319621000779883
+        ]
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S23_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S24",
+      "title": "Robust likelihood transfer beyond matched t3 shift",
+      "priority": 55.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S23"
+      ],
+      "rationale": "S23 supported the robust nonlinear likelihood on the compound benchmark; test frozen inference under unseen tail thickness and mechanism shape."
     }
   ],
   "established_findings": [
@@ -765,7 +804,8 @@
     "S19 FALSIFIED_ON_CONFIRMATION: residual-aware PPC gate disposition recorded; next direction is explicit model-class uncertainty rather than further hand-engineered abstention thresholds.",
     "S20 FALSIFIED_AT_SCREEN: explicit model-class mixture terminal inference tested at 100% coverage; disposition recorded without post-hoc class-weight tuning.",
     "S21 diagnostic EVIDENCE_DOMINANCE_FAILURE: evidence-best rate 0.042, oracle-best delta -0.428, selection regret 1.633.",
-    "S22 FALSIFIED_AT_TRAINING: robust model-class evidence tempering disposition recorded with frozen training/validation/confirmation separation."
+    "S22 FALSIFIED_AT_TRAINING: robust model-class evidence tempering disposition recorded with frozen training/validation/confirmation separation.",
+    "S23 SUPPORTED: tanh-parent Student-t robust quasi-evidence terminal inference tested under unchanged baseline planning."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
