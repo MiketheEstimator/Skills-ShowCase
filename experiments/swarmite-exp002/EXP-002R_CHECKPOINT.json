@@ -1,27 +1,24 @@
 {
   "experiment": "EXP-002R",
-  "status": "RUNNING",
-  "stage": "dag_enumeration_verified",
+  "status": "COMPLETE_FAILED_RECONSTRUCTION",
+  "stage": "failed_reconstruction_after_clean_v1_smoke_and_history_audit",
   "verified_invariants": {
     "labeled_nodes": 5,
     "possible_directed_edges_without_self_loops": 20,
     "enumerated_acyclic_dags": 29281,
-    "enumeration_method": "exhaustive 2^20 directed-edge masks with Kahn acyclicity test"
+    "enumeration_method": "exhaustive 2^20 directed-edge masks with Kahn acyclicity test",
+    "parent_mask_roundtrip": "PASS"
   },
   "historical_regression_targets": {
     "EXP-002M2": {
       "n": 48,
-      "budget": "fixed intervention cap; mean realized spend w1=9.71875, w2=9.854166666666666",
       "edge_delta_w2_minus_w1": -0.09866383531628649,
-      "edge_ci95": [-0.20105308930466795, -0.004018415555396709],
-      "compute_ratio_w2_over_w1": 1.974409878
+      "edge_ci95": [-0.20105308930466795, -0.004018415555396709]
     },
     "EXP-002F": {
       "n": 24,
-      "budget": 10.0,
       "edge_delta_two_minus_one": 0.00329643074814454,
-      "edge_ci95": [-0.12404068964723458, 0.12740611740655267],
-      "compute_ratio_two_over_one": 8.953916040009156
+      "edge_ci95": [-0.12404068964723458, 0.12740611740655267]
     },
     "EXP-002J2_corrected": {
       "n": 96,
@@ -29,13 +26,27 @@
       "edge_ci95": [-0.15924005100145414, 0.06549005873872177]
     }
   },
-  "unresolved_implementation_fields": [
+  "reconstruction_v1": {
+    "runner": "experiments/swarmite-exp002/swarmite_canonical_v1.py",
+    "result": "experiments/swarmite-exp002/EXP-002R_CANONICAL_V1_SMOKE.json",
+    "n": 8,
+    "mean_edge_w1": 1.8472187901,
+    "mean_edge_w2": 2.1052783312,
+    "edge_delta_w2_minus_w1": 0.2580595411,
+    "map_w1": 0.75,
+    "map_w2": 0.75,
+    "outcome": "FAILED_RECONSTRUCTION: breadth effect direction incompatible with historical supported M2 result"
+  },
+  "provenance_audit": "experiments/swarmite-exp002/EXP-002R_PROVENANCE_AUDIT.md",
+  "recovered_historical_invariant": "Original README specifies corrected fixed total intervention-cost budget = 15.",
+  "unrecoverable_identity_fields": [
     "canonical SCM coefficient/noise generator",
     "observational sample count and initial-data procedure",
-    "intervention action space and cost function",
+    "exact intervention action space and cost function",
     "exact likelihood/marginal-likelihood formula used for DAG scoring",
     "designer proposal algorithms and tie-breaking",
     "historical seed mapping/per-world state"
   ],
-  "next_action": "Recover implementation fields from repository/history if available; otherwise implement a clean canonical runner under explicit new versioning and regression-test without tuning to historical outputs. Do not pool fresh replication rows with historical J4 n=12 unless exact compatibility is established."
+  "decision": "Historical EXP-002J4 remains blocked and its n=12 may not be pooled with new runs. Do not tune reconstruction parameters to historical aggregates.",
+  "successor": "EXP-002R2: create a separately versioned fresh benchmark using protocol-grounded mechanics, historical budget 15 recovered independently, genuine posterior-predictive information scoring, and atomic seed/state persistence; establish its own breadth baseline before transfer testing."
 }
