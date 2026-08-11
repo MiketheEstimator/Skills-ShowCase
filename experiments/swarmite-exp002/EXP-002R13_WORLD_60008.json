@@ -1,0 +1,1 @@
+{"seed":60008,"shortlist":[3,2,1],"control_action":3,"treatment_action":3,"paired_edge_delta_treatment_minus_control":0.0,"paired_brier_delta":0.0,"paired_true_mass_delta":0.0,"paired_map_delta":0,"control_edge_regret":0.017248251355780786,"treatment_edge_regret":0.017248251355780786,"compute_ratio_vs_one_step_audit":6.65,"wall_seconds":5.056774854660034}
