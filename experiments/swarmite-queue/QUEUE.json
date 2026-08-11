@@ -1,5 +1,5 @@
 {
-  "version": "7.4",
+  "version": "7.5",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1818,7 +1818,7 @@
       "id": "EXP-002S36",
       "title": "Global stacking transfer-failure diagnostic",
       "priority": 52.0,
-      "status": "RUNNING",
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED",
       "depends_on": [
         "EXP-002S35"
       ],
@@ -1827,17 +1827,256 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s36_stack_diag.py",
       "runner_commit": "acbdc70d34eb50278333d9ba8c1fed6911654f0d",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "exact_lp_diagnostic",
-        "training_seeds": [
-          72201,
-          72248
-        ],
-        "validation_seeds": [
-          72261,
-          72296
-        ]
-      }
+        "state": "complete",
+        "disposition": "MODEL_SET_INSUFFICIENCY"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S36_RESULT.json",
+      "result_summary": {
+        "training_exact": {
+          "weights": {
+            "LG": 0.7319147375557714,
+            "TG": 0.0,
+            "TT": 0.0,
+            "SG": 0.0,
+            "ST": 0.2680852624442284,
+            "AG": 0.0,
+            "AT": 0.0
+          },
+          "lp_worst_cell_delta": 0.05912399408029194,
+          "mean_delta": 0.004792124998970119,
+          "worst_cell_delta": 0.059123994080291974,
+          "by_cell_delta": {
+            "tanh_gaussian": -0.059263666216724895,
+            "tanh_t7": 0.006908614873376087,
+            "sin_gaussian": -0.030966860819729616,
+            "sin_t7": 0.059123994080291974,
+            "asinh_gaussian": 0.059123994080291925,
+            "asinh_t7": -0.006173326003684788
+          }
+        },
+        "validation_exact": {
+          "weights": {
+            "LG": 0.8054648541564928,
+            "TG": 0.0,
+            "TT": 0.0,
+            "SG": 0.0,
+            "ST": 0.1945351458435072,
+            "AG": 0.0,
+            "AT": 0.0
+          },
+          "lp_worst_cell_delta": 0.03359680732990518,
+          "mean_delta": 0.00767329770789526,
+          "worst_cell_delta": 0.03359680732990523,
+          "by_cell_delta": {
+            "tanh_gaussian": 0.02973577125023326,
+            "tanh_t7": 0.008473739753239303,
+            "sin_gaussian": -0.047156957204631485,
+            "sin_t7": 0.03359680732990523,
+            "asinh_gaussian": 0.033596807329905186,
+            "asinh_t7": -0.012206382211279893
+          }
+        },
+        "training_weights_on_validation": {
+          "mean_delta": -0.01645329309594474,
+          "worst_cell_delta": 0.06300135001712824,
+          "by_cell_delta": {
+            "tanh_gaussian": 0.03827060279771424,
+            "tanh_t7": -0.05420085585045519,
+            "sin_gaussian": -0.040454380238299566,
+            "sin_t7": -0.037615277858553474,
+            "asinh_gaussian": 0.06300135001712824,
+            "asinh_t7": -0.06772119744320267
+          }
+        },
+        "validation_weights_on_training": {
+          "mean_delta": 0.019030022998541285,
+          "worst_cell_delta": 0.1319028272880505,
+          "by_cell_delta": {
+            "tanh_gaussian": -0.031195674508603288,
+            "tanh_t7": 0.03134194030443763,
+            "sin_gaussian": -0.02156922990454866,
+            "sin_t7": 0.1319028272880505,
+            "asinh_gaussian": 0.03869545075185751,
+            "asinh_t7": -0.03499517593994603
+          }
+        },
+        "training_cell_best": {
+          "tanh_gaussian": {
+            "best_class": "ST",
+            "best_mean_delta": -0.33857494040940167,
+            "all_class_mean_delta": {
+              "LG": 0.04304228883978173,
+              "TG": 0.2541199005062966,
+              "TT": 0.02447206846695396,
+              "SG": 0.12575876761347726,
+              "ST": -0.33857494040940167,
+              "AG": 0.1306712721107379,
+              "AT": 0.18941115582150336
+            }
+          },
+          "tanh_t7": {
+            "best_class": "ST",
+            "best_mean_delta": -0.23623322904199837,
+            "all_class_mean_delta": {
+              "LG": 0.09596645411692581,
+              "TG": 1.0020805585419004,
+              "TT": -0.12669176679929353,
+              "SG": 1.094108566571392,
+              "ST": -0.23623322904199837,
+              "AG": 0.5038644997818484,
+              "AT": -0.12683464228517133
+            }
+          },
+          "sin_gaussian": {
+            "best_class": "ST",
+            "best_mean_delta": -0.12448492554653984,
+            "all_class_mean_delta": {
+              "LG": 0.003286876178772713,
+              "TG": 0.15642144003908776,
+              "TT": 0.15901895925887144,
+              "SG": -0.0059265686595918465,
+              "ST": -0.12448492554653984,
+              "AG": 0.0943197264272525,
+              "AT": 0.2744752838090297
+            }
+          },
+          "sin_t7": {
+            "best_class": "ST",
+            "best_mean_delta": -0.6651155186324512,
+            "all_class_mean_delta": {
+              "LG": 0.3243979800727945,
+              "TG": 0.5149317407204654,
+              "TT": -0.18513443118798617,
+              "SG": 0.3981310376476812,
+              "ST": -0.6651155186324512,
+              "AG": 0.3778566971170904,
+              "AT": 0.22198278529806698
+            }
+          },
+          "asinh_gaussian": {
+            "best_class": "LG",
+            "best_mean_delta": -0.015336681886915532,
+            "all_class_mean_delta": {
+              "LG": -0.015336681886915532,
+              "TG": 0.5665196560035337,
+              "TT": 0.5130076861560809,
+              "SG": 0.6267641712433663,
+              "ST": 0.2624132969381906,
+              "AG": 0.2098758557715489,
+              "AT": 0.4587649986534497
+            }
+          },
+          "asinh_t7": {
+            "best_class": "LG",
+            "best_mean_delta": -0.11122704394999988,
+            "all_class_mean_delta": {
+              "LG": -0.11122704394999988,
+              "TG": 0.5614298657900803,
+              "TT": 0.10709688224198463,
+              "SG": 1.149507883821412,
+              "ST": 0.28063977106438415,
+              "AG": 0.14218401784444917,
+              "AT": -0.0050814488351879905
+            }
+          }
+        },
+        "validation_cell_best": {
+          "tanh_gaussian": {
+            "best_class": "LG",
+            "best_mean_delta": 0.007161711866312463,
+            "all_class_mean_delta": {
+              "LG": 0.007161711866312463,
+              "TG": 0.5985498805145393,
+              "TT": 0.1775588147705809,
+              "SG": 0.5639348377442742,
+              "ST": 0.12320274540829453,
+              "AG": 0.272969080418716,
+              "AT": 0.1375822393857701
+            }
+          },
+          "tanh_t7": {
+            "best_class": "ST",
+            "best_mean_delta": -0.6778906922883531,
+            "all_class_mean_delta": {
+              "LG": 0.1742438589582982,
+              "TG": 0.39627217191642855,
+              "TT": -0.35576257076804785,
+              "SG": 0.38769553263916107,
+              "ST": -0.6778906922883531,
+              "AG": 0.24993416661175508,
+              "AT": -0.1780406375360067
+            }
+          },
+          "sin_gaussian": {
+            "best_class": "LG",
+            "best_mean_delta": -0.06488482560151076,
+            "all_class_mean_delta": {
+              "LG": -0.06488482560151076,
+              "TG": 0.35957158496512864,
+              "TT": 0.11557222475736284,
+              "SG": 0.22986771665684133,
+              "ST": 0.026244560402293244,
+              "AG": 0.11702189753476251,
+              "AT": 0.2030958619059091
+            }
+          },
+          "sin_t7": {
+            "best_class": "ST",
+            "best_mean_delta": -0.7462637076694568,
+            "all_class_mean_delta": {
+              "LG": 0.2219480162499631,
+              "TG": 0.2225043635199663,
+              "TT": -0.0729961160504115,
+              "SG": -0.10557512492832433,
+              "ST": -0.7462637076694568,
+              "AG": 0.22472361880844005,
+              "AT": 0.16009614983486276
+            }
+          },
+          "asinh_gaussian": {
+            "best_class": "LG",
+            "best_mean_delta": -0.044176244087180905,
+            "all_class_mean_delta": {
+              "LG": -0.044176244087180905,
+              "TG": 0.3318107191372077,
+              "TT": 0.47531054178720605,
+              "SG": 0.48187401081109565,
+              "ST": 0.3556129615078339,
+              "AG": 0.15039443317047355,
+              "AT": 0.5716111112748141
+            }
+          },
+          "asinh_t7": {
+            "best_class": "ST",
+            "best_mean_delta": -0.6201623531997315,
+            "all_class_mean_delta": {
+              "LG": 0.13462659612707864,
+              "TG": 0.6284986403850579,
+              "TT": -0.5498930268581504,
+              "SG": 0.4798265510458614,
+              "ST": -0.6201623531997315,
+              "AG": 0.36679546079065545,
+              "AT": -0.43554796133941615
+            }
+          }
+        },
+        "training_oracle_coverage": 1.0,
+        "validation_oracle_coverage": 1.0,
+        "s35_approx_training_worst_cell_delta": 0.1276709676332539,
+        "every_cell_has_negative_class_both_splits": false,
+        "disposition": "MODEL_SET_INSUFFICIENCY"
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S36_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S37",
+      "title": "Missing terminal class localization",
+      "priority": 51.75,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S36"
+      ],
+      "rationale": "S36 shows even oracle use of represented classes is insufficient in some regimes; localize the missing mechanism/noise family before adding a new class."
     }
   ],
   "established_findings": [
@@ -1872,7 +2111,8 @@
     "S32 MECHANISM_NOISE_INTERACTION_OR_MIXED_GAP: frozen S30 architecture factorized across tanh/sin/asinh mechanisms and Gaussian/t7 noise on 120 fresh worlds.",
     "S33 EXPANDED_MODEL_SET_FALSIFIED: seven-class mechanism\u00d7noise terminal expansion versus frozen S30 on 36 fresh worlds; edge delta vs S30 0.0621, CI [-0.06236321273465108, 0.17679359181349777], Brier -0.0080, harms 4.",
     "S34 PREDICTIVE_WEIGHT_MISALIGNMENT: represented-class coverage 1.000, mean predictive-score/structural-utility Spearman -0.217, top-weight/oracle match 0.083, mixture regret vs represented oracle 0.731.",
-    "S35 STRUCTURAL_STACKING_FALSIFIED_VALIDATION: frozen training-only structural stack; edge delta vs S30 0.0024, CI [-0.08652042734333419, 0.09892142080733121], Brier -0.0011, harms 2."
+    "S35 STRUCTURAL_STACKING_FALSIFIED_VALIDATION: frozen training-only structural stack; edge delta vs S30 0.0024, CI [-0.08652042734333419, 0.09892142080733121], Brier -0.0011, harms 2.",
+    "S36 MODEL_SET_INSUFFICIENCY: exact training minimax worst-cell delta 0.0591, validation minimax 0.0336, training oracle coverage 1.000, validation oracle coverage 1.000."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
