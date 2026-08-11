@@ -1,0 +1,26 @@
+{
+  "experiment": "EXP-002M2",
+  "status": "COMPLETE_SUPPORTED",
+  "design": "Powered RNG-isolated width-1 vs width-2 root proposal widening",
+  "n_worlds": 48,
+  "primary": {
+    "metric": "paired edge error",
+    "width_1": 1.0876027701598006,
+    "width_2": 0.9889389348435141,
+    "delta": -0.09866383531628649,
+    "bootstrap_ci95": [-0.20105308930466795, -0.004018415555396709]
+  },
+  "secondary": {
+    "true_mass": {"w1": 0.3056050198365242, "w2": 0.340713792773687, "delta": 0.03510877293716284, "ci95": [-0.002802490254117437, 0.07423204686987045]},
+    "map_accuracy": {"w1": 0.7291666666666666, "w2": 0.8958333333333334, "delta": 0.16666666666666666, "ci95": [0.041666666666666664, 0.2916666666666667]},
+    "posterior_entropy": {"w1": 2.9870857323242013, "w2": 2.8879006456650296, "delta": -0.09918508665917168, "ci95": [-0.22622368592464248, 0.020828260570980025]},
+    "mean_compute_seconds": {"w1": 0.856338565548261, "w2": 1.6907652119795482, "ratio": 1.974409878},
+    "mean_intervention_spend": {"w1": 9.71875, "w2": 9.854166666666666, "delta": 0.13541666666666666}
+  },
+  "spend_robustness": {
+    "equal_spend_pairs": {"n": 23, "w1_edge": 1.1160145039703198, "w2_edge": 1.0218755453413477, "delta": -0.09413895862897183, "ci95": [-0.24995551104761857, 0.04412952931681771]},
+    "paired_regression_adjusting_spend": {"width2_effect_at_zero_spend_difference": -0.11751378894185992, "ci95": [-0.21763185865183704, -0.023113819647956647], "spend_delta_slope": 0.13919965754269564, "spend_slope_ci95": [-0.1359332956270227, 0.38499638171760275]}
+  },
+  "established_finding": "Within the exact five-node linear-Gaussian benchmark, moderate root proposal widening from one five-designer set to two independent sets improves terminal causal recovery under a fixed intervention-budget cap. The benefit survives adjustment for small differences in realized spend and costs roughly 2x inference compute, substantially less than the ~9x cost of two-step lookahead.",
+  "next": "EXP-002H identify which epistemic designers benefit from second-sample allocation and replace uniform width-2 with an adaptive proposal-allocation swarm."
+}
