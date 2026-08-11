@@ -1,0 +1,24 @@
+{
+  "experiment":"EXP-002I",
+  "status":"COMPLETE_UNRESOLVED_WITH_NAIVE_TERMINAL_ANOMALY",
+  "design":"24 train / 24 held-out role-credit ablation on correctly specified width-2 swarm. Frozen role bonuses applied as a 15% relative proposal-score adjustment.",
+  "schemes":["UNIFORM","IMMEDIATE","NAIVE_TERMINAL","LEAVE_ONE_OUT","TRAJECTORY_TO_GO","ONE_STEP_STRUCT"],
+  "held_out_means":{
+    "UNIFORM":{"edge_error":1.0588034363239736,"true_mass":0.33050614726332944,"map":0.875,"entropy":2.8352251848110854},
+    "IMMEDIATE":{"edge_error":1.021464522795341,"true_mass":0.3277060421859697,"map":0.75,"entropy":2.817188719679624},
+    "NAIVE_TERMINAL":{"edge_error":0.9619341100935586,"true_mass":0.3499870847635731,"map":0.9166666666666666,"entropy":2.824516189494966},
+    "LEAVE_ONE_OUT":{"edge_error":1.0187896092886686,"true_mass":0.33137959607965684,"map":0.7916666666666666,"entropy":2.8210153844170516},
+    "TRAJECTORY_TO_GO":{"edge_error":1.026088016511169,"true_mass":0.33178900020857865,"map":0.8333333333333334,"entropy":2.8481360171862726},
+    "ONE_STEP_STRUCT":{"edge_error":0.9878332937453344,"true_mass":0.3426520551992027,"map":0.875,"entropy":2.838465077459644}
+  },
+  "paired_vs_uniform":{
+    "NAIVE_TERMINAL":{"edge_delta":-0.09686932623041507,"edge_ci95":[-0.2687175208900566,0.05565526248773566],"map_delta":0.041666666666666664},
+    "ONE_STEP_STRUCT":{"edge_delta":-0.07097014257863933,"edge_ci95":[-0.2180482330988015,0.0493323823554488]},
+    "IMMEDIATE":{"edge_delta":-0.037338913528632736,"edge_ci95":[-0.19878031138640012,0.10735141687977286]},
+    "LEAVE_ONE_OUT":{"edge_delta":-0.040013827035305156,"edge_ci95":[-0.20135324300858404,0.10589080146571822]},
+    "TRAJECTORY_TO_GO":{"edge_delta":-0.032715419812804736,"edge_ci95":[-0.19345190141682395,0.11525596545712605]}
+  },
+  "training_role_pattern":"Immediate, leave-one-out, trajectory-to-go and one-step structural credit all favored INFOGAIN/FALSIFY and penalized RIVAL. Naive terminal credit uniquely favored RIVAL, making its best held-out mean a surprising attribution anomaly rather than an expected result.",
+  "interpretation":"No credit method is established at n=24. Naive terminal credit has the best mean recovery but remains statistically unresolved and uses a qualitatively suspicious role attribution. Power it on a fresh test set and separate the reward scheme from the resulting RIVAL-favoring heuristic.",
+  "next":"EXP-002I2 powered naive-terminal replication plus explicit RIVAL-bonus mechanism control"
+}
