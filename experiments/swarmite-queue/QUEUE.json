@@ -1,5 +1,5 @@
 {
-  "version": "5.8",
+  "version": "5.9",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -778,11 +778,50 @@
       "id": "EXP-002S24",
       "title": "Robust likelihood transfer beyond matched t3 shift",
       "priority": 55.0,
-      "status": "PENDING",
+      "status": "COMPLETE_TRANSFER_SUPPORTED",
       "depends_on": [
         "EXP-002S23"
       ],
-      "rationale": "S23 supported the robust nonlinear likelihood on the compound benchmark; test frozen inference under unseen tail thickness and mechanism shape."
+      "rationale": "S23 supported the robust nonlinear likelihood on the compound benchmark; test frozen inference under unseen tail thickness and mechanism shape.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S24_ROBUST_LIKELIHOOD_TRANSFER_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s24_transfer.py",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "TRANSFER_SUPPORTED"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S24_MECHANICS_RESULT.json",
+      "screen_artifact": "experiments/swarmite-exp002/EXP-002S24_SCREEN_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S24_CONFIRMATION_RESULT.json",
+      "result_summary": {
+        "n": 36,
+        "mean_edge_delta": -0.7945985787743243,
+        "mean_brier_delta": -0.013769612098471006,
+        "mean_edge_delta_vs_s5": -0.267835356667068,
+        "mean_brier_delta_vs_s5": -0.022817692936767643,
+        "wins": 34,
+        "large_harms": 1,
+        "trace_identical_all": true,
+        "dag_count_ok": true,
+        "spend_ok": true,
+        "planning_reconstruction_ok": true,
+        "scores_finite": true,
+        "posterior_normalized": true,
+        "bootstrap95_edge_delta": [
+          -1.0578432895826728,
+          -0.562513399356853
+        ]
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S24_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S25",
+      "title": "Heterogeneous mechanism/noise transfer",
+      "priority": 54.75,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S24"
+      ],
+      "rationale": "S24 transferred without retuning; test the frozen S23 inference across per-world heterogeneous mechanism families and tail thicknesses."
     }
   ],
   "established_findings": [
@@ -805,7 +844,8 @@
     "S20 FALSIFIED_AT_SCREEN: explicit model-class mixture terminal inference tested at 100% coverage; disposition recorded without post-hoc class-weight tuning.",
     "S21 diagnostic EVIDENCE_DOMINANCE_FAILURE: evidence-best rate 0.042, oracle-best delta -0.428, selection regret 1.633.",
     "S22 FALSIFIED_AT_TRAINING: robust model-class evidence tempering disposition recorded with frozen training/validation/confirmation separation.",
-    "S23 SUPPORTED: tanh-parent Student-t robust quasi-evidence terminal inference tested under unchanged baseline planning."
+    "S23 SUPPORTED: tanh-parent Student-t robust quasi-evidence terminal inference tested under unchanged baseline planning.",
+    "S24 TRANSFER_SUPPORTED: frozen S23 robust likelihood tested under softsign + t5 unseen shift without retuning."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
