@@ -3119,20 +3119,43 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s45_joint_latent.py",
       "runner_commit": "e6d1f308dc5aada09d1ac06f1bf37bafb5566c0b",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "training",
-        "training_seeds": [
-          73501,
-          73572
-        ],
-        "validation_seeds": [
-          73601,
-          73636
-        ],
-        "confirmation_seeds": [
-          73701,
-          73772
-        ]
+        "state": "training_frozen",
+        "next_stage": "validation",
+        "selected_T": 0.05
+      },
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S45_TRAINING_RESULT.json",
+      "selected_T": 0.05,
+      "cell_utilities": {
+        "sparse_tanh": {
+          "n": 12,
+          "mean_edge_delta": -0.8458422708023358,
+          "large_harm_rate": 0.0
+        },
+        "sparse_sin": {
+          "n": 12,
+          "mean_edge_delta": -0.7432122245184344,
+          "large_harm_rate": 0.0
+        },
+        "sparse_asinh": {
+          "n": 12,
+          "mean_edge_delta": -0.6948221494616224,
+          "large_harm_rate": 0.16666666666666666
+        },
+        "dense_tanh": {
+          "n": 12,
+          "mean_edge_delta": -0.6152802249956414,
+          "large_harm_rate": 0.08333333333333333
+        },
+        "dense_sin": {
+          "n": 12,
+          "mean_edge_delta": -0.5736983811153481,
+          "large_harm_rate": 0.08333333333333333
+        },
+        "dense_asinh": {
+          "n": 12,
+          "mean_edge_delta": -0.4649673649162451,
+          "large_harm_rate": 0.08333333333333333
+        }
       }
     }
   ],
