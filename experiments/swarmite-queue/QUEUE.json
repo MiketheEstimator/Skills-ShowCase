@@ -1,5 +1,5 @@
 {
-  "version": "8.1",
+  "version": "8.3",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -2468,11 +2468,122 @@
       "id": "EXP-002S40",
       "title": "Credal abstention transfer under unseen heteroskedastic mechanism shift",
       "priority": 51.0,
-      "status": "PENDING",
+      "status": "COMPLETE_TRANSFER_SUPPORTED",
       "depends_on": [
         "EXP-002S39"
       ],
-      "rationale": "S39 supported specialist disagreement as uncertainty while preserving S30 point inference; freeze the gate and test transfer under a new heteroskedastic nonlinear world family before architectural promotion."
+      "rationale": "S39 supported specialist disagreement as uncertainty while preserving S30 point inference; freeze the gate and test transfer under a new heteroskedastic nonlinear world family before architectural promotion.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S40_HETEROSKEDASTIC_TRANSFER_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s40_hetero.py",
+      "runner_commit": "41af5c00afc5c5b097ae07ea9bf7de339d266583",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "HETEROSKEDASTIC_TRANSFER_SUPPORTED"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S40_RESULT.json",
+      "result_summary": {
+        "mechanics": {
+          "rows": [
+            {
+              "seed": 72501,
+              "mechanism": "tanh",
+              "score": 0.08845554558769068,
+              "promote": true,
+              "s30_edge_delta_vs_baseline": -0.9363328491073988,
+              "s30_brier_delta_vs_baseline": 0.005014636849469775,
+              "s30_large_harm": 0,
+              "spend": 15,
+              "trace_identical": true,
+              "finite": true,
+              "s30_sum": 0.9999999999999999
+            },
+            {
+              "seed": 72502,
+              "mechanism": "sin",
+              "score": 0.09045915638132279,
+              "promote": true,
+              "s30_edge_delta_vs_baseline": -0.7574444723661564,
+              "s30_brier_delta_vs_baseline": -0.0036670633920402804,
+              "s30_large_harm": 0,
+              "spend": 15,
+              "trace_identical": true,
+              "finite": true,
+              "s30_sum": 1.0
+            },
+            {
+              "seed": 72503,
+              "mechanism": "asinh",
+              "score": 0.09416421904125916,
+              "promote": true,
+              "s30_edge_delta_vs_baseline": -1.051844667642618,
+              "s30_brier_delta_vs_baseline": -0.008503538220487546,
+              "s30_large_harm": 0,
+              "spend": 15,
+              "trace_identical": true,
+              "finite": true,
+              "s30_sum": 1.0
+            },
+            {
+              "seed": 72504,
+              "mechanism": "tanh",
+              "score": 0.09338581733816206,
+              "promote": true,
+              "s30_edge_delta_vs_baseline": -0.9902402656687928,
+              "s30_brier_delta_vs_baseline": -0.0047695000728492365,
+              "s30_large_harm": 0,
+              "spend": 15,
+              "trace_identical": true,
+              "finite": true,
+              "s30_sum": 1.0
+            }
+          ],
+          "passed": true
+        },
+        "screen": {
+          "n": 24,
+          "coverage": 0.9583333333333334,
+          "n_promoted": 23,
+          "promoted_large_harms": 1,
+          "promoted_large_harm_rate": 0.043478260869565216,
+          "always_s30_mean_edge_delta": -0.5811758124641998,
+          "hybrid_mean_edge_delta": -0.7334716183448423,
+          "bootstrap95_hybrid_edge_delta": [
+            -0.9406507291461553,
+            -0.516759733694664
+          ],
+          "hybrid_mean_brier_delta": -0.005192322055674273,
+          "improvement_retained": 1.2620477360110782,
+          "mechanics_ok": true
+        },
+        "confirmation": {
+          "n": 48,
+          "coverage": 1.0,
+          "n_promoted": 48,
+          "promoted_large_harms": 1,
+          "promoted_large_harm_rate": 0.020833333333333332,
+          "always_s30_mean_edge_delta": -0.8107407841393878,
+          "hybrid_mean_edge_delta": -0.8107407841393878,
+          "bootstrap95_hybrid_edge_delta": [
+            -0.9600670631399039,
+            -0.6557263518793027
+          ],
+          "hybrid_mean_brier_delta": 0.0008735114063205514,
+          "improvement_retained": 1.0,
+          "mechanics_ok": true
+        },
+        "disposition": "HETEROSKEDASTIC_TRANSFER_SUPPORTED"
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S40_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S41",
+      "title": "Frozen credal gate under graph-density shift",
+      "priority": 50.75,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S40"
+      ],
+      "rationale": "S40 supported heteroskedastic transfer without retuning; test whether the frozen S39 uncertainty layer survives sparse/dense topology shift before architectural promotion."
     }
   ],
   "established_findings": [
@@ -2511,7 +2622,8 @@
     "S36 MODEL_SET_INSUFFICIENCY: exact training minimax worst-cell delta 0.0591, validation minimax 0.0336, training oracle coverage 1.000, validation oracle coverage 1.000.",
     "S37 ANCHOR_ONLY_SAFE: S30-anchor exact minimax worst-cell delta train 0.0000, validation 0.0000; S30 weights train 1.000, validation 1.000.",
     "S38 HETEROGENEOUS_RESIDUAL_VALUE: oracle specialist coverage train 0.833, validation 0.861; mean oracle improvement train 0.511, validation 0.638; safe specialists [].",
-    "S39 CREDAL_ABSTENTION_SUPPORTED: mean credal-width threshold 0.269201; confirmation coverage 0.812, hybrid edge delta -0.127, promoted large-harm rate 0.000."
+    "S39 CREDAL_ABSTENTION_SUPPORTED: mean credal-width threshold 0.269201; confirmation coverage 0.812, hybrid edge delta -0.127, promoted large-harm rate 0.000.",
+    "S40 HETEROSKEDASTIC_TRANSFER_SUPPORTED: frozen S39 credal gate under heteroskedastic nonlinear shift; coverage 1.000, hybrid edge delta -0.811, promoted large-harm rate 0.021."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
