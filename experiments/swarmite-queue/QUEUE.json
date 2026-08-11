@@ -1,5 +1,5 @@
 {
-  "version": "5.5",
+  "version": "5.6",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -553,11 +553,56 @@
       "id": "EXP-002S21",
       "title": "Model-class mixture evidence-dominance diagnostic",
       "priority": 55.75,
-      "status": "PENDING",
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED",
       "depends_on": [
         "EXP-002S20"
       ],
-      "rationale": "S20 did not promote; diagnose model-class evidence domination and shared likelihood misspecification before adding any new model class."
+      "rationale": "S20 did not promote; diagnose model-class evidence domination and shared likelihood misspecification before adding any new model class.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S21_EVIDENCE_DOMINANCE_DIAGNOSTIC_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s21_diagnostic.py",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S21_RESULT.json",
+      "result_summary": {
+        "n": 24,
+        "selected_class_best_rate": 0.041666666666666664,
+        "mean_oracle_best_delta_vs_control": -0.4277942275252315,
+        "mean_selection_regret": 1.632935524214559,
+        "mean_mixture_regret": 1.6203765327727975,
+        "mean_mixture_delta_vs_control": 1.192582305247566,
+        "mean_class_weights": [
+          0.0070212818603462976,
+          0.04434599190823942,
+          0.9486327262314141
+        ],
+        "selected_class_counts": [
+          0,
+          1,
+          23
+        ],
+        "best_class_counts": [
+          5,
+          19,
+          0
+        ],
+        "mean_dominant_density_error": 1.8595834107830875,
+        "dominant_weight_vs_mixture_harm_r": 0.32433360804318206,
+        "tanh_weight_vs_mixture_harm_r": 0.2897269965951259,
+        "disposition": "EVIDENCE_DOMINANCE_FAILURE"
+      },
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "EVIDENCE_DOMINANCE_FAILURE"
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S21_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S22",
+      "title": "Robust model-class posterior aggregation",
+      "priority": 55.5,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S21"
+      ],
+      "rationale": "Evidence ranking selects the wrong represented class; test robust aggregation on separated training and evaluation worlds."
     }
   ],
   "established_findings": [
@@ -577,7 +622,8 @@
     "Posterior-disagreement geometry alone is now deprioritized; S19 tests whether observable posterior-predictive residual mismatch can identify the remaining model-shift-sensitive cases.",
     "Execution reproducibility and namespace isolation remain hard scientific invariants; blocked historical worlds are never pooled.",
     "S19 FALSIFIED_ON_CONFIRMATION: residual-aware PPC gate disposition recorded; next direction is explicit model-class uncertainty rather than further hand-engineered abstention thresholds.",
-    "S20 FALSIFIED_AT_SCREEN: explicit model-class mixture terminal inference tested at 100% coverage; disposition recorded without post-hoc class-weight tuning."
+    "S20 FALSIFIED_AT_SCREEN: explicit model-class mixture terminal inference tested at 100% coverage; disposition recorded without post-hoc class-weight tuning.",
+    "S21 diagnostic EVIDENCE_DOMINANCE_FAILURE: evidence-best rate 0.042, oracle-best delta -0.428, selection regret 1.633."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
