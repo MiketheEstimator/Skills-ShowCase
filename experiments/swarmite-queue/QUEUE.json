@@ -3424,13 +3424,10 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s50_world_model_mixture.py",
       "runner_commit": "b02425dd854a60e72b1579c2a4079fe86e34116d",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics",
-        "mechanics": "2 linear + 2 heteroskedastic",
-        "training": "48 + 48",
-        "validation": "24 + 24",
-        "confirmation": "48 + 48"
-      }
+        "state": "mechanics_passed",
+        "next_stage": "training"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S50_MECHANICS_RESULT.json"
     }
   ],
   "established_findings": [
