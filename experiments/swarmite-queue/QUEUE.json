@@ -1,5 +1,5 @@
 {
-  "version": "9.0",
+  "version": "9.1",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3156,7 +3156,18 @@
           "large_harm_rate": 0.08333333333333333
         }
       },
-      "validation_artifact": "experiments/swarmite-exp002/EXP-002S45_VALIDATION_RESULT.json"
+      "validation_artifact": "experiments/swarmite-exp002/EXP-002S45_VALIDATION_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S45_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S46",
+      "title": "Continuous observable harm-risk prediction for terminal S30",
+      "priority": 49.5,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S45"
+      ],
+      "rationale": "S45 falsified the hand-specified six-class ontology; replace discrete world classes with a continuous preregistered risk model over observable topology evidence, mechanism predictive scores, credal width, and posterior diagnostics, trained only on fresh training worlds."
     }
   ],
   "established_findings": [
@@ -3200,7 +3211,8 @@
     "S41 FALSIFIED_AT_SCREEN: frozen S39 gate under sparse/dense graph shift; coverage 0.833, hybrid edge delta -0.038, promoted large-harm rate 0.000.",
     "S42 TOPOLOGY_WORLDCLASS_SUPPORTED: topology class AUC 0.785, credal control AUC 0.637, Brier 0.193, accuracy 0.729.",
     "S43 CLASS_AWARE_DECISION_SUPPORTED: class-aware coverage 1.000, hybrid edge delta -0.127, S39 control -0.051, harm rate 0.021.",
-    "S44 FALSIFIED_ON_CONFIRMATION: frozen S43 class-aware decision evaluated prospectively under joint topology plus heteroskedastic nonlinear mechanism shift."
+    "S44 FALSIFIED_ON_CONFIRMATION: frozen S43 class-aware decision evaluated prospectively under joint topology plus heteroskedastic nonlinear mechanism shift.",
+    "S45 FALSIFIED_ON_VALIDATION: explicit joint topology-mechanism/noise latent-class terminal decision evaluated with separated training, validation, and confirmation worlds."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
