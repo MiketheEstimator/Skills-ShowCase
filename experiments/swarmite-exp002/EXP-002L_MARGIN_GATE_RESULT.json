@@ -1,0 +1,15 @@
+{
+  "experiment": "EXP-002L",
+  "status": "COMPLETE_FALSIFIED_FOR_MARGIN_GATING",
+  "design": "Gate two-step lookahead on normalized margin between best and second-best one-step proposal scores",
+  "training_worlds": 12,
+  "margin_distribution": {"p25": 0.1196, "median": 0.2441, "p75": 0.4229},
+  "threshold_results": {
+    "tau_0.120": {"edge_error": 1.180767541665159, "mean_seconds": 3.199574132760366, "deep_rate": 0.27358490566037735},
+    "tau_0.244": {"edge_error": 1.0749961376685073, "mean_seconds": 5.570782721042633, "deep_rate": 0.5648148148148148},
+    "tau_0.423_six_world_screen": {"edge_error": 1.144962768184287, "mean_seconds": 7.2105850378672285, "deep_rate": 0.7321428571428571}
+  },
+  "controls_training": {"always_one_edge_error": 1.0748529285715545, "always_one_seconds": 0.9791942834854126, "always_two_edge_error": 1.1202095368354892, "always_two_seconds": 8.681041618188223},
+  "interpretation": "No tested local ambiguity threshold improves training edge recovery enough to justify additional lookahead compute. The median threshold is essentially identical to always-one on edge error while using over five times the compute; the high threshold collapses toward always-two. The next search direction should allocate compute to proposal breadth rather than lookahead depth.",
+  "next": "EXP-002M breadth-vs-depth progressive proposal widening"
+}
