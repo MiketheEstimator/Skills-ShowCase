@@ -1,5 +1,5 @@
 {
-  "version": "7.1",
+  "version": "7.2",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1768,11 +1768,30 @@
       "id": "EXP-002S35",
       "title": "Structural-utility stacking without predictive-score weights",
       "priority": 52.25,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S34"
       ],
-      "rationale": "S34 shows represented useful classes exist but predictive CV scores misrank structural utility; test a materially different training-only stacking objective based on terminal structural surrogate, with held-out validation and no truth at deployment."
+      "rationale": "S34 shows represented useful classes exist but predictive CV scores misrank structural utility; test a materially different training-only stacking objective based on terminal structural surrogate, with held-out validation and no truth at deployment.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S35_STRUCTURAL_UTILITY_STACKING_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s35_stack.py",
+      "runner_commit": "416b82cb52a58a94409cd848dac3bf4eb40749bf",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "training",
+        "training_seeds": [
+          72201,
+          72248
+        ],
+        "validation_seeds": [
+          72261,
+          72296
+        ],
+        "confirmation_seeds": [
+          72301,
+          72372
+        ]
+      }
     }
   ],
   "established_findings": [
