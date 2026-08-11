@@ -1,5 +1,5 @@
 {
-  "version": "6.5",
+  "version": "6.6",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1319,11 +1319,94 @@
       "id": "EXP-002S31",
       "title": "Continuous science-posterior combination transfer stress",
       "priority": 53.25,
-      "status": "PENDING",
+      "status": "COMPLETE_FALSIFIED_ON_TRANSFER",
       "depends_on": [
         "EXP-002S30"
       ],
-      "rationale": "S30 supported ADEQ-weighted posterior combination; test the frozen mixing rule on unseen mechanism/noise families before promotion to reference architecture."
+      "rationale": "S30 supported ADEQ-weighted posterior combination; test the frozen mixing rule on unseen mechanism/noise families before promotion to reference architecture.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S31_CONTINUOUS_COMBINATION_TRANSFER_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s31_transfer.py",
+      "runner_commit": "459138fa5384cb75f3e0205b2ff24b0d7776c8d0",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "TRANSFER_FALSIFIED"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S31_MECHANICS_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S31_CONFIRMATION_RESULT.json",
+      "result_summary": {
+        "n": 96,
+        "mean_edge_delta": -0.2080105977064813,
+        "bootstrap95_edge_delta": [
+          -0.32388028667061497,
+          -0.10387745514922234
+        ],
+        "mean_brier_delta": -0.006046037205228464,
+        "wins": 47,
+        "large_harms": 2,
+        "mean_alpha": 0.2831603187327653,
+        "by_regime": {
+          "linear_gaussian_anchor": {
+            "n": 24,
+            "mean_edge_delta": 0.009555862120886544,
+            "bootstrap95_edge_delta": [
+              0.0002001982129168821,
+              0.027214390263671638
+            ],
+            "mean_brier_delta": 0.0013170273455432356,
+            "large_harms": 0,
+            "mean_alpha": 0.03567827300674586,
+            "mean_ADEQ": -34.17635589940658
+          },
+          "sin_gaussian": {
+            "n": 24,
+            "mean_edge_delta": 0.033219014053473495,
+            "bootstrap95_edge_delta": [
+              -0.011836550772212854,
+              0.08623652037288895
+            ],
+            "mean_brier_delta": 0.0016857193655805715,
+            "large_harms": 0,
+            "mean_alpha": 0.11911492521288014,
+            "mean_ADEQ": -20.283207501086014
+          },
+          "asinh_t7": {
+            "n": 24,
+            "mean_edge_delta": -0.22351210088594944,
+            "bootstrap95_edge_delta": [
+              -0.5002638239315709,
+              0.024730389508662128
+            ],
+            "mean_brier_delta": -0.005982685659872332,
+            "large_harms": 1,
+            "mean_alpha": 0.35839955376408783,
+            "mean_ADEQ": -4.810039412384147
+          },
+          "leakyrelu_contaminated": {
+            "n": 24,
+            "mean_edge_delta": -0.6513051661143359,
+            "bootstrap95_edge_delta": [
+              -0.9303825959819241,
+              -0.3874261307995629
+            ],
+            "mean_brier_delta": -0.02120420987216533,
+            "large_harms": 1,
+            "mean_alpha": 0.6194485229473473,
+            "mean_ADEQ": 7.617422128879038
+          }
+        },
+        "mechanics_ok": true
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S31_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S32",
+      "title": "Unseen-regime model-set insufficiency diagnostic",
+      "priority": 53.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S31"
+      ],
+      "rationale": "S31 exposed a transfer boundary for the baseline+S23 model set; isolate the failing unseen mechanism/noise family before expanding terminal model classes."
     }
   ],
   "established_findings": [
@@ -1353,7 +1436,8 @@
     "S27 FROZEN_SELECTOR_FAILED_CONFIRMATION: frozen PPC-tail full-coverage selector tested baseline versus robust terminal inference on separated training/validation/confirmation worlds.",
     "S28 MULTIVARIATE_REPRESENTATION_NOT_SUPPORTED: tail-only CV AUC 0.317; multivariate CV AUC 0.520; gain 0.203.",
     "S29 DIRECT_ADEQUACY_NOT_SUPPORTED: direct CV adequacy AUC 0.697, zero-boundary balanced accuracy 0.680.",
-    "S30 CONTINUOUS_COMBINATION_SUPPORTED: ADEQ-weighted continuous posterior combination evaluated on separated fresh worlds."
+    "S30 CONTINUOUS_COMBINATION_SUPPORTED: ADEQ-weighted continuous posterior combination evaluated on separated fresh worlds.",
+    "S31 TRANSFER_FALSIFIED: frozen T=5 ADEQ-weighted posterior combination stress-tested on unseen mechanism/noise families."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",

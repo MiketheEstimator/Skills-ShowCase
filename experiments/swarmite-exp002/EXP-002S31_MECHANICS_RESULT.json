@@ -1,0 +1,143 @@
+{
+  "rows": [
+    {
+      "seed": 71700,
+      "regime": "linear_gaussian_anchor",
+      "dag_count": 29281,
+      "spend": 15,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "p0_sum": 1.0000000000000002,
+      "pr_sum": 1.0,
+      "pmix_sum": 1.0,
+      "ADEQ": -25.243194683496824,
+      "alpha": 0.00637713404671359,
+      "edge_delta": 0.001107279285031737,
+      "brier_delta": 9.300188354973912e-05,
+      "large_harm": 0,
+      "robust_edge_delta": 0.17363274425794772,
+      "robust_brier_delta": 0.01983462221511573,
+      "trace_identical": true
+    },
+    {
+      "seed": 71701,
+      "regime": "sin_gaussian",
+      "dag_count": 29281,
+      "spend": 15,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "p0_sum": 0.9999999999999999,
+      "pr_sum": 1.0,
+      "pmix_sum": 1.0,
+      "ADEQ": -21.387586486770772,
+      "alpha": 0.013687134644481572,
+      "edge_delta": 0.009232001028481651,
+      "brier_delta": -0.00029161532627040854,
+      "large_harm": 0,
+      "robust_edge_delta": 0.6745020976472218,
+      "robust_brier_delta": 0.006363354984173508,
+      "trace_identical": true
+    },
+    {
+      "seed": 71702,
+      "regime": "asinh_t7",
+      "dag_count": 29281,
+      "spend": 15,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "p0_sum": 1.0000000000000002,
+      "pr_sum": 1.0,
+      "pmix_sum": 1.0,
+      "ADEQ": -4.309008981400041,
+      "alpha": 0.2969630362867513,
+      "edge_delta": 0.06806735870059955,
+      "brier_delta": -0.007795600648685334,
+      "large_harm": 0,
+      "robust_edge_delta": 0.22921155289802675,
+      "robust_brier_delta": -0.005652712431640207,
+      "trace_identical": true
+    },
+    {
+      "seed": 71703,
+      "regime": "leakyrelu_contaminated",
+      "dag_count": 29281,
+      "spend": 15,
+      "planning_reconstruction_max_abs": 0.0,
+      "family_scores_finite": true,
+      "p0_sum": 0.9999999999999998,
+      "pr_sum": 1.0,
+      "pmix_sum": 1.0,
+      "ADEQ": 7.417671370044445,
+      "alpha": 0.8151058185124623,
+      "edge_delta": -1.3428071237189285,
+      "brier_delta": -0.039183027883822275,
+      "large_harm": 0,
+      "robust_edge_delta": -1.647402206218453,
+      "robust_brier_delta": -0.0431311711643341,
+      "trace_identical": true
+    }
+  ],
+  "summary": {
+    "n": 4,
+    "mean_edge_delta": -0.3161001211762039,
+    "bootstrap95_edge_delta": [
+      -1.004797342532076,
+      0.05132733884670759
+    ],
+    "mean_brier_delta": -0.01179431049380707,
+    "wins": 1,
+    "large_harms": 0,
+    "mean_alpha": 0.2830332808726022,
+    "by_regime": {
+      "linear_gaussian_anchor": {
+        "n": 1,
+        "mean_edge_delta": 0.001107279285031737,
+        "bootstrap95_edge_delta": [
+          0.001107279285031737,
+          0.001107279285031737
+        ],
+        "mean_brier_delta": 9.300188354973912e-05,
+        "large_harms": 0,
+        "mean_alpha": 0.00637713404671359,
+        "mean_ADEQ": -25.243194683496824
+      },
+      "sin_gaussian": {
+        "n": 1,
+        "mean_edge_delta": 0.009232001028481651,
+        "bootstrap95_edge_delta": [
+          0.009232001028481651,
+          0.009232001028481651
+        ],
+        "mean_brier_delta": -0.00029161532627040854,
+        "large_harms": 0,
+        "mean_alpha": 0.013687134644481572,
+        "mean_ADEQ": -21.387586486770772
+      },
+      "asinh_t7": {
+        "n": 1,
+        "mean_edge_delta": 0.06806735870059955,
+        "bootstrap95_edge_delta": [
+          0.06806735870059955,
+          0.06806735870059955
+        ],
+        "mean_brier_delta": -0.007795600648685334,
+        "large_harms": 0,
+        "mean_alpha": 0.2969630362867513,
+        "mean_ADEQ": -4.309008981400041
+      },
+      "leakyrelu_contaminated": {
+        "n": 1,
+        "mean_edge_delta": -1.3428071237189285,
+        "bootstrap95_edge_delta": [
+          -1.3428071237189285,
+          -1.3428071237189285
+        ],
+        "mean_brier_delta": -0.039183027883822275,
+        "large_harms": 0,
+        "mean_alpha": 0.8151058185124623,
+        "mean_ADEQ": 7.417671370044445
+      }
+    },
+    "mechanics_ok": true
+  }
+}
