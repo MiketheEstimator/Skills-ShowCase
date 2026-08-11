@@ -3404,13 +3404,10 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s49_hetero_likelihood.py",
       "runner_commit": "c31af7c3511638a91b14e22384ad5b9976ecfad6",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics",
-        "mechanics": "2 linear + 2 heteroskedastic",
-        "training": "48 + 48",
-        "validation": "24 + 24",
-        "confirmation": "48 + 48"
-      }
+        "state": "mechanics_passed",
+        "next_stage": "training"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S49_MECHANICS_RESULT.json"
     }
   ],
   "established_findings": [
