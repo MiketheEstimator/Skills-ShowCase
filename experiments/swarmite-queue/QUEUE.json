@@ -3526,13 +3526,10 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s52_latent_residual_state.py",
       "runner_commit": "38625836aa2d81e018609ce9be9c5b6d5c7e8a92",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics",
-        "mechanics": "2 linear + 2 heteroskedastic",
-        "training": "64 + 64",
-        "validation": "32 + 32",
-        "confirmation": "64 + 64"
-      }
+        "state": "mechanics_passed",
+        "next_stage": "training"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S52_MECHANICS_RESULT.json"
     }
   ],
   "established_findings": [
