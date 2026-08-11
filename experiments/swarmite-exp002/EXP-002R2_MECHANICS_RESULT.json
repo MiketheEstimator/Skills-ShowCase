@@ -1,0 +1,19 @@
+{
+  "experiment": "EXP-002R2",
+  "stage": "mechanics_only",
+  "engine_blob_sha": "339e622169411861592d9c0e5abd4beadc6f2ac7",
+  "invariants": {
+    "dag_count": 29281,
+    "matched_budget_pass": true,
+    "deterministic_rng_namespaces": true,
+    "strict_nested_generator_by_construction": true,
+    "scientific_parameter_changes_after_outcomes": 0
+  },
+  "paired_summary": [
+    {"seed":3000,"w1_edge":1.485359388658817,"w2_edge":1.1924233704898832,"delta":-0.2929360181689338,"w1_spend":15,"w2_spend":15,"w1_int":15,"w2_int":12},
+    {"seed":3001,"w1_edge":1.2990361959118577,"w2_edge":1.1683368684122364,"delta":-0.13069932749962132,"w1_spend":15,"w2_spend":15,"w1_int":7,"w2_int":9},
+    {"seed":3002,"w1_edge":0.7875407764877916,"w2_edge":1.7781095565216725,"delta":0.9905687800338808,"w1_spend":15,"w2_spend":15,"w1_int":15,"w2_int":11},
+    {"seed":3003,"w1_edge":1.2286912421801843,"w2_edge":1.4290344849368355,"delta":0.20034324275665116,"w1_spend":15,"w2_spend":15,"w1_int":11,"w2_int":12}
+  ],
+  "note": "Outcome direction was not used for tuning. Mixed directions observed."
+}
