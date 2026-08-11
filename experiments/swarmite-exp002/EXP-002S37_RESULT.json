@@ -1,0 +1,49 @@
+{
+  "training": {
+    "weights": {
+      "S30": 1.0,
+      "LG": -0.0,
+      "TG": 0.0,
+      "TT": 0.0,
+      "SG": 0.0,
+      "ST": -0.0,
+      "AG": 0.0,
+      "AT": 0.0
+    },
+    "worst_cell_delta": 0.0,
+    "mean_delta": 0.0,
+    "by_cell_delta": {
+      "tanh_gaussian": 0.0,
+      "tanh_t7": 0.0,
+      "sin_gaussian": 0.0,
+      "sin_t7": 0.0,
+      "asinh_gaussian": 0.0,
+      "asinh_t7": 0.0
+    },
+    "lp_t": -0.0
+  },
+  "validation": {
+    "weights": {
+      "S30": 1.0,
+      "LG": -0.0,
+      "TG": 0.0,
+      "TT": 0.0,
+      "SG": 0.0,
+      "ST": -0.0,
+      "AG": 0.0,
+      "AT": 0.0
+    },
+    "worst_cell_delta": 0.0,
+    "mean_delta": 0.0,
+    "by_cell_delta": {
+      "tanh_gaussian": 0.0,
+      "tanh_t7": 0.0,
+      "sin_gaussian": 0.0,
+      "sin_t7": 0.0,
+      "asinh_gaussian": 0.0,
+      "asinh_t7": 0.0
+    },
+    "lp_t": -0.0
+  },
+  "disposition": "ANCHOR_ONLY_SAFE"
+}

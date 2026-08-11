@@ -1,5 +1,5 @@
 {
-  "version": "7.6",
+  "version": "7.7",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -2072,7 +2072,7 @@
       "id": "EXP-002S37",
       "title": "Missing terminal class localization",
       "priority": 51.75,
-      "status": "RUNNING",
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED",
       "depends_on": [
         "EXP-002S36"
       ],
@@ -2081,17 +2081,70 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s37_anchor_diag.py",
       "runner_commit": "8b08b94b982aaac25146c928cd1974f2e2498668",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "anchor_lp_diagnostic",
-        "training_seeds": [
-          72201,
-          72248
-        ],
-        "validation_seeds": [
-          72261,
-          72296
-        ]
-      }
+        "state": "complete",
+        "disposition": "ANCHOR_ONLY_SAFE"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S37_RESULT.json",
+      "result_summary": {
+        "training": {
+          "weights": {
+            "S30": 1.0,
+            "LG": -0.0,
+            "TG": 0.0,
+            "TT": 0.0,
+            "SG": 0.0,
+            "ST": -0.0,
+            "AG": 0.0,
+            "AT": 0.0
+          },
+          "worst_cell_delta": 0.0,
+          "mean_delta": 0.0,
+          "by_cell_delta": {
+            "tanh_gaussian": 0.0,
+            "tanh_t7": 0.0,
+            "sin_gaussian": 0.0,
+            "sin_t7": 0.0,
+            "asinh_gaussian": 0.0,
+            "asinh_t7": 0.0
+          },
+          "lp_t": -0.0
+        },
+        "validation": {
+          "weights": {
+            "S30": 1.0,
+            "LG": -0.0,
+            "TG": 0.0,
+            "TT": 0.0,
+            "SG": 0.0,
+            "ST": -0.0,
+            "AG": 0.0,
+            "AT": 0.0
+          },
+          "worst_cell_delta": 0.0,
+          "mean_delta": 0.0,
+          "by_cell_delta": {
+            "tanh_gaussian": 0.0,
+            "tanh_t7": 0.0,
+            "sin_gaussian": 0.0,
+            "sin_t7": 0.0,
+            "asinh_gaussian": 0.0,
+            "asinh_t7": 0.0
+          },
+          "lp_t": -0.0
+        },
+        "disposition": "ANCHOR_ONLY_SAFE"
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S37_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S38",
+      "title": "Specialist residual-value diagnostic over S30 anchor",
+      "priority": 51.5,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S37"
+      ],
+      "rationale": "S37 shows S30 is the only robust global anchor; quantify where specialist posteriors add residual structural value over S30 before attempting conditional residual corrections."
     }
   ],
   "established_findings": [
@@ -2127,7 +2180,8 @@
     "S33 EXPANDED_MODEL_SET_FALSIFIED: seven-class mechanism\u00d7noise terminal expansion versus frozen S30 on 36 fresh worlds; edge delta vs S30 0.0621, CI [-0.06236321273465108, 0.17679359181349777], Brier -0.0080, harms 4.",
     "S34 PREDICTIVE_WEIGHT_MISALIGNMENT: represented-class coverage 1.000, mean predictive-score/structural-utility Spearman -0.217, top-weight/oracle match 0.083, mixture regret vs represented oracle 0.731.",
     "S35 STRUCTURAL_STACKING_FALSIFIED_VALIDATION: frozen training-only structural stack; edge delta vs S30 0.0024, CI [-0.08652042734333419, 0.09892142080733121], Brier -0.0011, harms 2.",
-    "S36 MODEL_SET_INSUFFICIENCY: exact training minimax worst-cell delta 0.0591, validation minimax 0.0336, training oracle coverage 1.000, validation oracle coverage 1.000."
+    "S36 MODEL_SET_INSUFFICIENCY: exact training minimax worst-cell delta 0.0591, validation minimax 0.0336, training oracle coverage 1.000, validation oracle coverage 1.000.",
+    "S37 ANCHOR_ONLY_SAFE: S30-anchor exact minimax worst-cell delta train 0.0000, validation 0.0000; S30 weights train 1.000, validation 1.000."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
