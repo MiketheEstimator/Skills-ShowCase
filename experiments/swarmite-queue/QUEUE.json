@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -15,11 +15,20 @@
       "id": "EXP-002E",
       "title": "Two-step Bayesian proposal lookahead",
       "priority": 100,
-      "status": "PENDING",
+      "status": "RUNNING",
       "hypothesis": "Scoring concrete designer proposals by expected downstream terminal value over two experiment steps will outperform one-step proposal scoring under matched total cost.",
       "success_metric": "paired held-out improvement over strongest static control with uncertainty interval excluding zero on preregistered primary metric",
       "controls": ["INFOGAIN", "WEAKTIE", "CHEAPEST", "one_step_proposal_judge"],
-      "budget_rule": "equal_total_cost"
+      "budget_rule": "equal_total_cost",
+      "checkpoint": {
+        "artifact": "experiments/swarmite-exp002/EXP-002E_SMOKE_CHECKPOINT.md",
+        "state": "mechanics_validated_evidence_insufficient",
+        "next_action": "cache simulated transitions and accumulate matched batches to at least 12 held-out worlds",
+        "smoke_n": 2,
+        "smoke_budget": 7,
+        "smoke_two_minus_one_edge_error": 0.17707373379902303,
+        "smoke_two_minus_one_true_mass": -0.0636628399050984
+      }
     },
     {
       "id": "EXP-002F",
