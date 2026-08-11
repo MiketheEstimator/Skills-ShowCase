@@ -1,5 +1,5 @@
 {
-  "version": "8.7",
+  "version": "8.9",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -2740,11 +2740,143 @@
       "id": "EXP-002S43",
       "title": "Class-aware uncertainty decision over S30 anchor",
       "priority": 50.25,
-      "status": "PENDING",
+      "status": "COMPLETE_SUPPORTED",
       "depends_on": [
         "EXP-002S42"
       ],
-      "rationale": "S42 established an explicit observable topology-class posterior that outperforms scalar credal width for density identification; test a preregistered class-aware uncertainty decision while keeping S30 as point anchor."
+      "rationale": "S42 established an explicit observable topology-class posterior that outperforms scalar credal width for density identification; test a preregistered class-aware uncertainty decision while keeping S30 as point anchor.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S43_CLASS_AWARE_DECISION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s43_classaware.py",
+      "runner_commit": "eeaab00cb078f1656649a26041e3cbcbb7a2395e",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "CLASS_AWARE_DECISION_SUPPORTED"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S43_RESULT.json",
+      "result_summary": {
+        "training": {
+          "params": {
+            "sparse": {
+              "mean_edge_delta": -0.17642413429903825,
+              "large_harm_rate": 0.0,
+              "n": 24
+            },
+            "dense": {
+              "mean_edge_delta": -0.04040343473196801,
+              "large_harm_rate": 0.0,
+              "n": 24
+            }
+          },
+          "summary": {
+            "n": 48,
+            "class_aware": {
+              "coverage": 1.0,
+              "n_promoted": 48,
+              "promoted_large_harms": 0,
+              "promoted_large_harm_rate": 0.0,
+              "always_s30_mean_edge_delta": -0.10841378451550314,
+              "hybrid_mean_edge_delta": -0.10841378451550314,
+              "bootstrap95_hybrid_edge_delta": [
+                -0.21066614943198625,
+                -0.018556715019366593
+              ],
+              "hybrid_mean_brier_delta": -0.002979572811875761,
+              "improvement_retained": 1.0
+            },
+            "s39_control": {
+              "coverage": 0.8125,
+              "n_promoted": 39,
+              "promoted_large_harms": 0,
+              "promoted_large_harm_rate": 0.0,
+              "always_s30_mean_edge_delta": -0.10841378451550314,
+              "hybrid_mean_edge_delta": -0.07705574584402362,
+              "bootstrap95_hybrid_edge_delta": [
+                -0.15850331952722077,
+                -0.007888577563862733
+              ],
+              "hybrid_mean_brier_delta": -0.001376767374269552,
+              "improvement_retained": 0.7107559817082548
+            },
+            "mechanics_ok": true
+          }
+        },
+        "validation": {
+          "n": 36,
+          "class_aware": {
+            "coverage": 1.0,
+            "n_promoted": 36,
+            "promoted_large_harms": 0,
+            "promoted_large_harm_rate": 0.0,
+            "always_s30_mean_edge_delta": -0.1457685128733076,
+            "hybrid_mean_edge_delta": -0.1457685128733076,
+            "bootstrap95_hybrid_edge_delta": [
+              -0.26710329749817,
+              -0.04477899569257377
+            ],
+            "hybrid_mean_brier_delta": -0.002526445037055457,
+            "improvement_retained": 1.0
+          },
+          "s39_control": {
+            "coverage": 0.9166666666666666,
+            "n_promoted": 33,
+            "promoted_large_harms": 0,
+            "promoted_large_harm_rate": 0.0,
+            "always_s30_mean_edge_delta": -0.1457685128733076,
+            "hybrid_mean_edge_delta": -0.11924349814391405,
+            "bootstrap95_hybrid_edge_delta": [
+              -0.23473888679390423,
+              -0.025365645528135892
+            ],
+            "hybrid_mean_brier_delta": -0.0008747736375470517,
+            "improvement_retained": 0.8180333035814987
+          },
+          "mechanics_ok": true
+        },
+        "confirmation": {
+          "n": 48,
+          "class_aware": {
+            "coverage": 1.0,
+            "n_promoted": 48,
+            "promoted_large_harms": 1,
+            "promoted_large_harm_rate": 0.020833333333333332,
+            "always_s30_mean_edge_delta": -0.1273714162140672,
+            "hybrid_mean_edge_delta": -0.1273714162140672,
+            "bootstrap95_hybrid_edge_delta": [
+              -0.2320003999608758,
+              -0.038458210036036375
+            ],
+            "hybrid_mean_brier_delta": -0.0043640897292829646,
+            "improvement_retained": 1.0
+          },
+          "s39_control": {
+            "coverage": 0.8541666666666666,
+            "n_promoted": 41,
+            "promoted_large_harms": 1,
+            "promoted_large_harm_rate": 0.024390243902439025,
+            "always_s30_mean_edge_delta": -0.1273714162140672,
+            "hybrid_mean_edge_delta": -0.05141480703469877,
+            "bootstrap95_hybrid_edge_delta": [
+              -0.10763533119667941,
+              0.0018128997607055643
+            ],
+            "hybrid_mean_brier_delta": -0.0019056016202093423,
+            "improvement_retained": 0.40366048021550066
+          },
+          "mechanics_ok": true
+        },
+        "disposition": "CLASS_AWARE_DECISION_SUPPORTED"
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S43_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S44",
+      "title": "Joint class-aware decision transfer under topology plus heteroskedastic shift",
+      "priority": 50.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S43"
+      ],
+      "rationale": "S43 supported explicit topology-class utility propagation; test the frozen class-aware decision under combined topology and heteroskedastic observation shift before reference promotion."
     }
   ],
   "established_findings": [
@@ -2786,7 +2918,8 @@
     "S39 CREDAL_ABSTENTION_SUPPORTED: mean credal-width threshold 0.269201; confirmation coverage 0.812, hybrid edge delta -0.127, promoted large-harm rate 0.000.",
     "S40 HETEROSKEDASTIC_TRANSFER_SUPPORTED: frozen S39 credal gate under heteroskedastic nonlinear shift; coverage 1.000, hybrid edge delta -0.811, promoted large-harm rate 0.021.",
     "S41 FALSIFIED_AT_SCREEN: frozen S39 gate under sparse/dense graph shift; coverage 0.833, hybrid edge delta -0.038, promoted large-harm rate 0.000.",
-    "S42 TOPOLOGY_WORLDCLASS_SUPPORTED: topology class AUC 0.785, credal control AUC 0.637, Brier 0.193, accuracy 0.729."
+    "S42 TOPOLOGY_WORLDCLASS_SUPPORTED: topology class AUC 0.785, credal control AUC 0.637, Brier 0.193, accuracy 0.729.",
+    "S43 CLASS_AWARE_DECISION_SUPPORTED: class-aware coverage 1.000, hybrid edge delta -0.127, S39 control -0.051, harm rate 0.021."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
