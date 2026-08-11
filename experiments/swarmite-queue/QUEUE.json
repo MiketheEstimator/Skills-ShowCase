@@ -3546,13 +3546,10 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s53_calibrated_average.py",
       "runner_commit": "71d9aea5af22cc1e0d48f224b993c8487a1fba8d",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics",
-        "mechanics": "2 linear + 2 heteroskedastic",
-        "training": "64 + 64",
-        "validation": "32 + 32",
-        "confirmation": "64 + 64"
-      }
+        "state": "mechanics_passed",
+        "next_stage": "training"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S53_MECHANICS_RESULT.json"
     }
   ],
   "established_findings": [
