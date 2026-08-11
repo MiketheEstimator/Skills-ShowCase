@@ -1,5 +1,5 @@
 {
-  "version": "9.7",
+  "version": "9.8",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3517,11 +3517,22 @@
       "id": "EXP-002S52",
       "title": "Latent residual-state adjudication model",
       "priority": 48.0,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S51"
       ],
-      "rationale": "S51 found specialist headroom but weak observable discrimination. Replace scalar variance evidence with a richer latent residual-state representation while retaining S30 as anchor."
+      "rationale": "S51 found specialist headroom but weak observable discrimination. Replace scalar variance evidence with a richer latent residual-state representation while retaining S30 as anchor.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S52_LATENT_RESIDUAL_STATE_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s52_latent_residual_state.py",
+      "runner_commit": "38625836aa2d81e018609ce9be9c5b6d5c7e8a92",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "training": "64 + 64",
+        "validation": "32 + 32",
+        "confirmation": "64 + 64"
+      }
     }
   ],
   "established_findings": [
