@@ -3510,7 +3510,18 @@
             "mean_qhet": 0.4716896216005038
           }
         }
-      }
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S51_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S52",
+      "title": "Latent residual-state adjudication model",
+      "priority": 48.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S51"
+      ],
+      "rationale": "S51 found specialist headroom but weak observable discrimination. Replace scalar variance evidence with a richer latent residual-state representation while retaining S30 as anchor."
     }
   ],
   "established_findings": [
@@ -3560,7 +3571,8 @@
     "S47 FALSIFIED_AT_SCREEN: frozen S46 continuous-risk S30 architecture evaluated across six balanced prospective world families without refitting.",
     "S48 FALSIFIED_ON_VALIDATION: targeted residual-heteroskedasticity repair tested around the frozen S46/S30 architecture on separated linear-anchor and heteroskedastic worlds.",
     "S49 FALSIFIED_AT_TRAINING: terminal-only fitted-magnitude heteroskedastic likelihood specialist tested around frozen baseline planning, S30 anchor, and S46 adjudication.",
-    "S50 FALSIFIED_AT_TRAINING: bounded per-world S30/P_HET model uncertainty tested using cross-fitted observable variance evidence while preserving baseline-only planning and frozen S46 adjudication."
+    "S50 FALSIFIED_AT_TRAINING: bounded per-world S30/P_HET model uncertainty tested using cross-fitted observable variance evidence while preserving baseline-only planning and frozen S46 adjudication.",
+    "S51 ADJUDICATION_DOMINANT: heteroskedastic oracle two-posterior headroom 0.133 with 95% bootstrap [0.04402237771386583, 0.24754094497894613]; q_het specialist-win AUC 0.3783783783783784."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
