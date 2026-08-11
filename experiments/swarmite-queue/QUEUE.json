@@ -1,5 +1,5 @@
 {
-  "version": "6.0",
+  "version": "6.1",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -879,11 +879,98 @@
       "id": "EXP-002S26",
       "title": "Heterogeneous transfer regime diagnostic",
       "priority": 54.5,
-      "status": "PENDING",
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED",
       "depends_on": [
         "EXP-002S25"
       ],
-      "rationale": "S25 failed heterogeneous transfer; isolate the failing regime and mechanism before changing the supported S23/S24 inference."
+      "rationale": "S25 failed heterogeneous transfer; isolate the failing regime and mechanism before changing the supported S23/S24 inference.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S26_REGIME_DIAGNOSTIC_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s26_regime_diag.py",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "REGIME_SPECIFIC_SELECTOR_JUSTIFIED"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S26_RESULT.json",
+      "result_summary": {
+        "n": 96,
+        "by_regime": {
+          "linear_gaussian": {
+            "n": 24,
+            "mean_edge_delta": 0.46724847462110924,
+            "bootstrap95_edge_delta": [
+              0.0030583125442800725,
+              1.0235608966020917
+            ],
+            "mean_brier_delta": 0.03421141280116189,
+            "wins": 11,
+            "large_harms": 8,
+            "mean_D_robust": 1.781654629804332,
+            "mean_PPC_tail": 1.8435727782948332,
+            "mean_PPC_nonlinear": 0.03651753763254375,
+            "label": "ROBUST_HARMFUL"
+          },
+          "tanh_t3": {
+            "n": 24,
+            "mean_edge_delta": -1.403086350928566,
+            "bootstrap95_edge_delta": [
+              -1.6862811949438392,
+              -1.126307499723751
+            ],
+            "mean_brier_delta": -0.04254718678323413,
+            "wins": 24,
+            "large_harms": 0,
+            "mean_D_robust": 2.127356168072683,
+            "mean_PPC_tail": 23.645574609291515,
+            "mean_PPC_nonlinear": 0.04101741110289822,
+            "label": "ROBUST_SUPPORTED"
+          },
+          "softsign_t5": {
+            "n": 24,
+            "mean_edge_delta": -0.6534882283710082,
+            "bootstrap95_edge_delta": [
+              -0.9055320235927904,
+              -0.3974737714373573
+            ],
+            "mean_brier_delta": -0.010285186910988153,
+            "wins": 19,
+            "large_harms": 0,
+            "mean_D_robust": 1.8173884852976763,
+            "mean_PPC_tail": 8.681577615578961,
+            "mean_PPC_nonlinear": 0.025895539621671283,
+            "label": "ROBUST_SUPPORTED"
+          },
+          "arctan_laplace": {
+            "n": 24,
+            "mean_edge_delta": -0.7220026798696368,
+            "bootstrap95_edge_delta": [
+              -0.9900661639325027,
+              -0.4615177817741896
+            ],
+            "mean_brier_delta": -0.01385288963519475,
+            "wins": 21,
+            "large_harms": 0,
+            "mean_D_robust": 1.9087749454916787,
+            "mean_PPC_tail": 6.9032219324415784,
+            "mean_PPC_nonlinear": 0.04877647664684781,
+            "label": "ROBUST_SUPPORTED"
+          }
+        },
+        "all_trace_identical": true,
+        "planning_reconstruction_ok": true,
+        "posterior_normalized": true,
+        "scores_finite": true
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S26_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S27",
+      "title": "Observable baseline-versus-robust science selector",
+      "priority": 54.25,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S26"
+      ],
+      "rationale": "S26 supports robust inference on shifted regimes but harms in-distribution linear-Gaussian worlds; learn an observable selector on separate worlds, with no truth inputs at deployment."
     }
   ],
   "established_findings": [
@@ -908,7 +995,8 @@
     "S22 FALSIFIED_AT_TRAINING: robust model-class evidence tempering disposition recorded with frozen training/validation/confirmation separation.",
     "S23 SUPPORTED: tanh-parent Student-t robust quasi-evidence terminal inference tested under unchanged baseline planning.",
     "S24 TRANSFER_SUPPORTED: frozen S23 robust likelihood tested under softsign + t5 unseen shift without retuning.",
-    "S25 FALSIFIED_AT_SCREEN: frozen S23 robust terminal inference evaluated across four heterogeneous mechanism/noise regimes."
+    "S25 FALSIFIED_AT_SCREEN: frozen S23 robust terminal inference evaluated across four heterogeneous mechanism/noise regimes.",
+    "S26 REGIME_SPECIFIC_SELECTOR_JUSTIFIED: 24 fresh worlds per regime resolved heterogeneous transfer effects for frozen S23 inference."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
