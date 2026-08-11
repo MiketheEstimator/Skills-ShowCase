@@ -1,5 +1,5 @@
 {
-  "version": "7.5",
+  "version": "7.6",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -2072,11 +2072,26 @@
       "id": "EXP-002S37",
       "title": "Missing terminal class localization",
       "priority": 51.75,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S36"
       ],
-      "rationale": "S36 shows even oracle use of represented classes is insufficient in some regimes; localize the missing mechanism/noise family before adding a new class."
+      "rationale": "S36 shows even oracle use of represented classes is insufficient in some regimes; localize the missing mechanism/noise family before adding a new class.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S37_S30_ANCHOR_LOCALIZATION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s37_anchor_diag.py",
+      "runner_commit": "8b08b94b982aaac25146c928cd1974f2e2498668",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "anchor_lp_diagnostic",
+        "training_seeds": [
+          72201,
+          72248
+        ],
+        "validation_seeds": [
+          72261,
+          72296
+        ]
+      }
     }
   ],
   "established_findings": [
