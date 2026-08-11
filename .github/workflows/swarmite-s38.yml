@@ -1,0 +1,65 @@
+name: Swarmite S38 Specialist Residual Value
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s38.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Checkpoint S38 RUNNING
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S38')
+          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S38_SPECIALIST_RESIDUAL_VALUE_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s38_residual_diag.py','runner_commit':'78d13ae4529e91c848c1f10992646c7edb2ab5f6','checkpoint':{'state':'protocol_frozen','next_stage':'residual_value_diagnostic','training_seeds':[72201,72248],'validation_seeds':[72261,72296]}})
+          q['version']='7.8'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json
+          git commit -m 'Checkpoint EXP-002S38 RUNNING'
+          git push
+      - name: Execute S38 diagnostic
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s38_residual_diag as s38
+          out=s38.run(); Path('EXP-002S38_RESULT.json').write_text(json.dumps(out,indent=2))
+          PY
+      - name: Evaluate and enqueue successor
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          ep=Path('experiments/swarmite-exp002'); qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S38'); sm=json.loads((ep/'EXP-002S38_RESULT.json').read_text()); disp=sm['disposition']; item['result_artifact']='experiments/swarmite-exp002/EXP-002S38_RESULT.json'; item['result_summary']=sm; item['status']='COMPLETE_DIAGNOSTIC_SUPPORTED'; item['checkpoint']={'state':'complete','disposition':disp}
+          if disp=='SAFE_SPECIALIST_IDENTIFIED':
+            succ={'id':'EXP-002S39','title':'S30 anchored safe-specialist prospective correction','priority':51.25,'status':'PENDING','depends_on':['EXP-002S38'],'rationale':'S38 identified a specialist satisfying frozen safety criteria on both exposed splits; test a preregistered S30-anchored correction on fresh worlds.'}
+          elif disp=='HETEROGENEOUS_RESIDUAL_VALUE':
+            succ={'id':'EXP-002S39','title':'Credal science posterior from specialist disagreement','priority':51.25,'status':'PENDING','depends_on':['EXP-002S38'],'rationale':'S38 shows substantial but heterogeneous specialist value with no independently safe specialist; preserve S30 as point estimate and test whether specialist disagreement improves uncertainty calibration/abstention rather than shifting the point posterior.'}
+          elif disp=='LOW_RESIDUAL_VALUE':
+            succ={'id':'EXP-002S39','title':'Retire specialist correction branch and benchmark S30 robustness envelope','priority':51.25,'status':'PENDING','depends_on':['EXP-002S38'],'rationale':'S38 found limited residual specialist value; stop correction search and quantify the robust operating envelope of S30 before moving to a different uncertainty.'}
+          else:
+            succ={'id':'EXP-002S39','title':'Specialist residual heterogeneity decomposition','priority':51.25,'status':'PENDING','depends_on':['EXP-002S38'],'rationale':'S38 leaves mixed residual-value signals; isolate specialist/cell contributions before changing terminal outputs.'}
+          if not any(x.get('id')=='EXP-002S39' for x in q['queue']): q['queue'].append(succ)
+          finding=f"S38 {disp}: oracle specialist coverage train {sm['training']['oracle_coverage']:.3f}, validation {sm['validation']['oracle_coverage']:.3f}; mean oracle improvement train {sm['training']['mean_oracle_improvement']:.3f}, validation {sm['validation']['mean_oracle_improvement']:.3f}; safe specialists {sm['safe_specialists']}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          q['version']='7.9'; qp.write_text(json.dumps(q,indent=2))
+          lines=['# EXP-002S38 Evaluation','',f'**Disposition:** {disp}','',f"Training oracle specialist coverage: **{sm['training']['oracle_coverage']:.3f}**",f"Validation oracle specialist coverage: **{sm['validation']['oracle_coverage']:.3f}**",f"Training mean oracle improvement: **{sm['training']['mean_oracle_improvement']:.3f}**",f"Validation mean oracle improvement: **{sm['validation']['mean_oracle_improvement']:.3f}**",f"Safe specialists: **{sm['safe_specialists']}**",'', '## Next',succ['rationale']]
+          (ep/'EXP-002S38_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S38_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-exp002/EXP-002S38_* experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Complete EXP-002S38 specialist residual-value diagnostic'
+          git push
