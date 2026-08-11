@@ -1,0 +1,20 @@
+{
+  "experiment": "EXP-002H",
+  "status": "COMPLETE_NO_SIMPLE_ROLE_PRUNING",
+  "source_trace_n_worlds": 24,
+  "source_trace_decisions": 230,
+  "selected_origin_counts": {"extra": 104, "base": 71, "both": 55},
+  "selected_origin_rates": {"extra": 0.45217391304347826, "base": 0.30869565217391304, "both": 0.2391304347826087},
+  "mean_unique_proposals": 7.108695652173913,
+  "mean_duplicates_of_10": 2.891304347826087,
+  "extra_only_selected_designer_participation": {"FALSIFY": 42, "CHEAPEST": 31, "INFOGAIN": 35, "WEAKTIE": 14, "RIVAL": 1},
+  "prospective_leave_one_out_n": 12,
+  "prospective": {
+    "UNIFORM2": {"edge_error": 1.1801081892082208, "true_mass": 0.2782957791032155, "map": 0.8333333333333334, "entropy": 3.230575721806353, "seconds": 1.6832350293795268, "spent": 9.791666666666666},
+    "NO_INFO": {"edge_error": 1.196712147698552, "true_mass": 0.2557248577697969, "map": 0.8333333333333334, "entropy": 3.3399895781839866, "seconds": 1.6734257737795513, "spent": 9.833333333333334, "edge_delta_vs_uniform": 0.01660395849033111, "edge_ci95": [-0.16633814379153364, 0.18648383551382827]},
+    "NO_FALSIFY": {"edge_error": 1.1573848950437704, "true_mass": 0.27272658399150473, "map": 0.8333333333333334, "entropy": 3.282232846421845, "seconds": 1.6480683883031209, "spent": 9.75, "edge_delta_vs_uniform": -0.022723294164450403, "edge_ci95": [-0.16246179425915092, 0.11020964630771427]},
+    "NO_RIVAL": {"edge_error": 1.1801081892082208, "true_mass": 0.2782957791032155, "map": 0.8333333333333334, "entropy": 3.230575721806353, "seconds": 1.681756059328715, "spent": 9.791666666666666, "edge_delta_vs_uniform": 0.0, "edge_ci95": [0.0, 0.0]}
+  },
+  "interpretation": "The second swarm changes the chosen intervention often: extra-only proposals supply 45.2% of selected actions. Contributions are distributed across FALSIFY, INFOGAIN, CHEAPEST and WEAKTIE; RIVAL is nearly absent. Prospectively removing RIVAL produced exactly the same trajectories as uniform width-2, while removing INFOGAIN or FALSIFY had unstable effects. No simple globally fixed role-pruning rule improves on the full portfolio.",
+  "next": "EXP-002N adaptive breadth gate based on first-swarm proposal uniqueness and score geometry."
+}
