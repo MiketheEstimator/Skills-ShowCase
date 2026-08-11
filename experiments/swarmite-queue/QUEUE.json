@@ -1,5 +1,5 @@
 {
-  "version": "9.6",
+  "version": "9.7",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3435,11 +3435,20 @@
       "id": "EXP-002S51",
       "title": "Residual-process representation diagnostic",
       "priority": 48.25,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S50"
       ],
-      "rationale": "S50 falsified bounded evidence-weighted S30/P_HET averaging. Diagnose whether the heteroskedastic breadth problem is posterior point-estimate failure or adjudication failure before changing representation to a latent residual-process model."
+      "rationale": "S50 falsified bounded evidence-weighted S30/P_HET averaging. Diagnose whether the heteroskedastic breadth problem is posterior point-estimate failure or adjudication failure before changing representation to a latent residual-process model.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S51_RESIDUAL_PROCESS_DIAGNOSTIC_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s51_residual_diagnostic.py",
+      "runner_commit": "ef8e88e2bff52e3bfab3e7779bd1e1e0d56d7739",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "diagnostic": "48 linear + 48 heteroskedastic"
+      }
     }
   ],
   "established_findings": [
