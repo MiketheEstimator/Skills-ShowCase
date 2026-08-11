@@ -1,5 +1,5 @@
 {
-  "version": "1.1",
+  "version": "1.2",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -15,19 +15,37 @@
       "id": "EXP-002E",
       "title": "Two-step Bayesian proposal lookahead",
       "priority": 100,
-      "status": "RUNNING",
+      "status": "COMPLETE_UNRESOLVED",
       "hypothesis": "Scoring concrete designer proposals by expected downstream terminal value over two experiment steps will outperform one-step proposal scoring under matched total cost.",
       "success_metric": "paired held-out improvement over strongest static control with uncertainty interval excluding zero on preregistered primary metric",
       "controls": ["INFOGAIN", "WEAKTIE", "CHEAPEST", "one_step_proposal_judge"],
       "budget_rule": "equal_total_cost",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002E_12WORLD_RESULT.json",
+      "result": {
+        "n_worlds": 12,
+        "one_step_edge_error": 1.3403250861887883,
+        "two_step_edge_error": 1.1448479776172338,
+        "paired_edge_error_delta": -0.19547710857155445,
+        "paired_edge_error_ci95": [-0.4760304581159513, 0.06607695896693293],
+        "one_step_map": 0.6666666666666666,
+        "two_step_map": 0.8333333333333334,
+        "decision": "UNRESOLVED"
+      }
+    },
+    {
+      "id": "EXP-002E2",
+      "title": "Powered two-step Bayesian replication",
+      "priority": 99,
+      "status": "RUNNING",
+      "hypothesis": "The favorable mean effect observed in EXP-002E reflects a real but high-variance benefit of two-step lookahead rather than sampling noise.",
+      "design": "Continue matched unseen worlds with atomic one-world checkpoints; aggregate with EXP-002E only when budget and implementation are identical.",
+      "primary_metric": "paired two-step minus one-step edge error",
+      "stopping_rule": "continue until total matched n >= 48, or bootstrap 95% CI excludes zero, or CI lies inside a preregistered practical-equivalence band of +/-0.05 edge error",
+      "budget_rule": "equal_total_cost",
       "checkpoint": {
-        "artifact": "experiments/swarmite-exp002/EXP-002E_SMOKE_CHECKPOINT.md",
-        "state": "mechanics_validated_evidence_insufficient",
-        "next_action": "cache simulated transitions and accumulate matched batches to at least 12 held-out worlds",
-        "smoke_n": 2,
-        "smoke_budget": 7,
-        "smoke_two_minus_one_edge_error": 0.17707373379902303,
-        "smoke_two_minus_one_true_mass": -0.0636628399050984
+        "starting_total_n": 12,
+        "next_seed": 20260823,
+        "atomic_worlds_per_checkpoint": 1
       }
     },
     {
@@ -35,8 +53,8 @@
       "title": "One-step vs two-step matched ablation",
       "priority": 90,
       "status": "PENDING",
-      "depends_on": ["EXP-002E"],
-      "hypothesis": "Any benefit in EXP-002E is attributable to lookahead depth rather than implementation changes.",
+      "depends_on": ["EXP-002E2"],
+      "hypothesis": "Any benefit in the powered two-step result is attributable to lookahead depth rather than implementation changes.",
       "budget_rule": "equal_total_cost"
     },
     {
