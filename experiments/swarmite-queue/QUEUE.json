@@ -1,5 +1,5 @@
 {
-  "version": "6.6",
+  "version": "6.7",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1402,11 +1402,195 @@
       "id": "EXP-002S32",
       "title": "Unseen-regime model-set insufficiency diagnostic",
       "priority": 53.0,
-      "status": "PENDING",
+      "status": "COMPLETE_DIAGNOSTIC_UNRESOLVED",
       "depends_on": [
         "EXP-002S31"
       ],
-      "rationale": "S31 exposed a transfer boundary for the baseline+S23 model set; isolate the failing unseen mechanism/noise family before expanding terminal model classes."
+      "rationale": "S31 exposed a transfer boundary for the baseline+S23 model set; isolate the failing unseen mechanism/noise family before expanding terminal model classes.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S32_MODEL_SET_INSUFFICIENCY_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s32_modelset_diag.py",
+      "runner_commit": "f7ef97bfda1cb8cbf2cefc75f17371f52ec378e4",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "MECHANISM_NOISE_INTERACTION_OR_MIXED_GAP"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S32_RESULT.json",
+      "result_summary": {
+        "n": 120,
+        "by_cell": {
+          "tanh_gaussian": {
+            "n": 20,
+            "mean_edge_delta": -0.02934278744751422,
+            "bootstrap95_edge_delta": [
+              -0.10276019026023797,
+              0.014344253445597232
+            ],
+            "mean_brier_delta": -0.00036447856663912836,
+            "large_harms": 0,
+            "mean_ADEQ": -23.28411064933364,
+            "mean_alpha": 0.061224736997422056,
+            "mean_robust_edge_delta": 0.05699200512816895,
+            "label": "UNRESOLVED"
+          },
+          "tanh_t7": {
+            "n": 20,
+            "mean_edge_delta": -0.049935016415435865,
+            "bootstrap95_edge_delta": [
+              -0.2800435047586651,
+              0.17654652983598412
+            ],
+            "mean_brier_delta": 0.005166186163738183,
+            "large_harms": 2,
+            "mean_ADEQ": -1.7332887132789268,
+            "mean_alpha": 0.4022387336622968,
+            "mean_robust_edge_delta": -0.22168676223447817,
+            "label": "UNRESOLVED"
+          },
+          "sin_gaussian": {
+            "n": 20,
+            "mean_edge_delta": 0.046606332024249554,
+            "bootstrap95_edge_delta": [
+              -0.02700672432067713,
+              0.14766341962277327
+            ],
+            "mean_brier_delta": 0.002260986039266477,
+            "large_harms": 1,
+            "mean_ADEQ": -19.12095210216874,
+            "mean_alpha": 0.09474022062729542,
+            "mean_robust_edge_delta": 0.23904206300906045,
+            "label": "UNRESOLVED"
+          },
+          "sin_t7": {
+            "n": 20,
+            "mean_edge_delta": -0.0867266305914103,
+            "bootstrap95_edge_delta": [
+              -0.1799253600930977,
+              -0.0012863291927297377
+            ],
+            "mean_brier_delta": 0.0010923976041480447,
+            "large_harms": 0,
+            "mean_ADEQ": -8.59555173970418,
+            "mean_alpha": 0.3282135386010789,
+            "mean_robust_edge_delta": -0.13671215084948876,
+            "label": "SUPPORTED"
+          },
+          "asinh_gaussian": {
+            "n": 20,
+            "mean_edge_delta": 0.006308287620333886,
+            "bootstrap95_edge_delta": [
+              -0.005373190516321699,
+              0.022738581074675638
+            ],
+            "mean_brier_delta": 0.0004078828289078471,
+            "large_harms": 0,
+            "mean_ADEQ": -30.03527986383873,
+            "mean_alpha": 0.028718347524806027,
+            "mean_robust_edge_delta": 0.33788262990410406,
+            "label": "UNRESOLVED"
+          },
+          "asinh_t7": {
+            "n": 20,
+            "mean_edge_delta": -0.18362882425242272,
+            "bootstrap95_edge_delta": [
+              -0.5539645460853179,
+              0.07936290044282948
+            ],
+            "mean_brier_delta": -0.0020952271064105946,
+            "large_harms": 1,
+            "mean_ADEQ": -8.948255956016173,
+            "mean_alpha": 0.25954721831665795,
+            "mean_robust_edge_delta": -0.43067634384729114,
+            "label": "UNRESOLVED"
+          }
+        },
+        "by_mechanism": {
+          "tanh": {
+            "n": 40,
+            "mean_edge_delta": -0.03963890193147504,
+            "bootstrap95_edge_delta": [
+              -0.15470795105730556,
+              0.0785843083526106
+            ],
+            "mean_brier_delta": 0.0024008537985495274,
+            "large_harms": 2,
+            "mean_ADEQ": -12.508699681306286,
+            "mean_alpha": 0.2317317353298594,
+            "mean_robust_edge_delta": -0.0823473785531546,
+            "label": "UNRESOLVED"
+          },
+          "sin": {
+            "n": 40,
+            "mean_edge_delta": -0.02006014928358037,
+            "bootstrap95_edge_delta": [
+              -0.08525416792504513,
+              0.0475628334731583
+            ],
+            "mean_brier_delta": 0.001676691821707261,
+            "large_harms": 1,
+            "mean_ADEQ": -13.858251920936459,
+            "mean_alpha": 0.21147687961418718,
+            "mean_robust_edge_delta": 0.051164956079785814,
+            "label": "UNRESOLVED"
+          },
+          "asinh": {
+            "n": 40,
+            "mean_edge_delta": -0.08866026831604441,
+            "bootstrap95_edge_delta": [
+              -0.27125911169439365,
+              0.04245268768252583
+            ],
+            "mean_brier_delta": -0.0008436721387513745,
+            "large_harms": 1,
+            "mean_ADEQ": -19.49176790992745,
+            "mean_alpha": 0.144132782920732,
+            "mean_robust_edge_delta": -0.04639685697159352,
+            "label": "UNRESOLVED"
+          }
+        },
+        "by_noise": {
+          "gaussian": {
+            "n": 60,
+            "mean_edge_delta": 0.007857277399023073,
+            "bootstrap95_edge_delta": [
+              -0.028768588377878254,
+              0.047315182711479574
+            ],
+            "mean_brier_delta": 0.000768130100511732,
+            "large_harms": 1,
+            "mean_ADEQ": -24.14678087178037,
+            "mean_alpha": 0.06156110171650784,
+            "mean_robust_edge_delta": 0.2113055660137778,
+            "label": "UNRESOLVED"
+          },
+          "t7": {
+            "n": 60,
+            "mean_edge_delta": -0.10676349041975632,
+            "bootstrap95_edge_delta": [
+              -0.24912397734802794,
+              0.01702865607881224
+            ],
+            "mean_brier_delta": 0.0013877855538252115,
+            "large_harms": 3,
+            "mean_ADEQ": -6.425698802999759,
+            "mean_alpha": 0.3299998301933445,
+            "mean_robust_edge_delta": -0.2630250856437526,
+            "label": "UNRESOLVED"
+          }
+        },
+        "mechanics_ok": true,
+        "disposition": "MECHANISM_NOISE_INTERACTION_OR_MIXED_GAP"
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S32_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S33",
+      "title": "Mechanism-noise interaction model-class expansion screen",
+      "priority": 52.75,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S32"
+      ],
+      "rationale": "S32 found a mixed interaction boundary rather than a single mechanism/noise defect; test a small preregistered expanded terminal model set before changing weighting rules."
     }
   ],
   "established_findings": [
@@ -1437,7 +1621,8 @@
     "S28 MULTIVARIATE_REPRESENTATION_NOT_SUPPORTED: tail-only CV AUC 0.317; multivariate CV AUC 0.520; gain 0.203.",
     "S29 DIRECT_ADEQUACY_NOT_SUPPORTED: direct CV adequacy AUC 0.697, zero-boundary balanced accuracy 0.680.",
     "S30 CONTINUOUS_COMBINATION_SUPPORTED: ADEQ-weighted continuous posterior combination evaluated on separated fresh worlds.",
-    "S31 TRANSFER_FALSIFIED: frozen T=5 ADEQ-weighted posterior combination stress-tested on unseen mechanism/noise families."
+    "S31 TRANSFER_FALSIFIED: frozen T=5 ADEQ-weighted posterior combination stress-tested on unseen mechanism/noise families.",
+    "S32 MECHANISM_NOISE_INTERACTION_OR_MIXED_GAP: frozen S30 architecture factorized across tanh/sin/asinh mechanisms and Gaussian/t7 noise on 120 fresh worlds."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
