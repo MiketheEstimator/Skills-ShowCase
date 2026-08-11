@@ -1,5 +1,5 @@
 {
-  "version": "1.2",
+  "version": "1.3",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -16,46 +16,37 @@
       "title": "Two-step Bayesian proposal lookahead",
       "priority": 100,
       "status": "COMPLETE_UNRESOLVED",
-      "hypothesis": "Scoring concrete designer proposals by expected downstream terminal value over two experiment steps will outperform one-step proposal scoring under matched total cost.",
-      "success_metric": "paired held-out improvement over strongest static control with uncertainty interval excluding zero on preregistered primary metric",
-      "controls": ["INFOGAIN", "WEAKTIE", "CHEAPEST", "one_step_proposal_judge"],
-      "budget_rule": "equal_total_cost",
-      "result_artifact": "experiments/swarmite-exp002/EXP-002E_12WORLD_RESULT.json",
-      "result": {
-        "n_worlds": 12,
-        "one_step_edge_error": 1.3403250861887883,
-        "two_step_edge_error": 1.1448479776172338,
-        "paired_edge_error_delta": -0.19547710857155445,
-        "paired_edge_error_ci95": [-0.4760304581159513, 0.06607695896693293],
-        "one_step_map": 0.6666666666666666,
-        "two_step_map": 0.8333333333333334,
-        "decision": "UNRESOLVED"
-      }
+      "result_artifact": "experiments/swarmite-exp002/EXP-002E_12WORLD_RESULT.json"
     },
     {
       "id": "EXP-002E2",
       "title": "Powered two-step Bayesian replication",
       "priority": 99,
-      "status": "RUNNING",
-      "hypothesis": "The favorable mean effect observed in EXP-002E reflects a real but high-variance benefit of two-step lookahead rather than sampling noise.",
-      "design": "Continue matched unseen worlds with atomic one-world checkpoints; aggregate with EXP-002E only when budget and implementation are identical.",
-      "primary_metric": "paired two-step minus one-step edge error",
-      "stopping_rule": "continue until total matched n >= 48, or bootstrap 95% CI excludes zero, or CI lies inside a preregistered practical-equivalence band of +/-0.05 edge error",
-      "budget_rule": "equal_total_cost",
-      "checkpoint": {
-        "starting_total_n": 12,
-        "next_seed": 20260823,
-        "atomic_worlds_per_checkpoint": 1
+      "status": "COMPLETE_UNRESOLVED",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002E2_48WORLD_RESULT.json",
+      "result": {
+        "n_worlds": 48,
+        "paired_edge_error_delta": -0.06106721795794153,
+        "paired_edge_error_ci95": [-0.19540931562414832, 0.07233082815876239],
+        "one_step_map": 0.7291666666666666,
+        "two_step_map": 0.8125,
+        "entropy_delta": 0.14645077851476115,
+        "entropy_ci95": [0.015657032491132247, 0.2794508488241899],
+        "decision": "UNRESOLVED_AT_CAP"
       }
     },
     {
       "id": "EXP-002F",
-      "title": "One-step vs two-step matched ablation",
+      "title": "RNG-isolated one-step vs two-step ablation",
       "priority": 90,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": ["EXP-002E2"],
-      "hypothesis": "Any benefit in the powered two-step result is attributable to lookahead depth rather than implementation changes.",
-      "budget_rule": "equal_total_cost"
+      "hypothesis": "After isolating stochastic proposal generation, planning simulations, and real-world observation RNG streams, any remaining performance difference is attributable to lookahead depth rather than incidental RNG consumption.",
+      "design": "Use deterministic per-world/per-step RNG substreams. Proposal-generation randomness must be identical across depth conditions for the same state; planning simulation randomness is isolated and cannot affect future proposals or observations; world-observation randomness is isolated. Compare one-step and two-step under equal total cost.",
+      "primary_metric": "paired edge error",
+      "secondary_metrics": ["true DAG mass", "MAP recovery", "posterior entropy", "compute time"],
+      "stopping_rule": "pilot mechanics at n=6, then matched n>=24; bootstrap paired effect; continue/redirect based on uncertainty and compute-value tradeoff",
+      "checkpoint": {"state": "design_specified", "next_action": "implement isolated RNG streams and run 6-world pilot"}
     },
     {
       "id": "EXP-002G",
