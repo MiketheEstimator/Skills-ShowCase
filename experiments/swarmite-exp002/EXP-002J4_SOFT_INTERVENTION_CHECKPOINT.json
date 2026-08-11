@@ -1,0 +1,9 @@
+{
+  "experiment":"EXP-002J4",
+  "status":"RUNNING",
+  "screen_n":12,
+  "design":"Requested intervention setpoint is 65% imposed; 35% of the target's natural structural equation leaks through plus intervention noise. Inference still treats the action as a perfect intervention. Corrected nested width1 vs width2, equal budget.",
+  "screen":{"width1_edge":5.139217040993645,"width2_edge":4.970597164488688,"delta_width2_minus_width1":-0.1686198765049565,"bootstrap_ci95":[-0.6026809271924777,0.18474509446142928],"width2_pair_wins":2,"map":{"w1":0.08333333333333333,"w2":0.16666666666666666},"true_mass":{"w1":0.009258731506722004,"w2":0.01164255868881753},"entropy":{"w1":6.526647756996461,"w2":6.478115704819256}},
+  "interpretation":"Directionally favorable mean effect but highly heterogeneous; not sufficient for a claim. The attempted n=48 batch exceeded the execution ceiling and produced no complete result, so no partial rows are counted.",
+  "next_action":"Resume with atomic paired worlds starting after the 12 screened seeds; persist every completed pair and accumulate to n=48 before deciding support/falsification."
+}
