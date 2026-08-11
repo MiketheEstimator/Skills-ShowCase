@@ -3517,7 +3517,7 @@
       "id": "EXP-002S52",
       "title": "Latent residual-state adjudication model",
       "priority": 48.0,
-      "status": "RUNNING",
+      "status": "COMPLETE_FALSIFIED_AT_TRAINING",
       "depends_on": [
         "EXP-002S51"
       ],
@@ -3526,10 +3526,11 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s52_latent_residual_state.py",
       "runner_commit": "38625836aa2d81e018609ce9be9c5b6d5c7e8a92",
       "checkpoint": {
-        "state": "mechanics_passed",
-        "next_stage": "training"
+        "state": "complete",
+        "disposition": "FALSIFIED_AT_TRAINING"
       },
-      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S52_MECHANICS_RESULT.json"
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S52_MECHANICS_RESULT.json",
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S52_TRAINING_RESULT.json"
     }
   ],
   "established_findings": [
