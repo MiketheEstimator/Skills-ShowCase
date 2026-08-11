@@ -1,9 +1,16 @@
 {
-  "version":"3.2",
-  "mode":"endless_improvement",
-  "status":"ACTIVE",
-  "worker_policy":{"pop_order":"priority_then_created","on_complete":"evaluate_update_findings_enqueue_successors_then_pop_next","on_failure":"diagnose_enqueue_materially_different_successor_then_pop_next","on_runtime_stop":"checkpoint_running_item_and_resume_on_next_watchdog","drive_policy":"read_only","stop_condition":"explicit_user_stop_only"},
-  "queue":[
+  "version": "3.3",
+  "mode": "endless_improvement",
+  "status": "ACTIVE",
+  "worker_policy": {
+    "pop_order": "priority_then_created",
+    "on_complete": "evaluate_update_findings_enqueue_successors_then_pop_next",
+    "on_failure": "diagnose_enqueue_materially_different_successor_then_pop_next",
+    "on_runtime_stop": "checkpoint_running_item_and_resume_on_next_watchdog",
+    "drive_policy": "read_only",
+    "stop_condition": "explicit_user_stop_only"
+  },
+  "queue": [
     {"id":"EXP-002E","status":"COMPLETE_UNRESOLVED"},
     {"id":"EXP-002E2","status":"COMPLETE_UNRESOLVED"},
     {"id":"EXP-002F","status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH"},
@@ -22,27 +29,31 @@
     {"id":"EXP-002J2","title":"Nonlinear-aware inference recovery","priority":95,"status":"COMPLETE_ABSOLUTE_RECOVERY_SUPPORTED_BREADTH_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002J_J2_CORRECTED_NESTED_BREADTH_RESULT.json"},
     {"id":"EXP-002J2B","title":"Model-disagreement-aware proposal judge","priority":94,"status":"COMPLETE_FALSIFIED","result_artifact":"experiments/swarmite-exp002/EXP-002J2B_DISAGREEMENT_JUDGE_SCREEN.json"},
     {"id":"EXP-002J3","title":"Hidden-confounder transfer","priority":58,"status":"COMPLETE_FALSIFIED_AT_SCREEN","result_artifact":"experiments/swarmite-exp002/EXP-002J3_HIDDEN_CONFOUNDER_SCREEN.json"},
-    {"id":"EXP-002J4","title":"Imperfect-intervention transfer","priority":57,"status":"BLOCKED_EXECUTION_REPRODUCIBILITY","hypothesis":"The supported width-2 breadth controller remains useful when interventions are soft/noisy rather than perfect do-operations.","design":"Observed linear five-node DAGs; requested intervention value is only partially imposed: target retains 35% of its natural structural equation and receives 65% of the requested setpoint plus intervention noise. Inference still treats the action as a perfect intervention. Compare corrected nested width1 vs width2 at equal intervention budget.","primary_metric":"paired edge error","secondary_metrics":["MAP recovery","posterior entropy","true-DAG mass interpreted cautiously under intervention misspecification"],"checkpoint":{"state":"historical_lineage_permanently_nonpoolable_without_missing_runner_state","artifact":"experiments/swarmite-exp002/EXP-002J4_REPRODUCIBILITY_BLOCKER.md","completed_n":12,"powered_target_n":48,"next_action":"Do not resume historical world 13. A fresh separately labeled soft-intervention replication may be enqueued only after EXP-002R2 establishes a reproducible benchmark-v2 baseline."}},
-    {"id":"EXP-002R","title":"Canonical benchmark reconstruction and regression certification","priority":100,"status":"COMPLETE_FAILED_RECONSTRUCTION","depends_on":[],"hypothesis":"Durable protocol/result invariants are sufficient to reconstruct a reproducible canonical EXP-002 benchmark without post-hoc tuning.","protocol":"experiments/swarmite-exp002/EXP-002R_CANONICAL_RUNNER_RECOVERY_PROTOCOL.md","result_artifact":"experiments/swarmite-exp002/EXP-002R_CANONICAL_V1_SMOKE.json","checkpoint":{"state":"failed_reconstruction_after_clean_v1_smoke_and_history_audit","artifact":"experiments/swarmite-exp002/EXP-002R_CHECKPOINT.json","provenance":"experiments/swarmite-exp002/EXP-002R_PROVENANCE_AUDIT.md","conclusion":"Earliest repository history contains no EXP-002 executable runner; untuned canonical-v1 passed structural invariants but produced width2-width1 edge delta +0.2581 over 8 paired worlds, opposite historical supported M2 direction. Historical J4 cannot be resumed or pooled."}},
-    {"id":"EXP-002R2","title":"Fresh benchmark v2 preregistration and calibration controls","priority":99,"status":"RUNNING","depends_on":[],"hypothesis":"A separately versioned benchmark using genuine posterior-predictive proposal scoring, matched budget 15, strict nested breadth, and atomic seed/state persistence can establish an exactly resumable prospective baseline without tuning to historical aggregates.","protocol":"experiments/swarmite-exp002/EXP-002R2_FRESH_BENCHMARK_V2_PROTOCOL.md","checkpoint":{"state":"protocol_frozen","next_action":"Implement genuine posterior-predictive EIG and deterministic designer definitions; serialize benchmark manifest and source hash; run four mechanics-only paired worlds, fixing only implementation bugs before freezing the baseline screen."}},
-    {"id":"EXP-002J5","title":"Nonstationary transfer","priority":56,"status":"PENDING","depends_on":["EXP-002J4"],"hypothesis":"A controller with explicit model-uncertainty handling degrades less when mechanisms drift during the experiment trajectory."}
+    {"id":"EXP-002J4","title":"Imperfect-intervention transfer","priority":57,"status":"BLOCKED_EXECUTION_REPRODUCIBILITY","checkpoint":{"state":"historical_lineage_permanently_nonpoolable","artifact":"experiments/swarmite-exp002/EXP-002J4_REPRODUCIBILITY_BLOCKER.md","completed_n":12,"next_action":"Do not resume historical world 13; only a separately labeled benchmark-v2 transfer may proceed after a stable benchmark-v2 controller is established."}},
+    {"id":"EXP-002R","title":"Canonical benchmark reconstruction and regression certification","priority":100,"status":"COMPLETE_FAILED_RECONSTRUCTION","result_artifact":"experiments/swarmite-exp002/EXP-002R_CANONICAL_V1_SMOKE.json"},
+    {"id":"EXP-002R2","title":"Fresh benchmark v2 preregistration and calibration controls","priority":99,"status":"COMPLETE_REPRODUCIBLE_BASELINE_UNRESOLVED","protocol":"experiments/swarmite-exp002/EXP-002R2_FRESH_BENCHMARK_V2_PROTOCOL.md","engine":"experiments/swarmite-exp002/swarmite_benchmark_v2.py","manifest":"experiments/swarmite-exp002/EXP-002R2_BENCHMARK_V2_MANIFEST.json","mechanics_result":"experiments/swarmite-exp002/EXP-002R2_MECHANICS_RESULT.json","result_artifact":"experiments/swarmite-exp002/EXP-002R2_BASELINE_N12_RESULT.json","conclusion":"Benchmark v2 is reproducibly executable and prospectively frozen. In 12 fresh worlds width2-width1 edge error was -0.1962 with bootstrap 95% CI [-0.6877,+0.3173]; MAP was 58.3% vs 41.7%. Breadth superiority remains unresolved."},
+    {"id":"EXP-002R3","title":"Powered breadth replication on frozen benchmark v2","priority":98,"status":"COMPLETE_UNRESOLVED_NULL","protocol":"experiments/swarmite-exp002/EXP-002R3_POWERED_BREADTH_PROTOCOL.md","engine_blob_sha":"339e622169411861592d9c0e5abd4beadc6f2ac7","result_summary":{"n":48,"mean_edge_w1":2.0885528918131313,"mean_edge_w2":2.1025985629256465,"mean_delta":0.014045671112515257,"bootstrap_95_ci":[-0.2419662762073733,0.2753941664789606],"map_w1":0.6041666666666666,"map_w2":0.6041666666666666,"mean_planner_sims_w1":150.1875,"mean_planner_sims_w2":309.5},"conclusion":"Frozen benchmark-v2 width-2 breadth shows no resolved primary advantage at n=48 and costs about 2.06x planner simulations. Do not claim unconditional breadth superiority on benchmark v2."},
+    {"id":"EXP-002R4","title":"Breadth novelty and redundancy mechanism audit","priority":97,"status":"RUNNING","depends_on":["EXP-002R3"],"hypothesis":"The null benchmark-v2 breadth effect is caused by action-space redundancy: the extra swarm frequently proposes interventions that are duplicates or near-duplicates of width-1 rather than supplying genuinely novel high-EIG actions.","design":"Using the frozen benchmark-v2 engine and fresh diagnostic seeds, instrument both proposal swarms before selection. Measure exact action duplication, target duplication, EIG rank of extra-swarm candidates, selected-action provenance, and incremental EIG of width-2 over width-1. This is a mechanism audit, not another adaptive breadth threshold test.","checkpoint":{"state":"protocol_needed_then_instrumentation","next_action":"Freeze R4 diagnostic protocol, add proposal-set instrumentation without changing policy behavior, run 12 fresh diagnostic worlds, and evaluate whether extra-swarm novelty predicts any paired recovery benefit."}},
+    {"id":"EXP-002J5","title":"Nonstationary transfer","priority":56,"status":"PENDING","depends_on":["EXP-002J4"]}
   ],
-  "established_findings":[
+  "established_findings": [
     "Unconditional two-step search does not improve the primary metric after RNG isolation and costs roughly 9x compute.",
     "Initial-state and local-margin depth gates failed to justify deeper search.",
-    "Uniform width-2 proposal breadth improves edge recovery over width-1 across combined n=72 matched correctly specified historical worlds, with bootstrap CI excluding zero, at roughly 2x compute.",
-    "The historical width-2 gain is a portfolio effect rather than one globally best extra role.",
-    "Simple adaptive breadth thresholds failed strict preregistered validation; uniform width-2 remains the supported correctly specified historical benchmark controller.",
-    "Under nonlinear ground truth, forcing linear-Gaussian inference sharply degrades absolute recovery and does not preserve the width-2 breadth advantage.",
-    "Nonlinear-aware local likelihoods substantially repair absolute recovery under nonlinear ground truth, but the width-2 advantage remains unresolved at n=96 after corrected nested-breadth controls.",
-    "A simple linear-vs-nonlinear posterior-disagreement bonus changes many intervention choices but worsens edge recovery prospectively; model disagreement is not itself a useful proposal reward.",
-    "Among tested role-credit schemes, naive terminal trajectory credit is the only directionally promising one, but it remains unresolved at n=96 and does not yet justify replacing the unweighted width-2 controller.",
-    "A single unmodeled latent common cause can reverse the breadth advantage: width-2 lost all 12 screened pairs, so robustness requires model-class changes rather than more proposals alone.",
-    "The historical EXP-002 powered lineage is not exactly resumable from repository state because its executable runner and per-world seed/state ledger were not persisted; future experiments require atomic seed/state serialization before claims are pooled across runs.",
-    "Repository archaeology confirms the EXP-002 executable mechanics were not committed even in the earliest EXP-002 tree; the original README independently fixes corrected total intervention-cost budget at 15.",
-    "An untuned clean canonical-v1 reconstruction passed the 29,281-DAG structural invariants but failed behavioral regression, producing mean width2-width1 edge error +0.2581 over its first 8 matched worlds versus the historical supported negative effect. Historical J4 must remain nonpoolable; future transfer claims require a separately versioned fresh benchmark."
+    "Uniform width-2 proposal breadth improved edge recovery in the unrecoverable historical benchmark lineage, but that implementation cannot be exactly resumed and its effect must not be assumed to transfer to benchmark v2.",
+    "The historical width-2 gain was a portfolio effect rather than one globally best extra role.",
+    "Simple adaptive breadth thresholds failed strict historical validation.",
+    "Under nonlinear ground truth, forcing linear-Gaussian inference sharply degrades absolute recovery and does not preserve the historical width-2 advantage.",
+    "Nonlinear-aware local likelihoods repair much absolute recovery under nonlinear ground truth, but breadth remained unresolved at n=96.",
+    "A simple model-disagreement proposal bonus changes many choices but worsens edge recovery prospectively.",
+    "Naive terminal trajectory credit remains directionally promising but unresolved and does not justify replacing the unweighted controller.",
+    "A single unmodeled latent common cause can reverse the historical breadth advantage; robustness requires model-class changes rather than more proposals alone.",
+    "Historical EXP-002 powered runs are not exactly resumable because executable mechanics and per-world seed/state lineage were not persisted.",
+    "Repository archaeology confirms the historical executable mechanics were not committed; corrected total intervention-cost budget is 15.",
+    "Untuned canonical-v1 reconstruction passed 29,281-DAG structural invariants but failed behavioral regression, so historical transfer experiments remain nonpoolable.",
+    "Fresh benchmark v2 now has a frozen executable engine, exact 29,281-DAG posterior support, budget 15, strict nested breadth, posterior-predictive EIG scoring, isolated RNG namespaces, and a source-addressed manifest.",
+    "On benchmark v2, the 12-world screen favored width-2 directionally but remained unresolved; the preregistered 48-world replication collapsed to a null primary effect: mean width2-width1 edge error +0.0140, 95% bootstrap CI [-0.2420,+0.2754], identical 60.4% MAP recovery, with about 2.06x planner simulations. Unconditional width-2 superiority is therefore not supported on benchmark v2."
   ],
-  "dynamic_enqueue_rules":[
+  "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
     "Falsification never empties the queue; it narrows or redirects it.",
     "Do not enqueue equivalent retries without a changed causal hypothesis, state representation, reward, search depth, world model, or evaluation design.",
