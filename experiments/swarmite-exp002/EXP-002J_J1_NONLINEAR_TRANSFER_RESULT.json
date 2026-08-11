@@ -1,0 +1,21 @@
+{
+  "experiment": "EXP-002J_J1",
+  "status": "COMPLETE_TRANSFER_NOT_SUPPORTED",
+  "design": "Nonlinear additive five-node SCM transfer with unchanged misspecified linear-Gaussian DAG posterior; paired width-1 vs uniform width-2; intervention budget 8; 29,281-DAG hypothesis space.",
+  "n_worlds": 48,
+  "primary": {
+    "metric": "paired edge error",
+    "width1": 3.9387406393923263,
+    "width2": 4.087459853850846,
+    "delta_width2_minus_width1": 0.14871921445852046,
+    "bootstrap_ci95": [-0.1400392338797643, 0.47558955638125033]
+  },
+  "secondary": {
+    "true_mass": {"w1": 0.015815541213129763, "w2": 0.01823342589760697, "delta": 0.0024178846844772088, "ci95": [-0.0027233883620236075, 0.008500407284478328]},
+    "map": {"w1": 0.1875, "w2": 0.2708333333333333, "delta": 0.08333333333333333, "ci95": [-0.041666666666666664, 0.20833333333333334]},
+    "entropy": {"w1": 6.9580827797915035, "w2": 7.050350735592545, "delta": 0.09226795580104098, "ci95": [-0.047612881933196544, 0.23688370619848154]},
+    "width2_pair_wins": 21
+  },
+  "interpretation": "The width-2 proposal-breadth advantage established in the correctly specified linear-Gaussian benchmark does not transfer to nonlinear additive mechanisms when inference remains linear-Gaussian. Absolute causal recovery degrades sharply for both policies; width-2 is numerically worse on the primary metric and its paired interval crosses zero. This is a model-misspecification failure, not evidence that proposal breadth is intrinsically harmful.",
+  "next": "EXP-002J2 test nonlinear-aware model-ensemble/local-feature inference before proceeding to hidden-confounder transfer."
+}
