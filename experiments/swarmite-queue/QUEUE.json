@@ -1,5 +1,5 @@
 {
-  "version": "6.3",
+  "version": "6.4",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1170,11 +1170,78 @@
       "id": "EXP-002S29",
       "title": "Direct predictive model-adequacy score diagnostic",
       "priority": 53.75,
-      "status": "PENDING",
+      "status": "COMPLETE_DIAGNOSTIC_FALSIFIED",
       "depends_on": [
         "EXP-002S28"
       ],
-      "rationale": "S28 did not show enough incremental selector information in posterior disagreement plus residual summaries; test a materially different observable model-adequacy representation rather than tuning classifiers or thresholds."
+      "rationale": "S28 did not show enough incremental selector information in posterior disagreement plus residual summaries; test a materially different observable model-adequacy representation rather than tuning classifiers or thresholds.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S29_DIRECT_MODEL_ADEQUACY_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s29_adequacy.py",
+      "runner_commit": "74163e7c6760459d2aab8f251b1e99f90f38bc89",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "DIRECT_ADEQUACY_NOT_SUPPORTED"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S29_RESULT.json",
+      "result_summary": {
+        "n": 96,
+        "auc": 0.696953781512605,
+        "balanced_accuracy_zero": 0.6796218487394958,
+        "tp": 39,
+        "tn": 22,
+        "fp": 6,
+        "fn": 29,
+        "spearman_ADEQ_edge_delta": -0.4543000542593597,
+        "all_finite": true,
+        "spend_ok": true,
+        "posterior_normalized": true,
+        "by_regime": {
+          "linear_gaussian": {
+            "n": 24,
+            "median_ADEQ": -26.75393495358722,
+            "mean_ADEQ": -27.201614536298525,
+            "beneficial": 9,
+            "zero_rule_fp": 0,
+            "zero_rule_fn": 9
+          },
+          "tanh_t3": {
+            "n": 24,
+            "median_ADEQ": 22.290173697397975,
+            "mean_ADEQ": 25.624064769586578,
+            "beneficial": 23,
+            "zero_rule_fp": 1,
+            "zero_rule_fn": 1
+          },
+          "softsign_t5": {
+            "n": 24,
+            "median_ADEQ": -5.830719211129974,
+            "mean_ADEQ": -6.787431880370552,
+            "beneficial": 18,
+            "zero_rule_fp": 1,
+            "zero_rule_fn": 13
+          },
+          "arctan_laplace": {
+            "n": 24,
+            "median_ADEQ": 8.763053945788357,
+            "mean_ADEQ": 7.69830946345327,
+            "beneficial": 18,
+            "zero_rule_fp": 4,
+            "zero_rule_fn": 6
+          }
+        },
+        "promising": false
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S29_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S30",
+      "title": "Continuous posterior-combination utility screen",
+      "priority": 53.5,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S29"
+      ],
+      "rationale": "S29 found per-world hard model selection insufficient even with direct predictive adequacy; replace hard selection with decision-theoretic continuous combination of baseline and robust terminal posteriors."
     }
   ],
   "established_findings": [
@@ -1202,7 +1269,8 @@
     "S25 FALSIFIED_AT_SCREEN: frozen S23 robust terminal inference evaluated across four heterogeneous mechanism/noise regimes.",
     "S26 REGIME_SPECIFIC_SELECTOR_JUSTIFIED: 24 fresh worlds per regime resolved heterogeneous transfer effects for frozen S23 inference.",
     "S27 FROZEN_SELECTOR_FAILED_CONFIRMATION: frozen PPC-tail full-coverage selector tested baseline versus robust terminal inference on separated training/validation/confirmation worlds.",
-    "S28 MULTIVARIATE_REPRESENTATION_NOT_SUPPORTED: tail-only CV AUC 0.317; multivariate CV AUC 0.520; gain 0.203."
+    "S28 MULTIVARIATE_REPRESENTATION_NOT_SUPPORTED: tail-only CV AUC 0.317; multivariate CV AUC 0.520; gain 0.203.",
+    "S29 DIRECT_ADEQUACY_NOT_SUPPORTED: direct CV adequacy AUC 0.697, zero-boundary balanced accuracy 0.680."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
