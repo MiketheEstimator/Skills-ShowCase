@@ -1,5 +1,5 @@
 {
-  "version": "9.8",
+  "version": "10.0",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3530,7 +3530,29 @@
         "disposition": "FALSIFIED_AT_TRAINING"
       },
       "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S52_MECHANICS_RESULT.json",
-      "training_artifact": "experiments/swarmite-exp002/EXP-002S52_TRAINING_RESULT.json"
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S52_TRAINING_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S52_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S53",
+      "title": "Calibrated residual-state terminal model averaging",
+      "priority": 47.75,
+      "status": "RUNNING",
+      "depends_on": [
+        "EXP-002S52"
+      ],
+      "rationale": "S52 latent features discriminated specialist wins on training but hard thresholds selected no specialist worlds. Replace brittle hard selection with bounded continuous terminal-only averaging driven by the frozen S52 observable latent predictions.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S53_CALIBRATED_RESIDUAL_MODEL_AVERAGING_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s53_calibrated_average.py",
+      "runner_commit": "71d9aea5af22cc1e0d48f224b993c8487a1fba8d",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "training": "64 + 64",
+        "validation": "32 + 32",
+        "confirmation": "64 + 64"
+      }
     }
   ],
   "established_findings": [
@@ -3581,7 +3603,8 @@
     "S48 FALSIFIED_ON_VALIDATION: targeted residual-heteroskedasticity repair tested around the frozen S46/S30 architecture on separated linear-anchor and heteroskedastic worlds.",
     "S49 FALSIFIED_AT_TRAINING: terminal-only fitted-magnitude heteroskedastic likelihood specialist tested around frozen baseline planning, S30 anchor, and S46 adjudication.",
     "S50 FALSIFIED_AT_TRAINING: bounded per-world S30/P_HET model uncertainty tested using cross-fitted observable variance evidence while preserving baseline-only planning and frozen S46 adjudication.",
-    "S51 ADJUDICATION_DOMINANT: heteroskedastic oracle two-posterior headroom 0.133 with 95% bootstrap [0.04402237771386583, 0.24754094497894613]; q_het specialist-win AUC 0.3783783783783784."
+    "S51 ADJUDICATION_DOMINANT: heteroskedastic oracle two-posterior headroom 0.133 with 95% bootstrap [0.04402237771386583, 0.24754094497894613]; q_het specialist-win AUC 0.3783783783783784.",
+    "S52 was falsified at training: the 42-feature latent residual-state model showed useful specialist-win discrimination (training AUC 0.8360836083608361, Brier 0.12439288888984713 versus constant 0.1664478922540713) but every preregistered hard-selection rule used the specialist zero times, so no rule qualified. Hard selection, not the latent representation itself, is the immediate failure mode."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
