@@ -1,5 +1,5 @@
 {
-  "version": "6.4",
+  "version": "6.5",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1237,11 +1237,93 @@
       "id": "EXP-002S30",
       "title": "Continuous posterior-combination utility screen",
       "priority": 53.5,
-      "status": "PENDING",
+      "status": "COMPLETE_SUPPORTED",
       "depends_on": [
         "EXP-002S29"
       ],
-      "rationale": "S29 found per-world hard model selection insufficient even with direct predictive adequacy; replace hard selection with decision-theoretic continuous combination of baseline and robust terminal posteriors."
+      "rationale": "S29 found per-world hard model selection insufficient even with direct predictive adequacy; replace hard selection with decision-theoretic continuous combination of baseline and robust terminal posteriors.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S30_CONTINUOUS_COMBINATION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s30_mix.py",
+      "runner_commit": "c85f8381ccd21aa8a4f303657f59a89a776137ef",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "CONTINUOUS_COMBINATION_SUPPORTED"
+      },
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S30_TRAINING_RESULT.json",
+      "selected_T": 5.0,
+      "validation_artifact": "experiments/swarmite-exp002/EXP-002S30_VALIDATION_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S30_CONFIRMATION_RESULT.json",
+      "result_summary": {
+        "n": 96,
+        "T": 5.0,
+        "mean_edge_delta": -0.715072870940055,
+        "bootstrap95_edge_delta": [
+          -0.9292696471619044,
+          -0.5206940834588978
+        ],
+        "mean_brier_delta": -0.019856742647560224,
+        "large_harms": 4,
+        "wins": 77,
+        "mean_alpha": 0.5553064818172225,
+        "by_regime": {
+          "linear_gaussian": {
+            "n": 24,
+            "mean_edge_delta": 0.009582240712505513,
+            "bootstrap95_edge_delta": [
+              -0.004607466122255724,
+              0.027281794659707766
+            ],
+            "mean_brier_delta": 0.00022065439767739322,
+            "large_harms": 0,
+            "mean_alpha": 0.022866228357077426
+          },
+          "tanh_t3": {
+            "n": 24,
+            "mean_edge_delta": -1.695312823100078,
+            "bootstrap95_edge_delta": [
+              -2.239803662156467,
+              -1.1979063230839615
+            ],
+            "mean_brier_delta": -0.052910926463086615,
+            "large_harms": 1,
+            "mean_alpha": 0.9259974616207609
+          },
+          "softsign_t5": {
+            "n": 24,
+            "mean_edge_delta": -0.32184025214321416,
+            "bootstrap95_edge_delta": [
+              -0.56697267719985,
+              -0.10905536751796535
+            ],
+            "mean_brier_delta": -0.004267233656227411,
+            "large_harms": 2,
+            "mean_alpha": 0.5621886029192806
+          },
+          "arctan_laplace": {
+            "n": 24,
+            "mean_edge_delta": -0.8527206492294339,
+            "bootstrap95_edge_delta": [
+              -1.203970491559929,
+              -0.5150786059979449
+            ],
+            "mean_brier_delta": -0.022469464868604277,
+            "large_harms": 1,
+            "mean_alpha": 0.7101736343717714
+          }
+        },
+        "mechanics_ok": true
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S30_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S31",
+      "title": "Continuous science-posterior combination transfer stress",
+      "priority": 53.25,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S30"
+      ],
+      "rationale": "S30 supported ADEQ-weighted posterior combination; test the frozen mixing rule on unseen mechanism/noise families before promotion to reference architecture."
     }
   ],
   "established_findings": [
@@ -1270,7 +1352,8 @@
     "S26 REGIME_SPECIFIC_SELECTOR_JUSTIFIED: 24 fresh worlds per regime resolved heterogeneous transfer effects for frozen S23 inference.",
     "S27 FROZEN_SELECTOR_FAILED_CONFIRMATION: frozen PPC-tail full-coverage selector tested baseline versus robust terminal inference on separated training/validation/confirmation worlds.",
     "S28 MULTIVARIATE_REPRESENTATION_NOT_SUPPORTED: tail-only CV AUC 0.317; multivariate CV AUC 0.520; gain 0.203.",
-    "S29 DIRECT_ADEQUACY_NOT_SUPPORTED: direct CV adequacy AUC 0.697, zero-boundary balanced accuracy 0.680."
+    "S29 DIRECT_ADEQUACY_NOT_SUPPORTED: direct CV adequacy AUC 0.697, zero-boundary balanced accuracy 0.680.",
+    "S30 CONTINUOUS_COMBINATION_SUPPORTED: ADEQ-weighted continuous posterior combination evaluated on separated fresh worlds."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
