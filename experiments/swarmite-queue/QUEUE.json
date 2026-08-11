@@ -1,39 +1,11 @@
 {
-  "version":"2.1",
-  "mode":"endless_improvement",
-  "status":"ACTIVE",
+  "version":"2.2","mode":"endless_improvement","status":"ACTIVE",
   "worker_policy":{"pop_order":"priority_then_created","on_complete":"evaluate_update_findings_enqueue_successors_then_pop_next","on_failure":"diagnose_enqueue_materially_different_successor_then_pop_next","on_runtime_stop":"checkpoint_running_item_and_resume_on_next_watchdog","drive_policy":"read_only","stop_condition":"explicit_user_stop_only"},
   "queue":[
-    {"id":"EXP-002E","status":"COMPLETE_UNRESOLVED"},
-    {"id":"EXP-002E2","status":"COMPLETE_UNRESOLVED"},
-    {"id":"EXP-002F","status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH"},
-    {"id":"EXP-002K","status":"COMPLETE_FALSIFIED"},
-    {"id":"EXP-002L","status":"COMPLETE_FALSIFIED"},
-    {"id":"EXP-002M","status":"COMPLETE_PROMISING_UNRESOLVED"},
-    {"id":"EXP-002M2","status":"COMPLETE_SUPPORTED","result_artifact":"experiments/swarmite-exp002/EXP-002M2_BREADTH_N48_RESULT.json"},
-    {"id":"EXP-002H","status":"COMPLETE_NO_SIMPLE_ROLE_PRUNING","result_artifact":"experiments/swarmite-exp002/EXP-002H_SOURCE_ATTRIBUTION_RESULT.json"},
-    {"id":"EXP-002N","title":"Adaptive breadth value-of-computation gate","priority":84,"status":"COMPLETE_PROMISING_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002N_ADAPTIVE_BREADTH_N24.json"},
-    {
-      "id":"EXP-002N2",
-      "title":"Powered adaptive breadth replication",
-      "priority":83,
-      "status":"RUNNING",
-      "hypothesis":"The frozen COMBO2 breadth gate retains or improves width-2 causal recovery while using materially less inference compute on unseen worlds.",
-      "frozen_rule":"spawn second swarm iff baseline unique proposals <=4 OR normalized top-score margin <0.15",
-      "design":"Run 24 additional unseen worlds with RNG-isolated ONE, TWO, and frozen COMBO2. Aggregate with the original 24 prospective worlds to n=48. Primary analysis is recovery/compute Pareto comparison; no threshold changes permitted.",
-      "primary_metrics":["paired edge error","inference compute ratio"],
-      "checkpoint":{"starting_prospective_n":24,"next_seed":20316001,"target_total_n":48}
-    },
-    {"id":"EXP-002G","status":"SUPERSEDED_BY_BREADTH_FIRST"},
-    {"id":"EXP-002I","title":"Reward and credit assignment ablation","priority":60,"status":"PENDING"},
-    {"id":"EXP-002J","title":"Model misspecification transfer","priority":50,"status":"PENDING"}
+    {"id":"EXP-002E","status":"COMPLETE_UNRESOLVED"},{"id":"EXP-002E2","status":"COMPLETE_UNRESOLVED"},{"id":"EXP-002F","status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH"},{"id":"EXP-002K","status":"COMPLETE_FALSIFIED"},{"id":"EXP-002L","status":"COMPLETE_FALSIFIED"},{"id":"EXP-002M","status":"COMPLETE_PROMISING_UNRESOLVED"},{"id":"EXP-002M2","status":"COMPLETE_SUPPORTED","result_artifact":"experiments/swarmite-exp002/EXP-002M2_BREADTH_N48_RESULT.json"},{"id":"EXP-002H","status":"COMPLETE_NO_SIMPLE_ROLE_PRUNING","result_artifact":"experiments/swarmite-exp002/EXP-002H_SOURCE_ATTRIBUTION_RESULT.json"},{"id":"EXP-002N","status":"COMPLETE_PROMISING_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002N_ADAPTIVE_BREADTH_N24.json"},{"id":"EXP-002N2","status":"COMPLETE_PROMISING_WITH_RESOLVED_MAP_GAIN","result_artifact":"experiments/swarmite-exp002/EXP-002N2_ADAPTIVE_BREADTH_N48.json"},
+    {"id":"EXP-002N3","title":"Adaptive breadth noninferiority and compute-savings validation","priority":82,"status":"RUNNING","hypothesis":"Frozen COMBO2 is noninferior to always-width2 on terminal edge error within +0.05 while reducing inference compute by at least 15%.","frozen_rule":"spawn second swarm iff baseline unique proposals <=4 OR normalized top-score margin <0.15","design":"Independent 48-world paired validation using only TWO and COMBO2. No tuning. Primary noninferiority criterion: upper 95% bootstrap CI of COMBO2-minus-TWO edge error < +0.05. Co-primary efficiency criterion: mean COMBO2 inference time <=85% of TWO.","primary_criteria":{"edge_noninferiority_margin":0.05,"max_compute_ratio":0.85},"checkpoint":{"next_seed":20317001,"target_n":48}},
+    {"id":"EXP-002G","status":"SUPERSEDED_BY_BREADTH_FIRST"},{"id":"EXP-002I","title":"Reward and credit assignment ablation","priority":60,"status":"PENDING"},{"id":"EXP-002J","title":"Model misspecification transfer","priority":50,"status":"PENDING"}
   ],
-  "established_findings":[
-    "Unconditional two-step search does not improve the primary metric after RNG isolation and costs roughly 9x compute.",
-    "Initial-state and local-margin depth gates failed to justify deeper search.",
-    "Uniform width-2 proposal breadth improves edge recovery over width-1 across combined n=72 matched worlds, with bootstrap CI excluding zero, at roughly 2x compute.",
-    "The width-2 gain is a portfolio effect rather than one globally best extra role.",
-    "A frozen adaptive breadth gate is a promising Pareto candidate at prospective n=24, with better mean recovery than ONE/TWO and about 19% less compute than TWO, but recovery effects remain statistically unresolved."
-  ],
+  "established_findings":["Unconditional two-step search does not improve the primary metric after RNG isolation and costs roughly 9x compute.","Initial-state and local-margin depth gates failed to justify deeper search.","Uniform width-2 proposal breadth improves edge recovery over width-1 across combined n=72 matched worlds, with bootstrap CI excluding zero, at roughly 2x compute.","The width-2 gain is a portfolio effect rather than one globally best extra role.","Frozen adaptive breadth shows a resolved MAP gain over width-1 at n=48 and uses ~22% less compute than always-width2; edge-error superiority remains unresolved."],
   "dynamic_enqueue_rules":["Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.","Falsification never empties the queue; it narrows or redirects it.","Do not enqueue equivalent retries without a changed causal hypothesis, state representation, reward, search depth, world model, or evaluation design.","Promote surprising anomalies and control victories into diagnostic experiments.","Maintain matched resource budgets and preserve all negative results."]
 }
