@@ -1,5 +1,5 @@
 {
-  "version": "6.1",
+  "version": "6.2",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -966,11 +966,97 @@
       "id": "EXP-002S27",
       "title": "Observable baseline-versus-robust science selector",
       "priority": 54.25,
-      "status": "PENDING",
+      "status": "COMPLETE_FALSIFIED_ON_CONFIRMATION",
       "depends_on": [
         "EXP-002S26"
       ],
-      "rationale": "S26 supports robust inference on shifted regimes but harms in-distribution linear-Gaussian worlds; learn an observable selector on separate worlds, with no truth inputs at deployment."
+      "rationale": "S26 supports robust inference on shifted regimes but harms in-distribution linear-Gaussian worlds; learn an observable selector on separate worlds, with no truth inputs at deployment.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S27_OBSERVABLE_SELECTOR_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s27_selector.py",
+      "runner_commit": "be1c3dfc033eb1dfba3c3173d66c944f0eb710c1",
+      "checkpoint": {
+        "state": "complete",
+        "disposition": "FROZEN_SELECTOR_FAILED_CONFIRMATION"
+      },
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S27_TRAINING_RESULT.json",
+      "training_grid": "experiments/swarmite-exp002/EXP-002S27_TRAINING_GRID.csv",
+      "selected_threshold": 6.0,
+      "validation_artifact": "experiments/swarmite-exp002/EXP-002S27_VALIDATION_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S27_CONFIRMATION_RESULT.json",
+      "result_summary": {
+        "n": 96,
+        "mean_edge_delta": -0.27556088817105967,
+        "bootstrap95_edge_delta": [
+          -0.4094254684489801,
+          -0.15035647134837937
+        ],
+        "mean_brier_delta": -0.007015662167598424,
+        "wins": 25,
+        "large_harms": 1,
+        "robust_selected": 32,
+        "coverage": 1.0,
+        "by_regime": {
+          "linear_gaussian": {
+            "n": 24,
+            "mean_edge_delta": 0.0,
+            "bootstrap95_edge_delta": [
+              0.0,
+              0.0
+            ],
+            "mean_brier_delta": 0.0,
+            "robust_selected": 0,
+            "large_harms": 0
+          },
+          "tanh_t3": {
+            "n": 24,
+            "mean_edge_delta": -0.557615131196253,
+            "bootstrap95_edge_delta": [
+              -0.8748581248045908,
+              -0.2763900858741995
+            ],
+            "mean_brier_delta": -0.01576897904206701,
+            "robust_selected": 12,
+            "large_harms": 0
+          },
+          "softsign_t5": {
+            "n": 24,
+            "mean_edge_delta": -0.14814275834686155,
+            "bootstrap95_edge_delta": [
+              -0.4027810798641452,
+              0.1138183290116294
+            ],
+            "mean_brier_delta": -0.0021630318934444423,
+            "robust_selected": 9,
+            "large_harms": 1
+          },
+          "arctan_laplace": {
+            "n": 24,
+            "mean_edge_delta": -0.3964856631411244,
+            "bootstrap95_edge_delta": [
+              -0.7016051167950242,
+              -0.12937890574537086
+            ],
+            "mean_brier_delta": -0.010130637734882247,
+            "robust_selected": 11,
+            "large_harms": 0
+          }
+        },
+        "trace_identical_all": true,
+        "planning_reconstruction_ok": true,
+        "posterior_normalized": true,
+        "scores_finite": true
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S27_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S28",
+      "title": "Selector error representation diagnostic",
+      "priority": 54.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S27"
+      ],
+      "rationale": "S27 prospectively falsified the frozen one-dimensional PPC-tail selector; diagnose false robust/baseline selections using preregistered multivariate observable features before any new selector is trained."
     }
   ],
   "established_findings": [
@@ -996,7 +1082,8 @@
     "S23 SUPPORTED: tanh-parent Student-t robust quasi-evidence terminal inference tested under unchanged baseline planning.",
     "S24 TRANSFER_SUPPORTED: frozen S23 robust likelihood tested under softsign + t5 unseen shift without retuning.",
     "S25 FALSIFIED_AT_SCREEN: frozen S23 robust terminal inference evaluated across four heterogeneous mechanism/noise regimes.",
-    "S26 REGIME_SPECIFIC_SELECTOR_JUSTIFIED: 24 fresh worlds per regime resolved heterogeneous transfer effects for frozen S23 inference."
+    "S26 REGIME_SPECIFIC_SELECTOR_JUSTIFIED: 24 fresh worlds per regime resolved heterogeneous transfer effects for frozen S23 inference.",
+    "S27 FROZEN_SELECTOR_FAILED_CONFIRMATION: frozen PPC-tail full-coverage selector tested baseline versus robust terminal inference on separated training/validation/confirmation worlds."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
