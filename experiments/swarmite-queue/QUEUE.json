@@ -3435,7 +3435,7 @@
       "id": "EXP-002S51",
       "title": "Residual-process representation diagnostic",
       "priority": 48.25,
-      "status": "RUNNING",
+      "status": "COMPLETE_DIAGNOSTIC_ADJUDICATION_DOMINANT",
       "depends_on": [
         "EXP-002S50"
       ],
@@ -3444,10 +3444,73 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s51_residual_diagnostic.py",
       "runner_commit": "ef8e88e2bff52e3bfab3e7779bd1e1e0d56d7739",
       "checkpoint": {
-        "state": "mechanics_passed",
-        "next_stage": "diagnostic_panel"
+        "state": "complete",
+        "disposition": "ADJUDICATION_DOMINANT"
       },
-      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S51_MECHANICS_RESULT.json"
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S51_MECHANICS_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S51_DIAGNOSTIC_RESULT.json",
+      "result_summary": {
+        "classification": "ADJUDICATION_DOMINANT",
+        "overall": {
+          "n": 96,
+          "mean_s30_edge_delta_vs_baseline": -0.3789802014766541,
+          "mean_phet_edge_delta_vs_baseline": 0.3163498234942632,
+          "specialist_win_rate": 0.21875,
+          "mean_specialist_gain_over_s30": -0.6953300249709174,
+          "mean_oracle_two_posterior_headroom": 0.11083418421641063,
+          "oracle_headroom_bootstrap95": [
+            0.04746123088994719,
+            0.19328067234234794
+          ],
+          "s30_large_harm_rate": 0.010416666666666666,
+          "s46_promoted_large_harm_rate_all": 0.010416666666666666,
+          "s46_promoted_large_harm_rate_among_promoted": 0.012195121951219513,
+          "promotion_coverage": 0.8541666666666666,
+          "qhet_auc_for_specialist_win": 0.4946031746031746,
+          "qhet_rank_corr_with_specialist_gain": -0.01319858925664677,
+          "mean_qhet": 0.45099008008869745
+        },
+        "by_regime": {
+          "linear": {
+            "n": 48,
+            "mean_s30_edge_delta_vs_baseline": 0.0025810076383945787,
+            "mean_phet_edge_delta_vs_baseline": 0.7786206769696579,
+            "specialist_win_rate": 0.20833333333333334,
+            "mean_specialist_gain_over_s30": -0.7760396693312633,
+            "mean_oracle_two_posterior_headroom": 0.0890743930178745,
+            "oracle_headroom_bootstrap95": [
+              0.019442115600562825,
+              0.2060700942497079
+            ],
+            "s30_large_harm_rate": 0.0,
+            "s46_promoted_large_harm_rate_all": 0.0,
+            "s46_promoted_large_harm_rate_among_promoted": 0.0,
+            "promotion_coverage": 0.8125,
+            "qhet_auc_for_specialist_win": 0.5526315789473685,
+            "qhet_rank_corr_with_specialist_gain": -0.10225792444637428,
+            "mean_qhet": 0.4302905385768912
+          },
+          "heteroskedastic": {
+            "n": 48,
+            "mean_s30_edge_delta_vs_baseline": -0.7605414105917029,
+            "mean_phet_edge_delta_vs_baseline": -0.14592102998113146,
+            "specialist_win_rate": 0.22916666666666666,
+            "mean_specialist_gain_over_s30": -0.6146203806105713,
+            "mean_oracle_two_posterior_headroom": 0.13259397541494677,
+            "oracle_headroom_bootstrap95": [
+              0.04402237771386583,
+              0.24754094497894613
+            ],
+            "s30_large_harm_rate": 0.020833333333333332,
+            "s46_promoted_large_harm_rate_all": 0.020833333333333332,
+            "s46_promoted_large_harm_rate_among_promoted": 0.023255813953488372,
+            "promotion_coverage": 0.8958333333333334,
+            "qhet_auc_for_specialist_win": 0.3783783783783784,
+            "qhet_rank_corr_with_specialist_gain": -0.1950716456795484,
+            "mean_qhet": 0.4716896216005038
+          }
+        }
+      }
     }
   ],
   "established_findings": [
