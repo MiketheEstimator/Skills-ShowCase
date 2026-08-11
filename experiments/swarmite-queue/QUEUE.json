@@ -1,5 +1,5 @@
 {
-  "version": "6.7",
+  "version": "6.8",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1586,11 +1586,38 @@
       "id": "EXP-002S33",
       "title": "Mechanism-noise interaction model-class expansion screen",
       "priority": 52.75,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S32"
       ],
-      "rationale": "S32 found a mixed interaction boundary rather than a single mechanism/noise defect; test a small preregistered expanded terminal model set before changing weighting rules."
+      "rationale": "S32 found a mixed interaction boundary rather than a single mechanism/noise defect; test a small preregistered expanded terminal model set before changing weighting rules.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S33_INTERACTION_MODEL_CLASS_EXPANSION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s33_expand.py",
+      "runner_commit": "1135b6c6d8ee87159a102b56d04680496c5550ff",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics_gate",
+        "mechanics_seeds": [
+          72101,
+          72102,
+          72103,
+          72104
+        ],
+        "screen_seeds": [
+          72111,
+          72146
+        ],
+        "classes": [
+          "LG",
+          "TG",
+          "TT",
+          "SG",
+          "ST",
+          "AG",
+          "AT"
+        ],
+        "T": 5.0
+      }
     }
   ],
   "established_findings": [
