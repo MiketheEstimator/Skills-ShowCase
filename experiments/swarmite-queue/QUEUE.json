@@ -1,5 +1,5 @@
 {
-  "version": "1.8",
+  "version": "1.9",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -16,18 +16,18 @@
     {"id":"EXP-002F","status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH"},
     {"id":"EXP-002K","status":"COMPLETE_FALSIFIED"},
     {"id":"EXP-002L","status":"COMPLETE_FALSIFIED"},
-    {"id":"EXP-002M","status":"COMPLETE_PROMISING_UNRESOLVED","result_artifact":"experiments/swarmite-exp002/EXP-002M_BREADTH_N24_RESULT.json"},
-    {"id":"EXP-002M2","title":"Powered width-1 vs width-2 proposal replication","priority":86,"status":"COMPLETE_SUPPORTED","result_artifact":"experiments/swarmite-exp002/EXP-002M2_BREADTH_N48_RESULT.json"},
+    {"id":"EXP-002M","status":"COMPLETE_PROMISING_UNRESOLVED"},
+    {"id":"EXP-002M2","status":"COMPLETE_SUPPORTED","result_artifact":"experiments/swarmite-exp002/EXP-002M2_BREADTH_N48_RESULT.json"},
     {
       "id":"EXP-002H",
       "title":"Adaptive proposal-allocation swarm",
       "priority":85,
       "status":"RUNNING",
-      "hypothesis":"The width-2 benefit is concentrated in resampling particular epistemic designer families. Allocating the second proposal-generation budget to the highest-value designer subsets can retain or improve width-2 recovery while using less compute than uniformly duplicating all five designers.",
-      "design":"Instrument proposal source identity. Compare baseline five-designer set plus one independently resampled proposal from INFOGAIN, FALSIFY, CHEAPEST, RIVAL, or WEAKTIE, and selected low-cost subsets. Use shallow one-step scoring, RNG-isolated observations, equal intervention budget, and compute accounting. Screen on matched worlds, then power the best allocation against uniform width-2.",
-      "primary_metric":"Pareto performance over edge error and compute time",
-      "control":"uniform width-2",
-      "checkpoint":{"state":"individual_designer_resampling_implementation_next","pilot_worlds":6}
+      "result_artifact":"experiments/swarmite-exp002/EXP-002H_ALLOCATION_SCREEN.json",
+      "established_input":"Uniform width-2 breadth is supported across combined n=72 matched worlds; naive CHEAPEST-only second-sample allocation is harmful at n=24.",
+      "hypothesis":"The width-2 gain depends on state-conditioned interactions among epistemically distinct proposal sources rather than one globally best extra designer.",
+      "next_design":"Instrument source-tagged uniform width-2 runs. For every selected intervention record whether it originated from baseline set, extra set, or both; record designer identity, duplicate rate, and current posterior state. Use these traces to define reduced second-set subsets, then test them prospectively against uniform width-2.",
+      "checkpoint":{"state":"source_tagging_implementation_next","target_trace_worlds":24}
     },
     {"id":"EXP-002G","status":"SUPERSEDED_BY_BREADTH_FIRST"},
     {"id":"EXP-002I","title":"Reward and credit assignment ablation","priority":60,"status":"PENDING"},
@@ -36,7 +36,8 @@
   "established_findings": [
     "Unconditional two-step search does not improve the primary metric after RNG isolation and costs roughly 9x compute.",
     "Initial-state and local-margin depth gates failed to justify deeper search.",
-    "Moderate proposal breadth (two independent five-designer root sets) improves edge recovery over width-1 at n=48, with paired CI excluding zero, and raises exact MAP recovery at roughly 2x compute."
+    "Uniform width-2 proposal breadth improves edge recovery over width-1 across combined n=72 matched worlds, with bootstrap CI excluding zero, at roughly 2x compute.",
+    "CHEAPEST-only second-sample allocation does not explain the breadth benefit and is harmful at n=24."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
