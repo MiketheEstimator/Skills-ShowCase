@@ -1,0 +1,17 @@
+{
+  "seed":59002,
+  "dag_mask":729344,
+  "rho_one_edge":0.6848484848484848,
+  "rho_voi_edge":0.2121212121212121,
+  "delta_rho_edge":-0.4727272727272727,
+  "edge_regret_one":0.0,
+  "edge_regret_voi":0.0,
+  "rho_one_brier":0.4666666666666666,
+  "rho_voi_brier":0.3696969696969697,
+  "rho_one_true_mass":0.4787878787878787,
+  "rho_voi_true_mass":0.38181818181818183,
+  "pred_continuation_planner_sims":12705,
+  "one_step_audit_sims":300,
+  "compute_ratio_vs_one_step":42.61666666666667,
+  "wall_seconds":13.267388343811035
+}
