@@ -3163,7 +3163,7 @@
       "id": "EXP-002S46",
       "title": "Continuous observable harm-risk prediction for terminal S30",
       "priority": 49.5,
-      "status": "RUNNING",
+      "status": "COMPLETE_SUPPORTED",
       "depends_on": [
         "EXP-002S45"
       ],
@@ -3172,15 +3172,178 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s46_continuous_risk.py",
       "runner_commit": "a1478f4babededd83810a40a6928b876030b5384",
       "checkpoint": {
-        "state": "validation_passed",
-        "next_stage": "heldout_confirmation"
+        "state": "complete",
+        "disposition": "CONTINUOUS_RISK_SUPPORTED"
       },
       "training_artifact": "experiments/swarmite-exp002/EXP-002S46_TRAINING_RESULT.json",
       "selected_rule": {
         "edge_cut": -0.25,
         "harm_cut": 0.1
       },
-      "validation_artifact": "experiments/swarmite-exp002/EXP-002S46_VALIDATION_RESULT.json"
+      "validation_artifact": "experiments/swarmite-exp002/EXP-002S46_VALIDATION_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S46_CONFIRMATION_RESULT.json",
+      "result_summary": {
+        "n": 120,
+        "continuous_risk": {
+          "coverage": 0.875,
+          "n_promoted": 105,
+          "promoted_large_harms": 1,
+          "promoted_large_harm_rate": 0.009523809523809525,
+          "always_s30_mean_edge_delta": -0.7607486344494091,
+          "hybrid_mean_edge_delta": -0.8183731837921709,
+          "bootstrap95_hybrid_edge_delta": [
+            -0.92279149595175,
+            -0.7126605846921706
+          ],
+          "hybrid_mean_brier_delta": -0.005964980218684208,
+          "improvement_retained": 1.0757471610638742,
+          "by_joint_cell": {
+            "dense_asinh": {
+              "n": 20,
+              "coverage": 0.55,
+              "hybrid_mean_edge_delta": -0.38392005460936585,
+              "large_harm_rate": 0.09090909090909091
+            },
+            "dense_sin": {
+              "n": 20,
+              "coverage": 0.8,
+              "hybrid_mean_edge_delta": -0.8015814181119432,
+              "large_harm_rate": 0.0
+            },
+            "dense_tanh": {
+              "n": 20,
+              "coverage": 0.9,
+              "hybrid_mean_edge_delta": -0.9446550410032678,
+              "large_harm_rate": 0.0
+            },
+            "sparse_asinh": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -0.7504887856277773,
+              "large_harm_rate": 0.0
+            },
+            "sparse_sin": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -1.074022995613348,
+              "large_harm_rate": 0.0
+            },
+            "sparse_tanh": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -0.9555708077873233,
+              "large_harm_rate": 0.0
+            }
+          }
+        },
+        "topology_control": {
+          "coverage": 1.0,
+          "n_promoted": 120,
+          "promoted_large_harms": 6,
+          "promoted_large_harm_rate": 0.05,
+          "always_s30_mean_edge_delta": -0.7607486344494091,
+          "hybrid_mean_edge_delta": -0.7607486344494091,
+          "bootstrap95_hybrid_edge_delta": [
+            -0.8975964942095142,
+            -0.6171300167423203
+          ],
+          "hybrid_mean_brier_delta": -0.0023159344894599547,
+          "improvement_retained": 1.0,
+          "by_joint_cell": {
+            "dense_asinh": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -0.07916061156557577,
+              "large_harm_rate": 0.2
+            },
+            "dense_sin": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -0.7924997474451934,
+              "large_harm_rate": 0.05
+            },
+            "dense_tanh": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -0.9127488586572359,
+              "large_harm_rate": 0.05
+            },
+            "sparse_asinh": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -0.7504887856277773,
+              "large_harm_rate": 0.0
+            },
+            "sparse_sin": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -1.074022995613348,
+              "large_harm_rate": 0.0
+            },
+            "sparse_tanh": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -0.9555708077873233,
+              "large_harm_rate": 0.0
+            }
+          }
+        },
+        "s39_control": {
+          "coverage": 0.9916666666666667,
+          "n_promoted": 119,
+          "promoted_large_harms": 5,
+          "promoted_large_harm_rate": 0.04201680672268908,
+          "always_s30_mean_edge_delta": -0.7607486344494091,
+          "hybrid_mean_edge_delta": -0.7759816976441681,
+          "bootstrap95_hybrid_edge_delta": [
+            -0.9026981341577044,
+            -0.6383776971448387
+          ],
+          "hybrid_mean_brier_delta": -0.00279590810241724,
+          "improvement_retained": 1.0200237798728142,
+          "by_joint_cell": {
+            "dense_asinh": {
+              "n": 20,
+              "coverage": 0.95,
+              "hybrid_mean_edge_delta": -0.17055899073413033,
+              "large_harm_rate": 0.15789473684210525
+            },
+            "dense_sin": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -0.7924997474451934,
+              "large_harm_rate": 0.05
+            },
+            "dense_tanh": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -0.9127488586572359,
+              "large_harm_rate": 0.05
+            },
+            "sparse_asinh": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -0.7504887856277773,
+              "large_harm_rate": 0.0
+            },
+            "sparse_sin": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -1.074022995613348,
+              "large_harm_rate": 0.0
+            },
+            "sparse_tanh": {
+              "n": 20,
+              "coverage": 1.0,
+              "hybrid_mean_edge_delta": -0.9555708077873233,
+              "large_harm_rate": 0.0
+            }
+          }
+        },
+        "risk_brier": 0.02386986062428253,
+        "constant_prevalence_brier": 0.0475206611570248,
+        "mechanics_ok": true
+      }
     }
   ],
   "established_findings": [
