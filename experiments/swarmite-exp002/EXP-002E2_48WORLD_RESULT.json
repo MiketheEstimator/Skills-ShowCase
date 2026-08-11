@@ -1,0 +1,23 @@
+{
+  "experiment": "EXP-002E2",
+  "status": "COMPLETE_UNRESOLVED",
+  "design": "powered paired replication of one-step vs two-step Bayesian proposal lookahead",
+  "n_worlds": 48,
+  "budget": 10.0,
+  "primary_metric": "paired two-step minus one-step edge error",
+  "primary_result": {
+    "one_step_mean": 1.2642185019459644,
+    "two_step_mean": 1.2031512839880232,
+    "delta": -0.06106721795794153,
+    "bootstrap_ci95": [-0.19540931562414832, 0.07233082815876239],
+    "two_step_wins": 25,
+    "decision": "UNRESOLVED_AT_PREREGISTERED_CAP"
+  },
+  "secondary": {
+    "true_mass": {"one": 0.25822304426038345, "two": 0.262456644785864, "delta": 0.004233600525480537, "ci95": [-0.03731794125651399, 0.04643572689746741]},
+    "map_accuracy": {"one": 0.7291666666666666, "two": 0.8125, "delta": 0.08333333333333333, "ci95": [-0.0625, 0.22916666666666666]},
+    "posterior_entropy": {"one": 3.1708758569484403, "two": 3.3173266354632016, "delta": 0.14645077851476115, "ci95": [0.015657032491132247, 0.2794508488241899]}
+  },
+  "interpretation": "Two-step lookahead shows no statistically resolved improvement on the preregistered edge-error metric at n=48. It produces a higher MAP hit rate but also significantly greater posterior entropy. Search-depth effects remain confounded by stochastic proposal generation and RNG consumption in planning simulations.",
+  "next": "EXP-002F matched-depth ablation with isolated RNG streams and identical proposal-generation randomness so the only intended treatment difference is lookahead depth."
+}
