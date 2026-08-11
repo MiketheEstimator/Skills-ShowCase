@@ -1,5 +1,5 @@
 {
-  "version": "10.0",
+  "version": "10.1",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3550,7 +3550,18 @@
         "disposition": "FALSIFIED_AT_TRAINING"
       },
       "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S53_MECHANICS_RESULT.json",
-      "training_artifact": "experiments/swarmite-exp002/EXP-002S53_TRAINING_RESULT.json"
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S53_TRAINING_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S53_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S54",
+      "title": "Nodewise residual-process posterior composition",
+      "priority": 47.5,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S53"
+      ],
+      "rationale": "S53 falsified continuous graph-level soft averaging despite useful S52 latent discrimination. Change representation granularity: infer residual-process adequacy nodewise and compose terminal structure locally rather than retuning graph-level caps or temperatures."
     }
   ],
   "established_findings": [
@@ -3602,7 +3613,8 @@
     "S49 FALSIFIED_AT_TRAINING: terminal-only fitted-magnitude heteroskedastic likelihood specialist tested around frozen baseline planning, S30 anchor, and S46 adjudication.",
     "S50 FALSIFIED_AT_TRAINING: bounded per-world S30/P_HET model uncertainty tested using cross-fitted observable variance evidence while preserving baseline-only planning and frozen S46 adjudication.",
     "S51 ADJUDICATION_DOMINANT: heteroskedastic oracle two-posterior headroom 0.133 with 95% bootstrap [0.04402237771386583, 0.24754094497894613]; q_het specialist-win AUC 0.3783783783783784.",
-    "S52 was falsified at training: the 42-feature latent residual-state model showed useful specialist-win discrimination (training AUC 0.8360836083608361, Brier 0.12439288888984713 versus constant 0.1664478922540713) but every preregistered hard-selection rule used the specialist zero times, so no rule qualified. Hard selection, not the latent representation itself, is the immediate failure mode."
+    "S52 was falsified at training: the 42-feature latent residual-state model showed useful specialist-win discrimination (training AUC 0.8360836083608361, Brier 0.12439288888984713 versus constant 0.1664478922540713) but every preregistered hard-selection rule used the specialist zero times, so no rule qualified. Hard selection, not the latent representation itself, is the immediate failure mode.",
+    "S53 disposition FALSIFIED_AT_TRAINING. Continuous terminal-only averaging driven by the frozen S52 latent residual-state model was tested prospectively against the frozen S46/S30 matched control with planning unchanged."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
