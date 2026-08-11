@@ -1,5 +1,5 @@
 {
-  "version": "7.2",
+  "version": "7.3",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -1768,7 +1768,7 @@
       "id": "EXP-002S35",
       "title": "Structural-utility stacking without predictive-score weights",
       "priority": 52.25,
-      "status": "RUNNING",
+      "status": "COMPLETE_FALSIFIED_ON_VALIDATION",
       "depends_on": [
         "EXP-002S34"
       ],
@@ -1777,21 +1777,52 @@
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s35_stack.py",
       "runner_commit": "416b82cb52a58a94409cd848dac3bf4eb40749bf",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "training",
-        "training_seeds": [
-          72201,
-          72248
+        "state": "complete",
+        "disposition": "STRUCTURAL_STACKING_FALSIFIED_VALIDATION"
+      },
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S35_TRAINING_RESULT.json",
+      "selected_weights": {
+        "LG": 0.6031615676768385,
+        "TG": 0.012514340621518289,
+        "TT": 0.059462254638280025,
+        "SG": 0.014319773478203093,
+        "ST": 0.23050576871928283,
+        "AG": 0.02753635294358805,
+        "AT": 0.0524999419222891
+      },
+      "validation_artifact": "experiments/swarmite-exp002/EXP-002S35_VALIDATION_RESULT.json",
+      "result_summary": {
+        "n": 36,
+        "mean_edge_delta_vs_s30": 0.0024113069703795196,
+        "bootstrap95_edge_delta_vs_s30": [
+          -0.08652042734333419,
+          0.09892142080733121
         ],
-        "validation_seeds": [
-          72261,
-          72296
-        ],
-        "confirmation_seeds": [
-          72301,
-          72372
-        ]
-      }
+        "mean_brier_delta_vs_s30": -0.00113853086745441,
+        "large_harms_vs_s30": 2,
+        "mean_edge_delta_vs_baseline": -0.06907521194844728,
+        "by_cell_mean_edge_delta_vs_s30": {
+          "tanh_gaussian": 0.07358216908744038,
+          "tanh_t7": -0.06426901114187326,
+          "sin_gaussian": -0.004537993348466866,
+          "sin_t7": -0.026622298848214543,
+          "asinh_gaussian": 0.12879204626681254,
+          "asinh_t7": -0.09247707019342115
+        },
+        "mechanics_ok": true,
+        "promote_to_confirmation": false
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S35_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S36",
+      "title": "Global stacking transfer-failure diagnostic",
+      "priority": 52.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S35"
+      ],
+      "rationale": "Training-optimized global structural weights failed fresh validation; diagnose training-distribution instability versus irreducible per-world heterogeneity before any adaptive stacking."
     }
   ],
   "established_findings": [
@@ -1825,7 +1856,8 @@
     "S31 TRANSFER_FALSIFIED: frozen T=5 ADEQ-weighted posterior combination stress-tested on unseen mechanism/noise families.",
     "S32 MECHANISM_NOISE_INTERACTION_OR_MIXED_GAP: frozen S30 architecture factorized across tanh/sin/asinh mechanisms and Gaussian/t7 noise on 120 fresh worlds.",
     "S33 EXPANDED_MODEL_SET_FALSIFIED: seven-class mechanism\u00d7noise terminal expansion versus frozen S30 on 36 fresh worlds; edge delta vs S30 0.0621, CI [-0.06236321273465108, 0.17679359181349777], Brier -0.0080, harms 4.",
-    "S34 PREDICTIVE_WEIGHT_MISALIGNMENT: represented-class coverage 1.000, mean predictive-score/structural-utility Spearman -0.217, top-weight/oracle match 0.083, mixture regret vs represented oracle 0.731."
+    "S34 PREDICTIVE_WEIGHT_MISALIGNMENT: represented-class coverage 1.000, mean predictive-score/structural-utility Spearman -0.217, top-weight/oracle match 0.083, mixture regret vs represented oracle 0.731.",
+    "S35 STRUCTURAL_STACKING_FALSIFIED_VALIDATION: frozen training-only structural stack; edge delta vs S30 0.0024, CI [-0.08652042734333419, 0.09892142080733121], Brier -0.0011, harms 2."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
