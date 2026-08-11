@@ -1,26 +1,527 @@
 {
-  "version":"5.3",
-  "mode":"endless_improvement",
-  "status":"ACTIVE",
-  "worker_policy":{"pop_order":"priority_then_created","on_complete":"evaluate_update_findings_enqueue_successors_then_pop_next","on_failure":"diagnose_enqueue_materially_different_successor_then_pop_next","on_runtime_stop":"checkpoint_running_item_and_resume_on_next_watchdog","drive_policy":"read_only","stop_condition":"explicit_user_stop_only"},
-  "queue":[
-    {"id":"EXP-002E","status":"COMPLETE_UNRESOLVED"},{"id":"EXP-002E2","status":"COMPLETE_UNRESOLVED"},{"id":"EXP-002F","status":"COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH"},{"id":"EXP-002K","status":"COMPLETE_FALSIFIED"},{"id":"EXP-002L","status":"COMPLETE_FALSIFIED"},{"id":"EXP-002M","status":"COMPLETE_PROMISING_UNRESOLVED"},{"id":"EXP-002M2","status":"COMPLETE_SUPPORTED"},{"id":"EXP-002H","status":"COMPLETE_NO_SIMPLE_ROLE_PRUNING"},{"id":"EXP-002N","status":"COMPLETE_PROMISING_UNRESOLVED"},{"id":"EXP-002N2","status":"COMPLETE_PROMISING_WITH_RESOLVED_MAP_GAIN"},{"id":"EXP-002N3","status":"COMPLETE_FAILED_NONINFERIORITY_PASSED_COMPUTE"},{"id":"EXP-002N4","status":"COMPLETE_FAILED_PREREGISTERED_CRITERIA"},{"id":"EXP-002G","status":"SUPERSEDED_BY_BREADTH_FIRST"},
-    {"id":"EXP-002I","priority":60,"status":"COMPLETE_PROMISING_UNRESOLVED"},{"id":"EXP-002J","priority":59,"status":"COMPLETE_TRANSFER_NOT_SUPPORTED"},{"id":"EXP-002J2","priority":95,"status":"COMPLETE_ABSOLUTE_RECOVERY_SUPPORTED_BREADTH_UNRESOLVED"},{"id":"EXP-002J2B","priority":94,"status":"COMPLETE_FALSIFIED"},{"id":"EXP-002J3","priority":58,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002J4","priority":57,"status":"BLOCKED_EXECUTION_REPRODUCIBILITY"},
-    {"id":"EXP-002R","priority":100,"status":"COMPLETE_FAILED_RECONSTRUCTION"},{"id":"EXP-002R2","priority":99,"status":"COMPLETE_REPRODUCIBLE_BASELINE_UNRESOLVED"},{"id":"EXP-002R3","priority":98,"status":"COMPLETE_UNRESOLVED_NULL"},{"id":"EXP-002R4","priority":97,"status":"COMPLETE_FALSIFIED_SIMPLE_REDUNDANCY"},{"id":"EXP-002R5","priority":96,"status":"COMPLETE_SUPPORTED_SCREEN"},{"id":"EXP-002R6","priority":95,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002R7","priority":94,"status":"COMPLETE_UNRESOLVED_HETEROGENEOUS"},{"id":"EXP-002R8","priority":93,"status":"COMPLETE_FALSIFIED"},{"id":"EXP-002R9","priority":92,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002R10","priority":91,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002R11","priority":90,"status":"COMPLETE_FALSIFIED_DOMINANT_MISCALIBRATION"},{"id":"EXP-002R12","priority":89,"status":"COMPLETE_FALSIFIED_PREREGISTERED_CRITERIA"},{"id":"EXP-002R13","priority":88,"status":"COMPLETE_FALSIFIED_PREREGISTERED_CRITERIA"},{"id":"EXP-002R14","priority":87,"status":"COMPLETE_EXPLORATORY_DIAGNOSTIC"},{"id":"EXP-002R15","priority":86,"status":"BLOCKED_EXECUTION_REPRODUCIBILITY"},{"id":"EXP-002R15R","priority":85,"status":"COMPLETE_FALSIFIED_PREREGISTERED_CRITERIA"},{"id":"EXP-002R16","priority":84,"status":"COMPLETE_EXPLORATORY_HETEROGENEOUS"},{"id":"EXP-002R17","priority":83,"status":"COMPLETE_FALSIFIED_ON_VALIDATION"},{"id":"EXP-002R18","priority":82,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002R19","priority":81,"status":"COMPLETE_FALSIFIED_ON_CONFIRMATION"},{"id":"EXP-002R20","priority":80,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002R21","priority":79,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002R22","priority":78,"status":"COMPLETE_DIAGNOSTIC_SUPPORTED"},{"id":"EXP-002R23","priority":77,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002R24","priority":76,"status":"COMPLETE_DIAGNOSTIC_SUPPORTED"},{"id":"EXP-002R25","priority":75,"status":"BLOCKED_EXECUTABLE_NAMESPACE_COLLISION"},{"id":"EXP-002R26","priority":74,"status":"BLOCKED_EXECUTABLE_NAMESPACE_COLLISION"},
-    {"id":"EXP-002S1","priority":73,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002S2","priority":72,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002S3","priority":71,"status":"COMPLETE_DIAGNOSTIC_SUPPORTED"},{"id":"EXP-002S4","priority":70,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002S5","priority":69,"status":"COMPLETE_PROMISING_FAILED_HARM_GUARDRAIL"},{"id":"EXP-002S6","priority":68,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002S7","priority":67,"status":"COMPLETE_DIAGNOSTIC_SUPPORTED"},
-    {"id":"EXP-002S8","title":"Dual-posterior planning/inference separation","priority":66,"status":"COMPLETE_SUPPORTED","result_artifact":"experiments/swarmite-exp002/EXP-002S8_CONFIRMATION_RESULT.json"},
-    {"id":"EXP-002S9","title":"Dual-posterior transfer under effect-size shift","priority":65,"status":"COMPLETE_TRANSFER_SUPPORTED","result_artifact":"experiments/swarmite-exp002/EXP-002S9_CONFIRMATION_RESULT.json"},
-    {"id":"EXP-002S10","title":"Dual-posterior transfer under nonlinear mechanism shift","priority":64,"status":"COMPLETE_FAILED_CALIBRATION_GUARDRAIL","protocol":"experiments/swarmite-exp002/EXP-002S10_NONLINEAR_SHIFT_PROTOCOL.md","runner":"experiments/swarmite-exp002/swarmite_exp002_s10_nonlinear.py","result_artifact":"experiments/swarmite-exp002/EXP-002S10_CONFIRMATION_RESULT.json"},
-    {"id":"EXP-002S11","priority":63,"status":"COMPLETE_EXPLORATORY_FALSIFIED"},{"id":"EXP-002S12","priority":62,"status":"COMPLETE_FALSIFIED_AT_SCREEN"},{"id":"EXP-002S13","priority":61,"status":"COMPLETE_FALSIFIED_ON_VALIDATION"},{"id":"EXP-002S14","priority":60,"status":"COMPLETE_FALSIFIED_ON_CONFIRMATION"},
-    {"id":"EXP-002S15","title":"Disagreement-aware structural abstention","priority":59,"status":"COMPLETE_SUPPORTED","protocol":"experiments/swarmite-exp002/EXP-002S15_DISAGREEMENT_ABSTENTION_PROTOCOL.md","result_artifact":"experiments/swarmite-exp002/EXP-002S15_CONFIRMATION_RESULT.json","result_summary":{"n_total":48,"n_promoted":45,"coverage":0.9375,"mean_edge_delta_promoted":-0.587468317898605,"bootstrap95_edge_delta_promoted":[-0.6894341831998766,-0.4747555408964214],"mean_brier_delta_promoted":0.0015025365323461184,"wins_promoted":42,"large_harms_promoted":1,"selected_threshold":1.5}},
-    {"id":"EXP-002S16","title":"Fixed S15 gate under noise-distribution shift","priority":58,"status":"BLOCKED_EXECUTION_REPRODUCIBILITY","depends_on":["EXP-002S15"],"protocol":"experiments/swarmite-exp002/EXP-002S16_NOISE_SHIFT_TRANSFER_PROTOCOL.md","checkpoint":{"state":"historical_same_seed_results_nonpoolable","artifact":"experiments/swarmite-exp002/EXP-002S16_REPRODUCIBILITY_BLOCKER.md"},"historical_artifact":"experiments/swarmite-exp002/EXP-002S16_CONFIRMATION_RESULT.json"},
-    {"id":"EXP-002S16R","title":"Fresh reproducible noise-shift transfer recovery","priority":58,"status":"COMPLETE_TRANSFER_SUPPORTED","depends_on":["EXP-002S16"],"protocol":"experiments/swarmite-exp002/EXP-002S16R_FRESH_NOISE_SHIFT_RECOVERY_PROTOCOL.md","runner":"experiments/swarmite-exp002/swarmite_exp002_s16_noise.py","runner_commit":"128325fbbc5e243cac54299f4a97bdf122682fdc","mechanics_artifact":"experiments/swarmite-exp002/EXP-002S16R_MECHANICS_RESULT.json","screen_artifact":"experiments/swarmite-exp002/EXP-002S16R_SCREEN_RESULT.json","result_artifact":"experiments/swarmite-exp002/EXP-002S16R_CONFIRMATION_RESULT.json","result_summary":{"n_total":24,"n_promoted":21,"coverage":0.875,"mean_edge_delta_promoted":-0.4390078344436161,"bootstrap95_edge_delta_promoted":[-0.5906397237592401,-0.2817521666908412],"mean_brier_delta_promoted":0.001411316011641378,"wins_promoted":19,"large_harms_promoted":0}},
-    {"id":"EXP-002S17","title":"Fixed gate under compound nonlinear plus heavy-tail shift","priority":57,"status":"COMPLETE_FALSIFIED_CALIBRATION_GUARDRAIL","depends_on":["EXP-002S16R"],"protocol":"experiments/swarmite-exp002/EXP-002S17_COMPOUND_SHIFT_TRANSFER_PROTOCOL.md","runner":"experiments/swarmite-exp002/swarmite_exp002_s17_compound.py","runner_commit":"a0a25ebbb630d9731aaeb93524d149098c6eca99","mechanics_artifact":"experiments/swarmite-exp002/EXP-002S17_MECHANICS_RESULT.json","screen_artifact":"experiments/swarmite-exp002/EXP-002S17_SCREEN_RESULT.json","result_artifact":"experiments/swarmite-exp002/EXP-002S17_CONFIRMATION_RESULT.json","evaluation_artifact":"experiments/swarmite-exp002/EXP-002S17_EVALUATION.md","result_summary":{"n_total":24,"n_promoted":21,"coverage":0.875,"mean_edge_delta_promoted":-0.35814649546090704,"bootstrap95_edge_delta_promoted":[-0.5026771763094974,-0.20729711518300498],"mean_brier_delta_promoted":0.008845546139137588,"wins_promoted":17,"large_harms_promoted":0}},
-    {"id":"EXP-002S18","title":"Multi-signal model-shift abstention gate","priority":56.5,"status":"COMPLETE_FALSIFIED_ON_VALIDATION","depends_on":["EXP-002S17"],"protocol":"experiments/swarmite-exp002/EXP-002S18_MULTI_SIGNAL_SHIFT_GATE_PROTOCOL.md","runner":"experiments/swarmite-exp002/swarmite_exp002_s18_features.py","runner_commit":"68175c3ee8eb1de27cc13b3e89d105e332065f07","training_artifact":"experiments/swarmite-exp002/EXP-002S18_TRAINING_RESULT.json","training_grid":"experiments/swarmite-exp002/EXP-002S18_TRAINING_GRID.csv","validation_artifact":"experiments/swarmite-exp002/EXP-002S18_VALIDATION_RESULT.json","evaluation_artifact":"experiments/swarmite-exp002/EXP-002S18_EVALUATION.md","selected_gate":{"D_sum_max":2.0,"D_max_max":0.45,"R_entropy_min":0.35},"result_summary":{"n_total":24,"n_promoted":24,"coverage":1.0,"mean_edge_delta_promoted":-0.4945525110551383,"mean_brier_delta_promoted":0.006280984978303656,"wins_promoted":22,"large_harms_promoted":0}},
-    {"id":"EXP-002S19","title":"Posterior-predictive residual shift gate","priority":56.25,"status":"RUNNING","depends_on":["EXP-002S18"],"protocol":"experiments/swarmite-exp002/EXP-002S19_POSTERIOR_PREDICTIVE_SHIFT_GATE_PROTOCOL.md","checkpoint":{"state":"protocol_frozen","completed_stage":"none","next_stage":"implement_residual_feature_runner_and_training_grid","training_seeds":[69601,69602,69603,69604,69605,69606,69607,69608,69609,69610,69611,69612,69613,69614,69615,69616,69617,69618,69619,69620,69621,69622,69623,69624],"validation_seeds":[69701,69702,69703,69704,69705,69706,69707,69708,69709,69710,69711,69712,69713,69714,69715,69716,69717,69718,69719,69720,69721,69722,69723,69724],"confirmation_seeds":[69801,69802,69803,69804,69805,69806,69807,69808,69809,69810,69811,69812,69813,69814,69815,69816,69817,69818,69819,69820,69821,69822,69823,69824,69825,69826,69827,69828,69829,69830,69831,69832,69833,69834,69835,69836,69837,69838,69839,69840,69841,69842,69843,69844,69845,69846,69847,69848],"next_action":"Commit a deterministic S17-compatible runner that records D_sum plus PPC_tail and PPC_nonlinear from the terminal planning MAP-DAG regressions; execute and persist the complete 24-world training grid before exposing validation worlds."}},
-    {"id":"EXP-002J5","priority":56,"status":"PENDING","depends_on":["EXP-002J4"]}
+  "version": "5.4",
+  "mode": "endless_improvement",
+  "status": "ACTIVE",
+  "worker_policy": {
+    "pop_order": "priority_then_created",
+    "on_complete": "evaluate_update_findings_enqueue_successors_then_pop_next",
+    "on_failure": "diagnose_enqueue_materially_different_successor_then_pop_next",
+    "on_runtime_stop": "checkpoint_running_item_and_resume_on_next_watchdog",
+    "drive_policy": "read_only",
+    "stop_condition": "explicit_user_stop_only"
+  },
+  "queue": [
+    {
+      "id": "EXP-002E",
+      "status": "COMPLETE_UNRESOLVED"
+    },
+    {
+      "id": "EXP-002E2",
+      "status": "COMPLETE_UNRESOLVED"
+    },
+    {
+      "id": "EXP-002F",
+      "status": "COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH"
+    },
+    {
+      "id": "EXP-002K",
+      "status": "COMPLETE_FALSIFIED"
+    },
+    {
+      "id": "EXP-002L",
+      "status": "COMPLETE_FALSIFIED"
+    },
+    {
+      "id": "EXP-002M",
+      "status": "COMPLETE_PROMISING_UNRESOLVED"
+    },
+    {
+      "id": "EXP-002M2",
+      "status": "COMPLETE_SUPPORTED"
+    },
+    {
+      "id": "EXP-002H",
+      "status": "COMPLETE_NO_SIMPLE_ROLE_PRUNING"
+    },
+    {
+      "id": "EXP-002N",
+      "status": "COMPLETE_PROMISING_UNRESOLVED"
+    },
+    {
+      "id": "EXP-002N2",
+      "status": "COMPLETE_PROMISING_WITH_RESOLVED_MAP_GAIN"
+    },
+    {
+      "id": "EXP-002N3",
+      "status": "COMPLETE_FAILED_NONINFERIORITY_PASSED_COMPUTE"
+    },
+    {
+      "id": "EXP-002N4",
+      "status": "COMPLETE_FAILED_PREREGISTERED_CRITERIA"
+    },
+    {
+      "id": "EXP-002G",
+      "status": "SUPERSEDED_BY_BREADTH_FIRST"
+    },
+    {
+      "id": "EXP-002I",
+      "priority": 60,
+      "status": "COMPLETE_PROMISING_UNRESOLVED"
+    },
+    {
+      "id": "EXP-002J",
+      "priority": 59,
+      "status": "COMPLETE_TRANSFER_NOT_SUPPORTED"
+    },
+    {
+      "id": "EXP-002J2",
+      "priority": 95,
+      "status": "COMPLETE_ABSOLUTE_RECOVERY_SUPPORTED_BREADTH_UNRESOLVED"
+    },
+    {
+      "id": "EXP-002J2B",
+      "priority": 94,
+      "status": "COMPLETE_FALSIFIED"
+    },
+    {
+      "id": "EXP-002J3",
+      "priority": 58,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002J4",
+      "priority": 57,
+      "status": "BLOCKED_EXECUTION_REPRODUCIBILITY"
+    },
+    {
+      "id": "EXP-002R",
+      "priority": 100,
+      "status": "COMPLETE_FAILED_RECONSTRUCTION"
+    },
+    {
+      "id": "EXP-002R2",
+      "priority": 99,
+      "status": "COMPLETE_REPRODUCIBLE_BASELINE_UNRESOLVED"
+    },
+    {
+      "id": "EXP-002R3",
+      "priority": 98,
+      "status": "COMPLETE_UNRESOLVED_NULL"
+    },
+    {
+      "id": "EXP-002R4",
+      "priority": 97,
+      "status": "COMPLETE_FALSIFIED_SIMPLE_REDUNDANCY"
+    },
+    {
+      "id": "EXP-002R5",
+      "priority": 96,
+      "status": "COMPLETE_SUPPORTED_SCREEN"
+    },
+    {
+      "id": "EXP-002R6",
+      "priority": 95,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002R7",
+      "priority": 94,
+      "status": "COMPLETE_UNRESOLVED_HETEROGENEOUS"
+    },
+    {
+      "id": "EXP-002R8",
+      "priority": 93,
+      "status": "COMPLETE_FALSIFIED"
+    },
+    {
+      "id": "EXP-002R9",
+      "priority": 92,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002R10",
+      "priority": 91,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002R11",
+      "priority": 90,
+      "status": "COMPLETE_FALSIFIED_DOMINANT_MISCALIBRATION"
+    },
+    {
+      "id": "EXP-002R12",
+      "priority": 89,
+      "status": "COMPLETE_FALSIFIED_PREREGISTERED_CRITERIA"
+    },
+    {
+      "id": "EXP-002R13",
+      "priority": 88,
+      "status": "COMPLETE_FALSIFIED_PREREGISTERED_CRITERIA"
+    },
+    {
+      "id": "EXP-002R14",
+      "priority": 87,
+      "status": "COMPLETE_EXPLORATORY_DIAGNOSTIC"
+    },
+    {
+      "id": "EXP-002R15",
+      "priority": 86,
+      "status": "BLOCKED_EXECUTION_REPRODUCIBILITY"
+    },
+    {
+      "id": "EXP-002R15R",
+      "priority": 85,
+      "status": "COMPLETE_FALSIFIED_PREREGISTERED_CRITERIA"
+    },
+    {
+      "id": "EXP-002R16",
+      "priority": 84,
+      "status": "COMPLETE_EXPLORATORY_HETEROGENEOUS"
+    },
+    {
+      "id": "EXP-002R17",
+      "priority": 83,
+      "status": "COMPLETE_FALSIFIED_ON_VALIDATION"
+    },
+    {
+      "id": "EXP-002R18",
+      "priority": 82,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002R19",
+      "priority": 81,
+      "status": "COMPLETE_FALSIFIED_ON_CONFIRMATION"
+    },
+    {
+      "id": "EXP-002R20",
+      "priority": 80,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002R21",
+      "priority": 79,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002R22",
+      "priority": 78,
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED"
+    },
+    {
+      "id": "EXP-002R23",
+      "priority": 77,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002R24",
+      "priority": 76,
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED"
+    },
+    {
+      "id": "EXP-002R25",
+      "priority": 75,
+      "status": "BLOCKED_EXECUTABLE_NAMESPACE_COLLISION"
+    },
+    {
+      "id": "EXP-002R26",
+      "priority": 74,
+      "status": "BLOCKED_EXECUTABLE_NAMESPACE_COLLISION"
+    },
+    {
+      "id": "EXP-002S1",
+      "priority": 73,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002S2",
+      "priority": 72,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002S3",
+      "priority": 71,
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED"
+    },
+    {
+      "id": "EXP-002S4",
+      "priority": 70,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002S5",
+      "priority": 69,
+      "status": "COMPLETE_PROMISING_FAILED_HARM_GUARDRAIL"
+    },
+    {
+      "id": "EXP-002S6",
+      "priority": 68,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002S7",
+      "priority": 67,
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED"
+    },
+    {
+      "id": "EXP-002S8",
+      "title": "Dual-posterior planning/inference separation",
+      "priority": 66,
+      "status": "COMPLETE_SUPPORTED",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S8_CONFIRMATION_RESULT.json"
+    },
+    {
+      "id": "EXP-002S9",
+      "title": "Dual-posterior transfer under effect-size shift",
+      "priority": 65,
+      "status": "COMPLETE_TRANSFER_SUPPORTED",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S9_CONFIRMATION_RESULT.json"
+    },
+    {
+      "id": "EXP-002S10",
+      "title": "Dual-posterior transfer under nonlinear mechanism shift",
+      "priority": 64,
+      "status": "COMPLETE_FAILED_CALIBRATION_GUARDRAIL",
+      "protocol": "experiments/swarmite-exp002/EXP-002S10_NONLINEAR_SHIFT_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s10_nonlinear.py",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S10_CONFIRMATION_RESULT.json"
+    },
+    {
+      "id": "EXP-002S11",
+      "priority": 63,
+      "status": "COMPLETE_EXPLORATORY_FALSIFIED"
+    },
+    {
+      "id": "EXP-002S12",
+      "priority": 62,
+      "status": "COMPLETE_FALSIFIED_AT_SCREEN"
+    },
+    {
+      "id": "EXP-002S13",
+      "priority": 61,
+      "status": "COMPLETE_FALSIFIED_ON_VALIDATION"
+    },
+    {
+      "id": "EXP-002S14",
+      "priority": 60,
+      "status": "COMPLETE_FALSIFIED_ON_CONFIRMATION"
+    },
+    {
+      "id": "EXP-002S15",
+      "title": "Disagreement-aware structural abstention",
+      "priority": 59,
+      "status": "COMPLETE_SUPPORTED",
+      "protocol": "experiments/swarmite-exp002/EXP-002S15_DISAGREEMENT_ABSTENTION_PROTOCOL.md",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S15_CONFIRMATION_RESULT.json",
+      "result_summary": {
+        "n_total": 48,
+        "n_promoted": 45,
+        "coverage": 0.9375,
+        "mean_edge_delta_promoted": -0.587468317898605,
+        "bootstrap95_edge_delta_promoted": [
+          -0.6894341831998766,
+          -0.4747555408964214
+        ],
+        "mean_brier_delta_promoted": 0.0015025365323461184,
+        "wins_promoted": 42,
+        "large_harms_promoted": 1,
+        "selected_threshold": 1.5
+      }
+    },
+    {
+      "id": "EXP-002S16",
+      "title": "Fixed S15 gate under noise-distribution shift",
+      "priority": 58,
+      "status": "BLOCKED_EXECUTION_REPRODUCIBILITY",
+      "depends_on": [
+        "EXP-002S15"
+      ],
+      "protocol": "experiments/swarmite-exp002/EXP-002S16_NOISE_SHIFT_TRANSFER_PROTOCOL.md",
+      "checkpoint": {
+        "state": "historical_same_seed_results_nonpoolable",
+        "artifact": "experiments/swarmite-exp002/EXP-002S16_REPRODUCIBILITY_BLOCKER.md"
+      },
+      "historical_artifact": "experiments/swarmite-exp002/EXP-002S16_CONFIRMATION_RESULT.json"
+    },
+    {
+      "id": "EXP-002S16R",
+      "title": "Fresh reproducible noise-shift transfer recovery",
+      "priority": 58,
+      "status": "COMPLETE_TRANSFER_SUPPORTED",
+      "depends_on": [
+        "EXP-002S16"
+      ],
+      "protocol": "experiments/swarmite-exp002/EXP-002S16R_FRESH_NOISE_SHIFT_RECOVERY_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s16_noise.py",
+      "runner_commit": "128325fbbc5e243cac54299f4a97bdf122682fdc",
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S16R_MECHANICS_RESULT.json",
+      "screen_artifact": "experiments/swarmite-exp002/EXP-002S16R_SCREEN_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S16R_CONFIRMATION_RESULT.json",
+      "result_summary": {
+        "n_total": 24,
+        "n_promoted": 21,
+        "coverage": 0.875,
+        "mean_edge_delta_promoted": -0.4390078344436161,
+        "bootstrap95_edge_delta_promoted": [
+          -0.5906397237592401,
+          -0.2817521666908412
+        ],
+        "mean_brier_delta_promoted": 0.001411316011641378,
+        "wins_promoted": 19,
+        "large_harms_promoted": 0
+      }
+    },
+    {
+      "id": "EXP-002S17",
+      "title": "Fixed gate under compound nonlinear plus heavy-tail shift",
+      "priority": 57,
+      "status": "COMPLETE_FALSIFIED_CALIBRATION_GUARDRAIL",
+      "depends_on": [
+        "EXP-002S16R"
+      ],
+      "protocol": "experiments/swarmite-exp002/EXP-002S17_COMPOUND_SHIFT_TRANSFER_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s17_compound.py",
+      "runner_commit": "a0a25ebbb630d9731aaeb93524d149098c6eca99",
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S17_MECHANICS_RESULT.json",
+      "screen_artifact": "experiments/swarmite-exp002/EXP-002S17_SCREEN_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S17_CONFIRMATION_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S17_EVALUATION.md",
+      "result_summary": {
+        "n_total": 24,
+        "n_promoted": 21,
+        "coverage": 0.875,
+        "mean_edge_delta_promoted": -0.35814649546090704,
+        "bootstrap95_edge_delta_promoted": [
+          -0.5026771763094974,
+          -0.20729711518300498
+        ],
+        "mean_brier_delta_promoted": 0.008845546139137588,
+        "wins_promoted": 17,
+        "large_harms_promoted": 0
+      }
+    },
+    {
+      "id": "EXP-002S18",
+      "title": "Multi-signal model-shift abstention gate",
+      "priority": 56.5,
+      "status": "COMPLETE_FALSIFIED_ON_VALIDATION",
+      "depends_on": [
+        "EXP-002S17"
+      ],
+      "protocol": "experiments/swarmite-exp002/EXP-002S18_MULTI_SIGNAL_SHIFT_GATE_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s18_features.py",
+      "runner_commit": "68175c3ee8eb1de27cc13b3e89d105e332065f07",
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S18_TRAINING_RESULT.json",
+      "training_grid": "experiments/swarmite-exp002/EXP-002S18_TRAINING_GRID.csv",
+      "validation_artifact": "experiments/swarmite-exp002/EXP-002S18_VALIDATION_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S18_EVALUATION.md",
+      "selected_gate": {
+        "D_sum_max": 2.0,
+        "D_max_max": 0.45,
+        "R_entropy_min": 0.35
+      },
+      "result_summary": {
+        "n_total": 24,
+        "n_promoted": 24,
+        "coverage": 1.0,
+        "mean_edge_delta_promoted": -0.4945525110551383,
+        "mean_brier_delta_promoted": 0.006280984978303656,
+        "wins_promoted": 22,
+        "large_harms_promoted": 0
+      }
+    },
+    {
+      "id": "EXP-002S19",
+      "title": "Posterior-predictive residual shift gate",
+      "priority": 56.25,
+      "status": "COMPLETE_FALSIFIED_ON_CONFIRMATION",
+      "depends_on": [
+        "EXP-002S18"
+      ],
+      "protocol": "experiments/swarmite-exp002/EXP-002S19_POSTERIOR_PREDICTIVE_SHIFT_GATE_PROTOCOL.md",
+      "checkpoint": {
+        "state": "validation_passed",
+        "selected_gate": {
+          "a": 2.0,
+          "t": 8.0,
+          "n": 0.1,
+          "n_promoted": 12,
+          "coverage": 0.5,
+          "mean_edge_delta": -0.5687949676521885,
+          "mean_brier_delta": -0.0005563706706118542,
+          "large_harms": 0,
+          "wins": 10,
+          "qualifies": true
+        },
+        "validation_summary": {
+          "n_total": 24,
+          "n_promoted": 13,
+          "coverage": 0.5416666666666666,
+          "mean_edge_delta_promoted": -0.5724044246521509,
+          "mean_brier_delta_promoted": -0.00100942679325688,
+          "wins_promoted": 11,
+          "large_harms_promoted": 0,
+          "trace_identical_all": true,
+          "max_spend": 15,
+          "all_finite_normalized": true
+        },
+        "next_stage": "heldout_confirmation"
+      },
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s19_ppc_gate.py",
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S19_TRAINING_RESULT.json",
+      "training_grid": "experiments/swarmite-exp002/EXP-002S19_TRAINING_GRID.csv",
+      "selected_gate": {
+        "a": 2.0,
+        "t": 8.0,
+        "n": 0.1,
+        "n_promoted": 12,
+        "coverage": 0.5,
+        "mean_edge_delta": -0.5687949676521885,
+        "mean_brier_delta": -0.0005563706706118542,
+        "large_harms": 0,
+        "wins": 10,
+        "qualifies": true
+      },
+      "validation_artifact": "experiments/swarmite-exp002/EXP-002S19_VALIDATION_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S19_CONFIRMATION_RESULT.json",
+      "result_summary": {
+        "n_total": 48,
+        "n_promoted": 23,
+        "coverage": 0.4791666666666667,
+        "mean_edge_delta_promoted": -0.5105030481592401,
+        "mean_brier_delta_promoted": -0.003682621693491696,
+        "wins_promoted": 22,
+        "large_harms_promoted": 0,
+        "trace_identical_all": true,
+        "max_spend": 15,
+        "all_finite_normalized": true,
+        "bootstrap95_edge_delta": [
+          -0.6123756297557961,
+          -0.40652305468339517
+        ]
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S19_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002J5",
+      "priority": 56,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002J4"
+      ]
+    },
+    {
+      "id": "EXP-002S20",
+      "title": "Explicit model-class uncertainty / mixture terminal inference",
+      "priority": 56.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S19"
+      ],
+      "rationale": "Residual-aware abstention failed; replace hand-engineered thresholding with explicit uncertainty over linear/nonlinear/noise model classes."
+    }
   ],
-  "established_findings":[
+  "established_findings": [
     "Unconditional two-step search does not improve the primary metric after RNG isolation and costs roughly 9x compute.",
     "Historical breadth benefits are not transferable without exact executable lineage; benchmark v2 n=48 does not support unconditional width-2 superiority.",
     "Simple breadth thresholds, local-margin depth gates, model-disagreement bonuses, proposal diversification, edge-centric utility replacement, posterior-state gating, calibration correction, variance-reduced EIG racing, and robust maximin EIG across prior classes were falsified prospectively.",
@@ -35,7 +536,14 @@
     "S17 falsified the one-dimensional D<=1.50 gate under compound nonlinear plus heavy-tail shift: structural recovery remained strong (mean promoted edge improvement 0.358; bootstrap 95% improvement interval [0.207,0.503]; zero large harms), but mean promoted Brier worsened by +0.00885 and breached the frozen +0.005 calibration guardrail.",
     "S18 showed that adding worst-edge disagreement and entropy-ratio signals did not resolve the compound-shift calibration failure: fresh validation retained mean edge improvement 0.495 with 22/24 wins and zero large harms, but Brier delta +0.00628 still failed the +0.005 guardrail.",
     "Posterior-disagreement geometry alone is now deprioritized; S19 tests whether observable posterior-predictive residual mismatch can identify the remaining model-shift-sensitive cases.",
-    "Execution reproducibility and namespace isolation remain hard scientific invariants; blocked historical worlds are never pooled."
+    "Execution reproducibility and namespace isolation remain hard scientific invariants; blocked historical worlds are never pooled.",
+    "S19 FALSIFIED_ON_CONFIRMATION: residual-aware PPC gate disposition recorded; next direction is explicit model-class uncertainty rather than further hand-engineered abstention thresholds."
   ],
-  "dynamic_enqueue_rules":["Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.","Falsification never empties the queue; it narrows or redirects it.","Do not enqueue equivalent retries without a changed causal hypothesis, state representation, reward, search depth, world model, or evaluation design.","Promote surprising anomalies and control victories into diagnostic experiments.","Maintain matched resource budgets and preserve all negative results."]
+  "dynamic_enqueue_rules": [
+    "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
+    "Falsification never empties the queue; it narrows or redirects it.",
+    "Do not enqueue equivalent retries without a changed causal hypothesis, state representation, reward, search depth, world model, or evaluation design.",
+    "Promote surprising anomalies and control victories into diagnostic experiments.",
+    "Maintain matched resource budgets and preserve all negative results."
+  ]
 }
