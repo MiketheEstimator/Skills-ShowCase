@@ -1,0 +1,19 @@
+{
+  "experiment":"EXP-002J1",
+  "status":"COMPLETE_TRANSFER_NOT_SUPPORTED",
+  "design":"48-world nonlinear additive SCM transfer with unchanged linear-Gaussian Bayesian inference",
+  "misspecification":"Ground-truth DAG remains in the 29,281 observed-node DAG space, but structural equations mix linear, tanh, and centered-quadratic parent effects. Inference and experiment scoring remain linear-Gaussian.",
+  "n_worlds":48,
+  "means":{
+    "width1":{"edge_error":1.610818304275832,"true_mass":0.16995722654397302,"map":0.5416666666666666,"entropy":3.158862055617462,"spent":9.84375,"seconds":0.9501301596562067},
+    "width2":{"edge_error":1.5698134401806954,"true_mass":0.17118451364261553,"map":0.5416666666666666,"entropy":3.186989235775574,"spent":9.916666666666666,"seconds":1.828503077228864}
+  },
+  "paired_width2_minus_width1":{
+    "edge_error":{"delta":-0.04100486409513656,"ci95":[-0.26988098794979654,0.17872359927959883]},
+    "true_mass":{"delta":0.001227287098642479,"ci95":[-0.04606384820198229,0.052519569684080974]},
+    "map":{"delta":0.0,"ci95":[-0.16666666666666666,0.16666666666666666]},
+    "entropy":{"delta":0.028127180158111848,"ci95":[-0.12683730882500896,0.18774787902430143]}
+  },
+  "interpretation":"The previously supported width-2 breadth advantage does not transfer as a statistically resolved benefit when the world is nonlinear but the Bayesian inference model remains linear-Gaussian. Both policies degrade sharply and exact MAP recovery falls to 54.2%. Breadth is therefore established only within the correctly specified benchmark family at this stage.",
+  "next":"EXP-002J2 hidden-confounder transfer"
+}
