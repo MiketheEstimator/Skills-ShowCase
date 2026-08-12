@@ -3826,7 +3826,7 @@
       "id": "EXP-002S59",
       "title": "Residual-state evidence decomposition diagnostic",
       "priority": 44.0,
-      "status": "RUNNING",
+      "status": "COMPLETE_DIAGNOSTIC_FALSIFIED",
       "depends_on": [
         "EXP-002S58"
       ],
@@ -3834,10 +3834,195 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S59_RESIDUAL_STATE_EVIDENCE_DECOMPOSITION_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s59_residual_state_evidence_decomposition.py",
       "checkpoint": {
-        "state": "mechanics_passed",
-        "next_stage": "diagnostic"
+        "state": "complete",
+        "disposition": "EVIDENCE_NOT_ALIGNED",
+        "diagnostic": {
+          "n_nodes": 640,
+          "n_anchor_rank_errors": 278,
+          "anchor_rank_error_rate": 0.434375,
+          "feature_auc": {
+            "mean_abs_adjustment": 0.4940577924400811,
+            "std_adjustment": 0.5723001709129933,
+            "range_adjustment": 0.5833002106602011,
+            "fraction_abs_adjustment_ge_002": 0.5175334870225367
+          },
+          "feature_severity_correlation": {
+            "mean_abs_adjustment": 0.04191372771069957,
+            "std_adjustment": 0.12551790941942045,
+            "range_adjustment": 0.14674045571952124,
+            "fraction_abs_adjustment_ge_002": 0.049696257535483644
+          },
+          "best_auc": 0.5833002106602011,
+          "best_feature": "range_adjustment",
+          "best_auc_bootstrap95": [
+            0.5409559849228898,
+            0.6279246013464944
+          ],
+          "mean_correction_delta_error_nodes": -0.05002213870980036,
+          "correction_delta_error_nodes_bootstrap95": [
+            -0.13665551543696405,
+            0.036120975306503905
+          ],
+          "fraction_positive_correction_error_nodes": 0.48201438848920863,
+          "fraction_repaired_error_nodes": 0.04316546762589928,
+          "by_regime": {
+            "linear": {
+              "n_nodes": 320,
+              "n_anchor_rank_errors": 157,
+              "anchor_rank_error_rate": 0.490625,
+              "feature_auc": {
+                "mean_abs_adjustment": 0.43245672306670313,
+                "std_adjustment": 0.5392130045719198,
+                "range_adjustment": 0.5533586026337384,
+                "fraction_abs_adjustment_ge_002": 0.5021296549568207
+              },
+              "feature_severity_correlation": {
+                "mean_abs_adjustment": -0.0014099456976960868,
+                "std_adjustment": 0.11217445251565526,
+                "range_adjustment": 0.13631663760690418,
+                "fraction_abs_adjustment_ge_002": 0.030274649207387986
+              },
+              "best_auc": 0.5533586026337384,
+              "best_feature": "range_adjustment",
+              "best_auc_bootstrap95": [
+                0.49852682869521364,
+                0.6173562275135775
+              ],
+              "mean_correction_delta_error_nodes": -0.031333691271130275,
+              "correction_delta_error_nodes_bootstrap95": [
+                -0.15935213062820208,
+                0.08986527518821474
+              ],
+              "fraction_positive_correction_error_nodes": 0.4840764331210191,
+              "fraction_repaired_error_nodes": 0.025477707006369428
+            },
+            "heteroskedastic": {
+              "n_nodes": 320,
+              "n_anchor_rank_errors": 121,
+              "anchor_rank_error_rate": 0.378125,
+              "feature_auc": {
+                "mean_abs_adjustment": 0.5458283151293658,
+                "std_adjustment": 0.5949997923501806,
+                "range_adjustment": 0.599069728809336,
+                "fraction_abs_adjustment_ge_002": 0.5303584035881889
+              },
+              "feature_severity_correlation": {
+                "mean_abs_adjustment": 0.058491047534501274,
+                "std_adjustment": 0.15685779545067885,
+                "range_adjustment": 0.16644384011881896,
+                "fraction_abs_adjustment_ge_002": 0.07096016726706436
+              },
+              "best_auc": 0.599069728809336,
+              "best_feature": "range_adjustment",
+              "best_auc_bootstrap95": [
+                0.5485888667897693,
+                0.6611086805376274
+              ],
+              "mean_correction_delta_error_nodes": -0.07427078538642186,
+              "correction_delta_error_nodes_bootstrap95": [
+                -0.2059964179293432,
+                0.05439979798237508
+              ],
+              "fraction_positive_correction_error_nodes": 0.4793388429752066,
+              "fraction_repaired_error_nodes": 0.06611570247933884
+            }
+          }
+        }
       },
-      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S59_MECHANICS_RESULT.json"
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S59_MECHANICS_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S59_DIAGNOSTIC_RESULT.json",
+      "result_summary": {
+        "n_nodes": 640,
+        "n_anchor_rank_errors": 278,
+        "anchor_rank_error_rate": 0.434375,
+        "feature_auc": {
+          "mean_abs_adjustment": 0.4940577924400811,
+          "std_adjustment": 0.5723001709129933,
+          "range_adjustment": 0.5833002106602011,
+          "fraction_abs_adjustment_ge_002": 0.5175334870225367
+        },
+        "feature_severity_correlation": {
+          "mean_abs_adjustment": 0.04191372771069957,
+          "std_adjustment": 0.12551790941942045,
+          "range_adjustment": 0.14674045571952124,
+          "fraction_abs_adjustment_ge_002": 0.049696257535483644
+        },
+        "best_auc": 0.5833002106602011,
+        "best_feature": "range_adjustment",
+        "best_auc_bootstrap95": [
+          0.5409559849228898,
+          0.6279246013464944
+        ],
+        "mean_correction_delta_error_nodes": -0.05002213870980036,
+        "correction_delta_error_nodes_bootstrap95": [
+          -0.13665551543696405,
+          0.036120975306503905
+        ],
+        "fraction_positive_correction_error_nodes": 0.48201438848920863,
+        "fraction_repaired_error_nodes": 0.04316546762589928,
+        "by_regime": {
+          "linear": {
+            "n_nodes": 320,
+            "n_anchor_rank_errors": 157,
+            "anchor_rank_error_rate": 0.490625,
+            "feature_auc": {
+              "mean_abs_adjustment": 0.43245672306670313,
+              "std_adjustment": 0.5392130045719198,
+              "range_adjustment": 0.5533586026337384,
+              "fraction_abs_adjustment_ge_002": 0.5021296549568207
+            },
+            "feature_severity_correlation": {
+              "mean_abs_adjustment": -0.0014099456976960868,
+              "std_adjustment": 0.11217445251565526,
+              "range_adjustment": 0.13631663760690418,
+              "fraction_abs_adjustment_ge_002": 0.030274649207387986
+            },
+            "best_auc": 0.5533586026337384,
+            "best_feature": "range_adjustment",
+            "best_auc_bootstrap95": [
+              0.49852682869521364,
+              0.6173562275135775
+            ],
+            "mean_correction_delta_error_nodes": -0.031333691271130275,
+            "correction_delta_error_nodes_bootstrap95": [
+              -0.15935213062820208,
+              0.08986527518821474
+            ],
+            "fraction_positive_correction_error_nodes": 0.4840764331210191,
+            "fraction_repaired_error_nodes": 0.025477707006369428
+          },
+          "heteroskedastic": {
+            "n_nodes": 320,
+            "n_anchor_rank_errors": 121,
+            "anchor_rank_error_rate": 0.378125,
+            "feature_auc": {
+              "mean_abs_adjustment": 0.5458283151293658,
+              "std_adjustment": 0.5949997923501806,
+              "range_adjustment": 0.599069728809336,
+              "fraction_abs_adjustment_ge_002": 0.5303584035881889
+            },
+            "feature_severity_correlation": {
+              "mean_abs_adjustment": 0.058491047534501274,
+              "std_adjustment": 0.15685779545067885,
+              "range_adjustment": 0.16644384011881896,
+              "fraction_abs_adjustment_ge_002": 0.07096016726706436
+            },
+            "best_auc": 0.599069728809336,
+            "best_feature": "range_adjustment",
+            "best_auc_bootstrap95": [
+              0.5485888667897693,
+              0.6611086805376274
+            ],
+            "mean_correction_delta_error_nodes": -0.07427078538642186,
+            "correction_delta_error_nodes_bootstrap95": [
+              -0.2059964179293432,
+              0.05439979798237508
+            ],
+            "fraction_positive_correction_error_nodes": 0.4793388429752066,
+            "fraction_repaired_error_nodes": 0.06611570247933884
+          }
+        }
+      }
     }
   ],
   "established_findings": [
