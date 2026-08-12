@@ -1,0 +1,47 @@
+name: Swarmite S72 Conformal Response Sets
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s72.yml']
+permissions: {contents: write}
+jobs:
+ run:
+  runs-on: ubuntu-latest
+  timeout-minutes: 240
+  steps:
+   - uses: actions/checkout@v4
+   - uses: actions/setup-python@v5
+     with: {python-version: '3.11'}
+   - run: pip install numpy
+   - name: Start S72
+     run: |
+      git pull --rebase
+      python - <<'PY'
+      import json
+      from pathlib import Path
+      p=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S72')
+      if it['status']=='PENDING':
+       it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S72_CONFORMAL_RESPONSE_SET_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s72_conformal_response_sets.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics_calibration_heldout'}})
+       q['version']='13.8'; p.write_text(json.dumps(q,indent=2))
+      PY
+      git config user.name swarmite-worker; git config user.email swarmite-worker@users.noreply.github.com; git add experiments/swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Start EXP-002S72 conformal response sets'; git push
+   - name: Execute and evaluate S72
+     working-directory: experiments/swarmite-exp002
+     run: |
+      git pull --rebase
+      python swarmite_exp002_s72_conformal_response_sets.py > EXP-002S72_RESULT.json
+      python - <<'PY'
+      import json
+      from pathlib import Path
+      root=Path('../..'); p=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S72'); z=json.loads(Path('EXP-002S72_RESULT.json').read_text()); d=z.get('disposition','BLOCKED_EXECUTION_UNKNOWN')
+      it['result_artifact']='experiments/swarmite-exp002/EXP-002S72_RESULT.json'; it['result_summary']={'heldout':z.get('heldout',{}),'coverage_error':z.get('coverage_error',{}),'width95_ratio':z.get('width95_ratio')}; it['checkpoint']={'state':'blocked' if d.startswith('BLOCKED') else 'complete','disposition':d}; it['status']=('BLOCKED_'+d.removeprefix('BLOCKED_')) if d.startswith('BLOCKED') else 'COMPLETE_'+d
+      if not d.startswith('BLOCKED'):
+       if d=='CONFORMAL_RESPONSE_SETS_SUPPORTED':
+        title='Frozen conformal branch-aware planner retest'; rationale='S72 recovered held-out response calibration distribution-free. Freeze conformal sets and retest branch-aware acquisition against EIG without planner retuning.'
+       else:
+        title='Set-valued empirical acquisition utility diagnostic'; rationale='S72 falsified empirical conformal response-set calibration after S70/S71 moment calibration failures. Abandon calibration retuning and test acquisition utility directly from empirical intervention-response outcome families.'
+       if not any(x.get('id')=='EXP-002S73' for x in q['queue']): q['queue'].append({'id':'EXP-002S73','title':title,'priority':39.7,'status':'PENDING','depends_on':['EXP-002S72'],'rationale':rationale})
+       finding=f"S72 disposition {d}. Held-out response sets: {z.get('heldout')}; coverage-error summary: {z.get('coverage_error')}; 95% width ratio: {z.get('width95_ratio')}."; q['established_findings'].append(finding) if finding not in q['established_findings'] else None
+       Path('EXP-002S72_EVALUATION.md').write_text('# EXP-002S72 Evaluation\n\n**Disposition:** '+d+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S72_EVALUATION.md'
+      q['version']='13.9'; p.write_text(json.dumps(q,indent=2))
+      PY
+      git add EXP-002S72_RESULT.json EXP-002S72_EVALUATION.md ../swarmite-queue/QUEUE.json 2>/dev/null || git add EXP-002S72_RESULT.json ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Complete EXP-002S72 and enqueue successor'; git push
