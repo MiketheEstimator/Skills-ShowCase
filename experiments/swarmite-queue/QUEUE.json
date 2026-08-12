@@ -4736,7 +4736,7 @@
       "id": "EXP-002S66",
       "title": "Evidence-guided intervention allocation diagnostic",
       "priority": 42.0,
-      "status": "RUNNING",
+      "status": "COMPLETE_ALLOCATION_SIGNAL_FALSIFIED",
       "depends_on": [
         "EXP-002S65"
       ],
@@ -4744,11 +4744,34 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S66_EVIDENCE_GUIDED_INTERVENTION_ALLOCATION_DIAGNOSTIC_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s66_evidence_guided_intervention_allocation.py",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics_then_heldout_diagnostic",
-        "mechanics": "2+2",
-        "model_training": "64+64",
-        "diagnostic": "64+64"
+        "state": "complete",
+        "disposition": "ALLOCATION_SIGNAL_FALSIFIED",
+        "next_stage": "evaluate_enqueue"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S66_RESULT.json",
+      "result_summary": {
+        "n_worlds": 128,
+        "finite": true,
+        "positive_value_auc": 0.5450620615218564,
+        "spearman_probability_vs_value": 0.11592870404957047,
+        "evidence_mean_value_per_cost": 0.06819125610406981,
+        "eig_mean_value_per_cost": 0.07862152696859487,
+        "paired_mean_difference": -0.010430270864525054,
+        "evidence_beats_eig_fraction": 0.328125,
+        "by_regime": {
+          "linear": {
+            "n": 64,
+            "evidence_mean_value_per_cost": 0.059646737409816346,
+            "eig_mean_value_per_cost": 0.07917156546311924,
+            "paired_difference": -0.01952482805330291
+          },
+          "heteroskedastic": {
+            "n": 64,
+            "evidence_mean_value_per_cost": 0.0767357747983233,
+            "eig_mean_value_per_cost": 0.0780714884740705,
+            "paired_difference": -0.0013357136757471957
+          }
+        }
       }
     }
   ],
