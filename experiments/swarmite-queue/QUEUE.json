@@ -1,5 +1,5 @@
 {
-  "version": "10.6",
+  "version": "10.7",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3715,7 +3715,18 @@
         }
       },
       "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S56_MECHANICS_RESULT.json",
-      "training_artifact": "experiments/swarmite-exp002/EXP-002S56_TRAINING_RESULT.json"
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S56_TRAINING_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S56_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S57",
+      "title": "Robust continuous residual-process likelihood",
+      "priority": 46.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S56"
+      ],
+      "rationale": "S56 produced nontrivial continuous variance-process evidence but did not qualify structurally. Replace Gaussian residual likelihood with a robust heavy-tailed residual process while preserving continuous variance marginalization; do not retune the gamma grid."
     }
   ],
   "established_findings": [
@@ -3771,7 +3782,8 @@
     "S53 disposition FALSIFIED_AT_TRAINING. Continuous terminal-only averaging driven by the frozen S52 latent residual-state model was tested prospectively against the frozen S46/S30 matched control with planning unchanged.",
     "S53 was falsified at training: continuous graph-level posterior averaging driven by the S52 latent residual-state model did not qualify. Because S52 retained useful latent discrimination, the next justified change is node-local residual-process composition rather than graph-level cap, temperature, or threshold retuning.",
     "S54 disposition FALSIFIED_AT_TRAINING. Nodewise residual-process posterior composition was evaluated prospectively against the frozen S46/S30 matched control with planning unchanged. Training paired edge difference -0.10876620460835856, node AUC 0.6520412315204123, node Brier 0.20296171938872742, mean node specialist mass 0.00017965051798812099.",
-    "S55 disposition FALSIFIED_AT_TRAINING. Explicit posterior uncertainty over nodewise residual-process classes was tested prospectively against the frozen S46/S30 matched control with planning unchanged. Training paired edge difference 0.055398038249583476, node AUC 0.6075445503747329, node Brier 0.21856553471947127, mean H-class mass 0.34218750001054704."
+    "S55 disposition FALSIFIED_AT_TRAINING. Explicit posterior uncertainty over nodewise residual-process classes was tested prospectively against the frozen S46/S30 matched control with planning unchanged. Training paired edge difference 0.055398038249583476, node AUC 0.6075445503747329, node Brier 0.21856553471947127, mean H-class mass 0.34218750001054704.",
+    "S56 disposition FALSIFIED_AT_TRAINING. Continuous variance-process evidence was marginalized within node/parent likelihoods and compared prospectively against frozen S46/S30 with planning unchanged. Training paired edge difference 0.32286868196719076, heteroskedastic difference 0.6592012227002657, linear difference -0.013463858765884285, mean absolute score adjustment 0.9946234840492849."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
