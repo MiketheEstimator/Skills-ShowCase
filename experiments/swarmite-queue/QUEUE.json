@@ -3722,7 +3722,7 @@
       "id": "EXP-002S57",
       "title": "Robust continuous residual-process likelihood",
       "priority": 46.0,
-      "status": "RUNNING",
+      "status": "COMPLETE_FALSIFIED_AT_TRAINING",
       "depends_on": [
         "EXP-002S56"
       ],
@@ -3730,10 +3730,44 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S57_ROBUST_CONTINUOUS_RESIDUAL_PROCESS_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s57_robust_continuous_residual_process.py",
       "checkpoint": {
-        "state": "mechanics_passed",
-        "next_stage": "training"
+        "state": "complete",
+        "disposition": "FALSIFIED_AT_TRAINING",
+        "training": {
+          "coverage": 0.8671875,
+          "control_hybrid_mean_edge_delta": -0.44082965327919443,
+          "candidate_hybrid_mean_edge_delta": -0.1781716870798909,
+          "paired_mean_edge_difference": 0.2626579661993035,
+          "bootstrap95_paired_edge_difference": [
+            0.15816344155981948,
+            0.3712539220307274
+          ],
+          "control_hybrid_mean_brier_delta": -0.00319212026453313,
+          "candidate_hybrid_mean_brier_delta": 0.0037243801043299538,
+          "control_promoted_large_harms": 0,
+          "candidate_promoted_large_harms": 6,
+          "mean_abs_family_score_adjustment": 0.871683936571051,
+          "mean_fraction_adjusted_families": 0.933203125,
+          "by_regime": {
+            "linear": {
+              "n": 64,
+              "coverage": 0.765625,
+              "control_hybrid_mean_edge_delta": 0.007036947539087552,
+              "candidate_hybrid_mean_edge_delta": -0.10988174323090583,
+              "paired_mean_edge_difference": -0.11691869076999337
+            },
+            "heteroskedastic": {
+              "n": 64,
+              "coverage": 0.96875,
+              "control_hybrid_mean_edge_delta": -0.8886962540974764,
+              "candidate_hybrid_mean_edge_delta": -0.246461630928876,
+              "paired_mean_edge_difference": 0.6422346231686005
+            }
+          },
+          "mechanics_ok": true
+        }
       },
-      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S57_MECHANICS_RESULT.json"
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S57_MECHANICS_RESULT.json",
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S57_TRAINING_RESULT.json"
     }
   ],
   "established_findings": [
