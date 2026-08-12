@@ -4865,7 +4865,7 @@
       "id": "EXP-002S69",
       "title": "Intervention-response predictive calibration diagnostic",
       "priority": 40.5,
-      "status": "RUNNING",
+      "status": "COMPLETE_PREDICTIVE_MISCALIBRATION_SUPPORTED",
       "depends_on": [
         "EXP-002S68"
       ],
@@ -4873,10 +4873,31 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S69_INTERVENTION_RESPONSE_PREDICTIVE_CALIBRATION_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s69_predictive_calibration.py",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics_then_diagnostic",
-        "mechanics": "2+2",
-        "diagnostic": "64+64"
+        "state": "complete",
+        "disposition": "PREDICTIVE_MISCALIBRATION_SUPPORTED",
+        "next_stage": "evaluate_enqueue"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S69_RESULT.json",
+      "result_summary": {
+        "n_worlds": 128,
+        "draws_per_target_setpoint": 32,
+        "finite": true,
+        "by_regime": {
+          "linear": {
+            "n_response_cells": 2560,
+            "mean_standardized_residual": -0.006772905635903747,
+            "rms_standardized_residual": 1.0599041811871397,
+            "coverage80": 0.7546875,
+            "coverage95": 0.900390625
+          },
+          "heteroskedastic": {
+            "n_response_cells": 2560,
+            "mean_standardized_residual": 0.022766061408813272,
+            "rms_standardized_residual": 0.6997770505823854,
+            "coverage80": 0.905859375,
+            "coverage95": 0.977734375
+          }
+        }
       }
     }
   ],
