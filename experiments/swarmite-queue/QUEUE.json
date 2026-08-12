@@ -1,5 +1,5 @@
 {
-  "version": "10.5",
+  "version": "10.6",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3670,11 +3670,21 @@
       "id": "EXP-002S56",
       "title": "Continuous residual-process likelihood family",
       "priority": 47.0,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S55"
       ],
-      "rationale": "S55 retained observable class discrimination but explicit binary residual-class marginalization did not qualify. Replace the binary A/H residual class with a continuous variance-process likelihood; do not retune S55 class probabilities."
+      "rationale": "S55 retained observable class discrimination but explicit binary residual-class marginalization did not qualify. Replace the binary A/H residual class with a continuous variance-process likelihood; do not retune S55 class probabilities.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S56_CONTINUOUS_VARIANCE_PROCESS_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s56_continuous_variance_process.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "training": "64 + 64",
+        "validation": "32 + 32",
+        "confirmation": "64 + 64"
+      }
     }
   ],
   "established_findings": [
