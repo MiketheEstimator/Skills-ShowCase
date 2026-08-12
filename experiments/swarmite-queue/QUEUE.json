@@ -1,5 +1,5 @@
 {
-  "version": "13.0",
+  "version": "13.1",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4858,7 +4858,18 @@
             "paired_difference": 0.015794519192389667
           }
         }
-      }
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S68_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S69",
+      "title": "Intervention-response predictive calibration diagnostic",
+      "priority": 40.5,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S68"
+      ],
+      "rationale": "S68 falsified sequential posterior-derived scalar VOI after S66/S67 failures. Diagnose intervention-response predictive model calibration/misspecification directly before any further planner scoring."
     }
   ],
   "established_findings": [
@@ -4926,7 +4937,8 @@
     "S64 disposition FALSIFIED_PROJECTION_GEOMETRY_AT_TRAINING. paired edge difference 0.02564153260106894; AUC 0.7108021390374332; proposal usefulness 0.5686274509803921; IPF residual 0.01046516765930532; harms candidate/control 0/0.",
     "S65 disposition FALSIFIED_ACTION_GEOMETRY_AT_TRAINING. paired action-edge difference 0.140625; AUC 0.7186628143647177; proposal usefulness 0.6415770609318996; action-change fraction 0.25; harms candidate/control 2/0.",
     "S66 disposition ALLOCATION_SIGNAL_FALSIFIED. positive acquisition-value AUC 0.5450620615218564; Spearman 0.11592870404957047; evidence/EIG mean value-per-cost 0.06819125610406981/0.07862152696859487; paired difference -0.010430270864525054; evidence-beats-EIG fraction 0.328125.",
-    "S67 disposition RESPONSE_DISAGREEMENT_FALSIFIED. positive acquisition-value AUC 0.5230826345213138; Spearman 0.20115388770480397; disagreement/EIG mean value-per-cost 0.056451730245156276/0.04317759674970712; paired difference 0.013274133495449158; disagreement-beats-EIG fraction 0.4140625."
+    "S67 disposition RESPONSE_DISAGREEMENT_FALSIFIED. positive acquisition-value AUC 0.5230826345213138; Spearman 0.20115388770480397; disagreement/EIG mean value-per-cost 0.056451730245156276/0.04317759674970712; paired difference 0.013274133495449158; disagreement-beats-EIG fraction 0.4140625.",
+    "S68 disposition BRANCH_VOI_FALSIFIED. positive acquisition-value AUC 0.5232663989290496; Spearman 0.15174248167109786; candidate/EIG mean value-per-cost 0.059504553419725874/0.04622881937637953; paired difference 0.013275734043346345; candidate-beats-EIG fraction 0.390625."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
