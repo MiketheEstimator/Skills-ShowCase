@@ -1,5 +1,5 @@
 {
-  "version": "11.6",
+  "version": "11.7",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4292,7 +4292,18 @@
         },
         "mechanics_ok": true
       },
-      "training_artifact": "experiments/swarmite-exp002/EXP-002S61_TRAINING_RESULT.json"
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S61_TRAINING_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S61_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S62",
+      "title": "Posterior-disagreement counterfactual parent proposal diagnostic",
+      "priority": 42.4,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S61"
+      ],
+      "rationale": "S61 falsified the predictive-state targeting/proposal mechanism. Replace mean held-out-loss competitor nomination with intervention-conditioned posterior family disagreement; do not tune S61 activation or tilt strength."
     }
   ],
   "established_findings": [
@@ -4353,7 +4364,8 @@
     "S57 disposition FALSIFIED_AT_TRAINING. A fixed Student-t residual likelihood with inherited continuous variance-slope marginalization was compared prospectively against frozen S46/S30. Training paired edge difference 0.2626579661993035, heteroskedastic difference 0.6422346231686005, linear difference -0.11691869076999337, mean absolute score adjustment 0.871683936571051.",
     "S58 disposition FALSIFIED_AT_TRAINING. Intervention-conditional robust residual-scale evidence was compared prospectively against frozen S46/S30. Training paired edge difference 0.5101479493392345, heteroskedastic difference 0.9297556834753999, linear difference 0.09054021520306874, mean absolute score adjustment 1.7943561217967567.",
     "S59 disposition EVIDENCE_NOT_ALIGNED. Best observable residual-state AUC for anchor parent-ranking errors 0.5833002106602011; mean S58 correction delta on anchor-error nodes -0.05002213870980036; positive-correction fraction 0.48201438848920863; repaired-error fraction 0.04316546762589928.",
-    "S60 disposition PREDICTIVE_STATE_ALIGNED. Best counterfactual predictive-state AUC for frozen anchor parent-ranking errors 0.652229387561323; bootstrap95 [0.607182554094821, 0.6933916075546676]; best feature cv_competitor_advantage; mean CV states 3.2296875."
+    "S60 disposition PREDICTIVE_STATE_ALIGNED. Best counterfactual predictive-state AUC for frozen anchor parent-ranking errors 0.652229387561323; bootstrap95 [0.607182554094821, 0.6933916075546676]; best feature cv_competitor_advantage; mean CV states 3.2296875.",
+    "S61 disposition FALSIFIED_TARGETING_AT_TRAINING. paired edge difference 0.012820018042227464; error-localization AUC 0.6561103771015925; competitor useful fraction on anchor-error nodes 0.29277566539923955; promoted large harms candidate/control 0/0."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
