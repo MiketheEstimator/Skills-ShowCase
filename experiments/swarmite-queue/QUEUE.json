@@ -4905,7 +4905,7 @@
       "id": "EXP-002S70",
       "title": "Cross-fitted intervention-response calibration layer",
       "priority": 40.0,
-      "status": "RUNNING",
+      "status": "COMPLETE_RESPONSE_CALIBRATION_FALSIFIED",
       "depends_on": [
         "EXP-002S69"
       ],
@@ -4913,11 +4913,77 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S70_RESPONSE_CALIBRATION_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s70_response_calibration.py",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics_crossfit_heldout",
-        "mechanics": "2+2",
-        "training": "64+64",
-        "heldout": "64+64"
+        "state": "complete",
+        "disposition": "RESPONSE_CALIBRATION_FALSIFIED",
+        "next_stage": "evaluate_enqueue"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S70_RESULT.json",
+      "result_summary": {
+        "heldout": {
+          "linear": {
+            "raw": {
+              "mean": -0.00340779803276193,
+              "rms": 1.0483747101584382,
+              "coverage80": 0.786328125,
+              "coverage95": 0.934375
+            },
+            "calibrated": {
+              "mean": 0.0011569964963933476,
+              "rms": 1.214731894372649,
+              "coverage80": 0.71484375,
+              "coverage95": 0.8953125
+            }
+          },
+          "heteroskedastic": {
+            "raw": {
+              "mean": -0.002256112586164241,
+              "rms": 0.7014113811742843,
+              "coverage80": 0.925390625,
+              "coverage95": 0.98984375
+            },
+            "calibrated": {
+              "mean": 0.0012396982104340634,
+              "rms": 0.8060548082584313,
+              "coverage80": 0.8875,
+              "coverage95": 0.97890625
+            }
+          }
+        },
+        "coverage_error": {
+          "raw_mean": 0.09726562500000002,
+          "calibrated_mean": 0.128125,
+          "relative_improvement": -0.31726907630522044
+        },
+        "crossfit_training": {
+          "linear": {
+            "raw": {
+              "mean": -0.00972829898791667,
+              "rms": 1.0090174235265568,
+              "coverage80": 0.800390625,
+              "coverage95": 0.9484375
+            },
+            "calibrated": {
+              "mean": -0.007740805129445897,
+              "rms": 1.1712712744086087,
+              "coverage80": 0.7328125,
+              "coverage95": 0.90625
+            }
+          },
+          "heteroskedastic": {
+            "raw": {
+              "mean": 0.0016113485137704089,
+              "rms": 0.691391776482999,
+              "coverage80": 0.933984375,
+              "coverage95": 0.9890625
+            },
+            "calibrated": {
+              "mean": 0.007155861789371868,
+              "rms": 0.7961927285418164,
+              "coverage80": 0.89609375,
+              "coverage95": 0.980859375
+            }
+          }
+        }
       }
     }
   ],
