@@ -1,0 +1,117 @@
+name: Swarmite S64 Constrained Local Posterior Projection
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s64.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install numpy
+      - name: Start S64
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S64')
+          if it.get('status')=='PENDING':
+              it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S64_CONSTRAINED_LOCAL_POSTERIOR_PROJECTION_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s64_constrained_local_posterior_projection.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics','mechanics':'2+2','training':'64+64','validation':'32+32','confirmation':'64+64'}}); q['version']='12.2'
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker; git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Start EXP-002S64 constrained posterior projection'; git push
+      - name: Mechanics
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s64_constrained_local_posterior_projection as s64
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S64')
+          if it.get('status')!='RUNNING': raise SystemExit(0)
+          rows=s64.generate(96801,2); ok=s64.mechanics(rows,2); Path('EXP-002S64_MECHANICS_RESULT.json').write_text(json.dumps({'passed':ok,'rows':rows},indent=2)); it['mechanics_artifact']='experiments/swarmite-exp002/EXP-002S64_MECHANICS_RESULT.json'
+          if ok: it['checkpoint']={'state':'mechanics_passed','next_stage':'training'}
+          else: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_mechanics','next_action':'repair S64 without opening training'}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S64_MECHANICS_RESULT.json ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S64 mechanics'; git push
+      - name: Training
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s64_constrained_local_posterior_projection as s64
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S64')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='mechanics_passed': raise SystemExit(0)
+          rows=s64.generate(96901,64); ok=s64.mechanics(rows,64)
+          if not ok: Path('EXP-002S64_TRAINING_RESULT.json').write_text(json.dumps({'mechanics_ok':False},indent=2)); it['status']='BLOCKED_EXECUTION_TRAINING_MECHANICS'; it['checkpoint']={'state':'blocked_training_mechanics','next_action':'repair without validation'}
+          else:
+              model=s64.train_model(rows); ev=s64.evaluate(rows,model,26464); passed=s64.qualifies(ev); Path('EXP-002S64_TRAINING_RESULT.json').write_text(json.dumps({'mechanics_ok':True,'model':model,'evaluation':ev,'qualified':passed},indent=2)); Path('EXP-002S64_MODEL.json').write_text(json.dumps(model,indent=2)); it['model_artifact']='experiments/swarmite-exp002/EXP-002S64_MODEL.json'
+              if passed: it['checkpoint']={'state':'training_passed','next_stage':'validation','training':ev}
+              else: disp=s64.failclass(ev)+'_AT_TRAINING'; it['status']='COMPLETE_'+disp; it['checkpoint']={'state':'complete','disposition':disp,'training':ev}; it['result_summary']=ev
+          it['training_artifact']='experiments/swarmite-exp002/EXP-002S64_TRAINING_RESULT.json'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S64_TRAINING_RESULT.json ../swarmite-queue/QUEUE.json; test ! -f EXP-002S64_MODEL.json || git add EXP-002S64_MODEL.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S64 training'; git push
+      - name: Validation
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s64_constrained_local_posterior_projection as s64
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S64')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='training_passed': raise SystemExit(0)
+          model=json.loads(Path('EXP-002S64_MODEL.json').read_text()); rows=s64.generate(97301,32); ok=s64.mechanics(rows,32); ev=s64.evaluate(rows,model,26465) if ok else None; passed=bool(ok and s64.qualifies(ev,True)); Path('EXP-002S64_VALIDATION_RESULT.json').write_text(json.dumps({'mechanics_ok':ok,'evaluation':ev,'qualified':passed},indent=2)); it['validation_artifact']='experiments/swarmite-exp002/EXP-002S64_VALIDATION_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_VALIDATION_MECHANICS'; it['checkpoint']={'state':'blocked_validation_mechanics','next_action':'repair without confirmation'}
+          elif passed: it['checkpoint']={'state':'validation_passed','next_stage':'confirmation','validation':ev}
+          else: disp=s64.failclass(ev)+'_ON_VALIDATION'; it['status']='COMPLETE_'+disp; it['checkpoint']={'state':'complete','disposition':disp,'validation':ev}; it['result_summary']=ev
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          test ! -f EXP-002S64_VALIDATION_RESULT.json || git add EXP-002S64_VALIDATION_RESULT.json; git add ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S64 validation'; git push
+      - name: Confirmation
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s64_constrained_local_posterior_projection as s64
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S64')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='validation_passed': raise SystemExit(0)
+          model=json.loads(Path('EXP-002S64_MODEL.json').read_text()); rows=s64.generate(97601,64); ok=s64.mechanics(rows,64); ev=s64.evaluate(rows,model,26466) if ok else None; passed=bool(ok and s64.qualifies(ev,True,True)); Path('EXP-002S64_CONFIRMATION_RESULT.json').write_text(json.dumps({'mechanics_ok':ok,'evaluation':ev,'qualified':passed},indent=2)); it['confirmation_artifact']='experiments/swarmite-exp002/EXP-002S64_CONFIRMATION_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_CONFIRMATION_MECHANICS'; it['checkpoint']={'state':'blocked_confirmation_mechanics','next_action':'repair confirmation mechanics'}
+          elif passed: it['status']='COMPLETE_SUPPORTED'; it['checkpoint']={'state':'complete','disposition':'SUPPORTED','confirmation':ev}; it['result_summary']=ev
+          else: disp=s64.failclass(ev)+'_ON_CONFIRMATION'; it['status']='COMPLETE_'+disp; it['checkpoint']={'state':'complete','disposition':disp,'confirmation':ev}; it['result_summary']=ev
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          test ! -f EXP-002S64_CONFIRMATION_RESULT.json || git add EXP-002S64_CONFIRMATION_RESULT.json; git add ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S64 confirmation'; git push
+      - name: Evaluate and enqueue S65
+        if: always()
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S64'); cp=it.get('checkpoint',{}); disp=cp.get('disposition')
+          if not disp: raise SystemExit(0)
+          ev=it.get('result_summary') or cp.get('confirmation') or cp.get('validation') or cp.get('training') or {}; sid='EXP-002S65'
+          if disp=='SUPPORTED': title='Frozen S64 breadth and mechanism-shift transfer'; rationale='S64 supported constrained local posterior projection. Test the fully frozen mechanism across breadth and mechanism shifts without retuning.'
+          elif 'EVIDENCE_TRANSFER' in disp: title='Set-valued intervention-invariance structural diagnostic'; rationale='S64 lost S62 evidence prospectively. Change evidence representation to set-valued intervention invariance/conditional-independence contrasts; do not tune projection parameters.'
+          else: title='Decision-theoretic local structural action diagnostic'; rationale='S64 retained S62 evidence but falsified global posterior projection geometry. Change the action layer to decision-theoretic local edge/parent-family actions under posterior uncertainty rather than retuning rho or IPF.'
+          if not any(x.get('id')==sid for x in q['queue']): q['queue'].append({'id':sid,'title':title,'priority':42.1,'status':'PENDING','depends_on':['EXP-002S64'],'rationale':rationale})
+          finding=f"S64 disposition {disp}. paired edge difference {ev.get('paired_mean_edge_difference')}; AUC {ev.get('error_localization_auc')}; proposal usefulness {ev.get('competitor_useful_fraction_on_error_nodes')}; IPF residual {ev.get('mean_final_ipf_residual')}; harms candidate/control {ev.get('candidate_promoted_large_harms')}/{ev.get('control_promoted_large_harms')}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          Path('EXP-002S64_EVALUATION.md').write_text('# EXP-002S64 Evaluation\n\n**Disposition:** '+str(disp)+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S64_EVALUATION.md'; q['version']='12.3'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S64_EVALUATION.md ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Evaluate EXP-002S64 and enqueue successor'; git push
