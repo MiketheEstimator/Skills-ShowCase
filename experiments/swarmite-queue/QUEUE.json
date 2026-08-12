@@ -1,5 +1,5 @@
 {
-  "version": "10.3",
+  "version": "10.4",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3613,11 +3613,21 @@
       "id": "EXP-002S55",
       "title": "Explicit residual-process class posterior",
       "priority": 47.25,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S54"
       ],
-      "rationale": "S54 retained nodewise specialist discrimination but local Bernoulli composition did not deliver structural gain. Replace deterministic local mixing with explicit posterior uncertainty over residual-process classes; do not retune S54 weights."
+      "rationale": "S54 retained nodewise specialist discrimination but local Bernoulli composition did not deliver structural gain. Replace deterministic local mixing with explicit posterior uncertainty over residual-process classes; do not retune S54 weights.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S55_RESIDUAL_PROCESS_CLASS_POSTERIOR_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s55_residual_process_class_posterior.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "training": "64 + 64",
+        "validation": "32 + 32",
+        "confirmation": "64 + 64"
+      }
     }
   ],
   "established_findings": [
