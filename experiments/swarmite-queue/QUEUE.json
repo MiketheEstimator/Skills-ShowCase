@@ -1,5 +1,5 @@
 {
-  "version": "10.4",
+  "version": "10.5",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3663,7 +3663,18 @@
         }
       },
       "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S55_MECHANICS_RESULT.json",
-      "training_artifact": "experiments/swarmite-exp002/EXP-002S55_TRAINING_RESULT.json"
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S55_TRAINING_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S55_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S56",
+      "title": "Continuous residual-process likelihood family",
+      "priority": 47.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S55"
+      ],
+      "rationale": "S55 retained observable class discrimination but explicit binary residual-class marginalization did not qualify. Replace the binary A/H residual class with a continuous variance-process likelihood; do not retune S55 class probabilities."
     }
   ],
   "established_findings": [
@@ -3718,7 +3729,8 @@
     "S52 was falsified at training: the 42-feature latent residual-state model showed useful specialist-win discrimination (training AUC 0.8360836083608361, Brier 0.12439288888984713 versus constant 0.1664478922540713) but every preregistered hard-selection rule used the specialist zero times, so no rule qualified. Hard selection, not the latent representation itself, is the immediate failure mode.",
     "S53 disposition FALSIFIED_AT_TRAINING. Continuous terminal-only averaging driven by the frozen S52 latent residual-state model was tested prospectively against the frozen S46/S30 matched control with planning unchanged.",
     "S53 was falsified at training: continuous graph-level posterior averaging driven by the S52 latent residual-state model did not qualify. Because S52 retained useful latent discrimination, the next justified change is node-local residual-process composition rather than graph-level cap, temperature, or threshold retuning.",
-    "S54 disposition FALSIFIED_AT_TRAINING. Nodewise residual-process posterior composition was evaluated prospectively against the frozen S46/S30 matched control with planning unchanged. Training paired edge difference -0.10876620460835856, node AUC 0.6520412315204123, node Brier 0.20296171938872742, mean node specialist mass 0.00017965051798812099."
+    "S54 disposition FALSIFIED_AT_TRAINING. Nodewise residual-process posterior composition was evaluated prospectively against the frozen S46/S30 matched control with planning unchanged. Training paired edge difference -0.10876620460835856, node AUC 0.6520412315204123, node Brier 0.20296171938872742, mean node specialist mass 0.00017965051798812099.",
+    "S55 disposition FALSIFIED_AT_TRAINING. Explicit posterior uncertainty over nodewise residual-process classes was tested prospectively against the frozen S46/S30 matched control with planning unchanged. Training paired edge difference 0.055398038249583476, node AUC 0.6075445503747329, node Brier 0.21856553471947127, mean H-class mass 0.34218750001054704."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
