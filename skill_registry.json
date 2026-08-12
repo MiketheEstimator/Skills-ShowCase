@@ -1,4 +1,6 @@
 {
+  "version": "1.0.0",
+  "showcase": "2IT_SKILLS",
   "skills": [
     {
       "skill_id": "SKILL_DOC_MARKDOWN",

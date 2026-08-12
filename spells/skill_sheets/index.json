@@ -1,0 +1,196 @@
+{
+  "skill_sheets": [
+    {
+      "sheet_id": "SKILL_SHEET_DOCUMENT_MARKDOWN",
+      "canonical_name": "Document Markdown",
+      "track": "documents",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_DOCUMENT_MARKDOWN.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_DOC_MARKDOWN_GENERAL.md",
+      "focus_code": "DOC-TRANSFORM-001"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_DOCUMENT_DOCX",
+      "canonical_name": "Document Docx",
+      "track": "documents",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_DOCUMENT_DOCX.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_DOC_WORD_DOCX.md",
+      "focus_code": "DOC-TRANSFORM-002"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_DOCUMENT_PDF",
+      "canonical_name": "Document Pdf",
+      "track": "documents",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_DOCUMENT_PDF.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_AUTOMATED_PRECISION_PDF.md",
+      "focus_code": "DOC-TRANSFORM-003"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_DATA_JSON",
+      "canonical_name": "Data Json",
+      "track": "data_serialization",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_DATA_JSON.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_VALIDATED_JSON_EXPORT.md",
+      "focus_code": "DATA-STRUCT-001"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_DATA_CSV",
+      "canonical_name": "Data Csv",
+      "track": "data_serialization",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_DATA_CSV.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_STRUCTURED_CSV_EXPORT.md",
+      "focus_code": "DATA-STRUCT-002"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_DATA_XLSX",
+      "canonical_name": "Data Xlsx",
+      "track": "spreadsheets",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_DATA_XLSX.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_XLSX_FILE.md",
+      "focus_code": "DATA-STRUCT-003"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_PRESENTATION_PPTX",
+      "canonical_name": "Presentation Pptx",
+      "track": "presentations",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_PRESENTATION_PPTX.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_PPTX_SKILL.md",
+      "focus_code": "PRES-PIPE-001"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_DIAGRAM_MERMAID",
+      "canonical_name": "Diagram Mermaid",
+      "track": "diagrams",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_DIAGRAM_MERMAID.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_DIAGRAM_MERMAID_AUTOGEN.md",
+      "focus_code": "DIAG-PIPE-001"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_DIAGRAM_PLANTUML",
+      "canonical_name": "Diagram Plantuml",
+      "track": "diagrams",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_DIAGRAM_PLANTUML.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_DIAGRAM_PLANTUML_AUTOGEN.md",
+      "focus_code": "DIAG-PIPE-002"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_CODE_PYTHON",
+      "canonical_name": "Code Python",
+      "track": "code_generation",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_CODE_PYTHON.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_CODE_PYTHON_GENERAL.md",
+      "focus_code": "CODE-PIPE-001"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_CODE_BASH",
+      "canonical_name": "Code Bash",
+      "track": "code_generation",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_CODE_BASH.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_CODE_BASH_GENERAL.md",
+      "focus_code": "CODE-PIPE-002"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_CODE_DOCKER",
+      "canonical_name": "Code Docker",
+      "track": "code_generation",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_CODE_DOCKER.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_CODE_DOCKER_PACKAGE.md",
+      "focus_code": "CODE-PIPE-003"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_MEDIA_IMAGE",
+      "canonical_name": "Media Image",
+      "track": "media_editing",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_MEDIA_IMAGE.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_CROSS_PLATFORM_IMAGE_EXPORT.md",
+      "focus_code": "MEDIA-PIPE-001"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_MEDIA_VIDEO",
+      "canonical_name": "Media Video",
+      "track": "media_editing",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_MEDIA_VIDEO.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_OPTIMIZED_VIDEO_EXPORT.md",
+      "focus_code": "MEDIA-PIPE-002"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_MEDIA_GIF",
+      "canonical_name": "Media Gif",
+      "track": "media_editing",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_MEDIA_GIF.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_IMAGE_GIF_OPTIMIZE.md",
+      "focus_code": "MEDIA-PIPE-003"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_SCHEMA_DESIGN",
+      "canonical_name": "Schema Design",
+      "track": "schema_design",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_SCHEMA_DESIGN.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_OPENAPI_SPEC.md",
+      "focus_code": "SCHEMA-PIPE-001"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_SCHEMA_JSON",
+      "canonical_name": "Schema Json",
+      "track": "schema_design",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_SCHEMA_JSON.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_VALIDATED_JSON_EXPORT.md",
+      "focus_code": "SCHEMA-PIPE-002"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_ROUTING_ARTIFACT",
+      "canonical_name": "Routing Artifact",
+      "track": "artifact_routing",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_ROUTING_ARTIFACT.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_RENDERED_HTML_DOCUMENT.md",
+      "focus_code": "ROUTE-PIPE-001"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_PROMPT_CONTRACT",
+      "canonical_name": "Prompt Contract",
+      "track": "prompt_contracts",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_PROMPT_CONTRACT.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_LLM_SESSION_STATE.md",
+      "focus_code": "PROMPT-PIPE-001"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_TRANSFORM_HTML",
+      "canonical_name": "Transform Html",
+      "track": "transformation_pipelines",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_TRANSFORM_HTML.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_RENDERED_HTML_DOCUMENT.md",
+      "focus_code": "TRANSFORM-001"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_TRANSFORM_XML",
+      "canonical_name": "Transform Xml",
+      "track": "transformation_pipelines",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_TRANSFORM_XML.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_STRUCTURED_XML_EXPORT.md",
+      "focus_code": "TRANSFORM-002"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_TRANSFORM_ARCHIVE",
+      "canonical_name": "Transform Archive",
+      "track": "transformation_pipelines",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_TRANSFORM_ARCHIVE.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_ZIP_ARCHIVE.md",
+      "focus_code": "TRANSFORM-003"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_VALIDATION_QA",
+      "canonical_name": "Validation Qa",
+      "track": "validation_qa",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_VALIDATION_QA.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_STYLE.md",
+      "focus_code": "VALIDATE-001"
+    },
+    {
+      "sheet_id": "SKILL_SHEET_SKILL_AUTHORING",
+      "canonical_name": "Skill Authoring",
+      "track": "skill_authoring",
+      "sheet_ref": "./spells/skill_sheets/SKILL_SHEET_SKILL_AUTHORING.md",
+      "primary_playbook_ref": "./spells/playbooks/SKILL_STYLE.md",
+      "focus_code": "AUTHOR-001"
+    }
+  ]
+}

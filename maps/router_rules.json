@@ -1,26 +1,126 @@
 {
   "routing_table": [
     {
-      "node": "1_AEC_BIM_CAD_GIS",
-      "intent_triggers": ["BIM", "CAD", "Revit", "IFC", "Clash", "Schedule", "GIS"],
-      "target_skill_ids": ["SKILL_IFC_FILE", "SKILL_GIS_GEOSPATIAL"],
-      "playbook_ref": "./spells/playbooks/SKILL_IFC_FILE.md",
-      "confidence_threshold": 0.85
+      "node": "DOCUMENT_OUTPUTS",
+      "intent_triggers": [
+        "document",
+        "docx",
+        "markdown",
+        "report",
+        "pdf",
+        "formatting"
+      ],
+      "output_types": [
+        "docx",
+        "md",
+        "pdf"
+      ],
+      "transformation_types": [
+        "author",
+        "convert",
+        "normalize",
+        "summarize"
+      ],
+      "target_skill_ids": [
+        "SKILL_DOC_DOCX",
+        "SKILL_DOC_MARKDOWN",
+        "SKILL_DOC_PDF"
+      ],
+      "playbook_ref": "./spells/playbooks/SKILL_DOC_MARKDOWN_GENERAL.md",
+      "confidence_threshold": 0.82
     },
     {
-      "node": "2_DOCUMENTS_AND_PARSING",
-      "intent_triggers": ["Word", "PDF", "Markdown", "LaTeX", "Report", "RTF"],
-      "target_skill_ids": ["SKILL_DOC_WORD_DOCX", "SKILL_DOC_PDF_PRECISION"],
-      "playbook_ref": "./spells/playbooks/SKILL_DOC_WORD_DOCX.md",
-      "confidence_threshold": 0.9
+      "node": "TABULAR_AND_SERIALIZED_DATA",
+      "intent_triggers": [
+        "spreadsheet",
+        "xlsx",
+        "csv",
+        "json",
+        "serialize",
+        "schema"
+      ],
+      "output_types": [
+        "xlsx",
+        "csv",
+        "json"
+      ],
+      "transformation_types": [
+        "transform",
+        "validate",
+        "export"
+      ],
+      "target_skill_ids": [
+        "SKILL_DATA_XLSX",
+        "SKILL_DATA_CSV",
+        "SKILL_DATA_JSON",
+        "SKILL_SCHEMA_DESIGN"
+      ],
+      "playbook_ref": "./spells/playbooks/SKILL_VALIDATED_JSON_EXPORT.md",
+      "confidence_threshold": 0.84
     },
     {
-      "node": "3_TABULAR_AND_STRUCTURED_DATA",
-      "intent_triggers": ["Excel", "XLSX", "Workbook", "Spreadsheet", "JSON", "Schema"],
-      "target_skill_ids": ["SKILL_DATA_EXCEL_FINANCIAL", "SKILL_VALIDATED_JSON_EXPORT"],
-      "playbook_ref": "./spells/playbooks/DATA_TABULAR_FINANCE_MASTER.md",
-      "confidence_threshold": 0.88
+      "node": "VISUAL_AND_PRESENTATION_ARTIFACTS",
+      "intent_triggers": [
+        "slides",
+        "presentation",
+        "diagram",
+        "mermaid",
+        "plantuml",
+        "image",
+        "video"
+      ],
+      "output_types": [
+        "pptx",
+        "mmd",
+        "puml",
+        "png",
+        "mp4"
+      ],
+      "transformation_types": [
+        "generate",
+        "render",
+        "optimize"
+      ],
+      "target_skill_ids": [
+        "SKILL_PRESENTATION_PPTX",
+        "SKILL_DIAGRAM_MERMAID",
+        "SKILL_DIAGRAM_PLANTUML",
+        "SKILL_MEDIA_IMAGE",
+        "SKILL_MEDIA_VIDEO"
+      ],
+      "playbook_ref": "./spells/playbooks/SKILL_PPTX_SKILL.md",
+      "confidence_threshold": 0.8
+    },
+    {
+      "node": "CODE_AND_WORKFLOW_AUTOMATION",
+      "intent_triggers": [
+        "python",
+        "bash",
+        "script",
+        "automation",
+        "prompt contract",
+        "workflow"
+      ],
+      "output_types": [
+        "py",
+        "sh",
+        "prompt-contract",
+        "html"
+      ],
+      "transformation_types": [
+        "generate",
+        "refactor",
+        "validate"
+      ],
+      "target_skill_ids": [
+        "SKILL_CODE_PYTHON",
+        "SKILL_CODE_BASH",
+        "SKILL_PROMPT_CONTRACT",
+        "SKILL_ROUTING_ARTIFACT"
+      ],
+      "playbook_ref": "./spells/playbooks/SKILL_CODE_PYTHON_GENERAL.md",
+      "confidence_threshold": 0.81
     }
   ],
-  "fallback_action": "ACTIVATE_SKILL_STATE_LLM_SESSION_AND_ASK_CLARIFICATION"
+  "fallback_action": "REQUEST_CLARIFICATION_WITH_EXPECTED_OUTPUT_TYPE"
 }

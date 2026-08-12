@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aces.example/schemas/artifact_envelope.schema.json",
+  "title": "ArtifactEnvelope",
+  "type": "object",
+  "required": ["skill_id", "artifact_type", "payload", "validation"],
+  "properties": {
+    "skill_id": {
+      "type": "string",
+      "description": "Skill identifier used to generate this artifact."
+    },
+    "artifact_type": {
+      "type": "string",
+      "description": "Output artifact type, for example docx, pdf, xlsx, json."
+    },
+    "payload": {
+      "description": "Artifact content or structured payload.",
+      "type": ["object", "array", "string", "number", "boolean", "null"]
+    },
+    "validation": {
+      "type": "object",
+      "required": ["qa_gates_checked", "status"],
+      "properties": {
+        "qa_gates_checked": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pass", "warn", "fail"]
+        },
+        "notes": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "trace": {
+      "type": "object",
+      "properties": {
+        "created_at": {"type": "string", "format": "date-time"},
+        "model": {"type": "string"},
+        "manifest_version": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

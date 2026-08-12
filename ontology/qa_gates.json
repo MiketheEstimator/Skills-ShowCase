@@ -1,58 +1,87 @@
 {
   "qa_checks": {
-    "QA_GATE_XLSX_01": [
+    "QA_GATE_FORMATTING_CORE": [
       {
-        "error_code": "ERR_XLSX_COLOR_01",
-        "description": "Hardcoded values are not colored Blue (RGB: 0,0,255).",
-        "resolution": "Modify python openpyxl code to apply Font(color='0000FF') to static inputs."
-      },
-      {
-        "error_code": "ERR_XLSX_RECALC_02",
-        "description": "Formula recalculation script (scripts/recalc.py) not referenced.",
-        "resolution": "Append usage instructions for scripts/recalc.py to the final output."
+        "error_code": "ERR_FORMAT_001",
+        "description": "Artifact formatting contract is incomplete.",
+        "resolution": "Apply format-specific template rules and regenerate."
       }
     ],
-    "QA_GATE_DOCX_01": [
+    "QA_GATE_PDF_USABILITY": [
       {
-        "error_code": "ERR_DOCX_QUOTE_01",
-        "description": "Standard quotes used instead of XML entities.",
-        "resolution": "Replace all ' and \" with &#x2018;, &#x2019;, &#x201C;, &#x201D;."
+        "error_code": "ERR_PDF_001",
+        "description": "PDF lacks selectable text or metadata fields.",
+        "resolution": "Generate with text layer and required metadata."
       }
     ],
-    "QA_GATE_PDF_01": [
+    "QA_GATE_SCHEMA_COMPLIANCE": [
       {
-        "error_code": "ERR_PDF_METADATA_01",
-        "description": "PDF is missing required title or author metadata.",
-        "resolution": "Populate PDF metadata fields title and author during document creation."
-      },
-      {
-        "error_code": "ERR_PDF_TEXT_LAYER_02",
-        "description": "PDF content is image-only without selectable text.",
-        "resolution": "Generate a text layer or use native text rendering unless OCR/image-only output is requested."
+        "error_code": "ERR_SCHEMA_001",
+        "description": "Output fails schema validation.",
+        "resolution": "Validate against schema and remove non-contract fields."
       }
     ],
-    "QA_GATE_JSON_01": [
+    "QA_GATE_STRUCTURE_CONSISTENCY": [
       {
-        "error_code": "ERR_JSON_SCHEMA_01",
-        "description": "Output does not validate against declared JSON schema.",
-        "resolution": "Validate output against schema and correct all validation errors before final response."
-      },
-      {
-        "error_code": "ERR_JSON_EXTRAS_02",
-        "description": "Unexpected fields found outside strict output contract.",
-        "resolution": "Remove all undeclared fields or extend the schema through controlled versioning."
+        "error_code": "ERR_STRUCT_001",
+        "description": "Tabular structure has inconsistent headers or row shape.",
+        "resolution": "Normalize columns and ensure consistent row width."
       }
     ],
-    "QA_GATE_AEC_01": [
+    "QA_GATE_SPREADSHEET_RELIABILITY": [
       {
-        "error_code": "ERR_AEC_COORDS_01",
-        "description": "Output omits coordinate reference system/projection details.",
-        "resolution": "Include CRS/EPSG information in metadata and delivery notes."
-      },
+        "error_code": "ERR_XLSX_001",
+        "description": "Spreadsheet formula or style reliability checks failed.",
+        "resolution": "Rebuild formulas and apply style consistency pass."
+      }
+    ],
+    "QA_GATE_PRESENTATION_READINESS": [
       {
-        "error_code": "ERR_AEC_UNITS_02",
-        "description": "Mixed or unspecified unit systems across AEC artifacts.",
-        "resolution": "Normalize units and declare canonical unit system before final output."
+        "error_code": "ERR_PPT_001",
+        "description": "Presentation structure is incomplete or unreadable.",
+        "resolution": "Enforce title/body hierarchy and slide consistency."
+      }
+    ],
+    "QA_GATE_DIAGRAM_VALIDITY": [
+      {
+        "error_code": "ERR_DIAGRAM_001",
+        "description": "Diagram syntax or graph completeness failed.",
+        "resolution": "Validate syntax and ensure required nodes/edges exist."
+      }
+    ],
+    "QA_GATE_CODE_QUALITY": [
+      {
+        "error_code": "ERR_CODE_001",
+        "description": "Generated code contains unresolved placeholders or invalid syntax.",
+        "resolution": "Run syntax checks and remove placeholder tokens."
+      }
+    ],
+    "QA_GATE_MEDIA_OUTPUT": [
+      {
+        "error_code": "ERR_MEDIA_001",
+        "description": "Media artifact has unsupported encoding or dimensions.",
+        "resolution": "Export using supported codec/profile and normalized sizing."
+      }
+    ],
+    "QA_GATE_PROMPT_CONTRACT": [
+      {
+        "error_code": "ERR_PROMPT_001",
+        "description": "Prompt contract omitted roles, constraints, or acceptance criteria.",
+        "resolution": "Rebuild prompt contract with full control sections."
+      }
+    ],
+    "QA_GATE_ROUTING_COHERENCE": [
+      {
+        "error_code": "ERR_ROUTE_001",
+        "description": "Routing metadata does not align with selected artifact type.",
+        "resolution": "Recalculate route using output type and transformation type."
+      }
+    ],
+    "QA_GATE_SHOWCASE_CONTAMINATION": [
+      {
+        "error_code": "ERR_POLICY_001",
+        "description": "Forbidden domain contamination terms detected in public-facing files.",
+        "resolution": "Replace contaminated language with domain-neutral showcase framing."
       }
     ]
   }

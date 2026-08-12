@@ -1,14 +1,22 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "skillpack_name": "ACES_Cognitive_Engine",
-  "version": "3.0.0",
-  "author": "ACES Architecture",
-  "description": "Taxonomy-driven artifact generation control system for AEC.",
+  "skillpack_name": "2IT_SKILLS_Showcase",
+  "version": "4.0.0",
+  "author": "2IT Systems",
+  "description": "General-purpose skillpack operating system for deterministic LLM artifact workflows.",
   "manifest_index": {
+    "bootstrap": "./BOOTSTRAP.md",
     "router": "./maps/router_rules.json",
-    "skills_registry": "./spells/skill_cards.json",
+    "skills_registry": "./skill_registry.json",
+    "legacy_skills_registry": "./spells/skill_cards.json",
     "playbooks_dir": "./spells/playbooks/",
+    "skill_sheets_index": "./spells/skill_sheets/index.json",
     "qa_gates": "./ontology/qa_gates.json",
     "schemas": "./schemas/"
+  },
+  "policy_refs": {
+    "integrity_policy": "./INTEGRITY_POLICY.md",
+    "naming_plan": "./NAMING_NORMALIZATION_PLAN.md",
+    "category_map": "./CATEGORY_MAP.md"
   }
 }
