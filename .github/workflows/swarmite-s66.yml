@@ -1,0 +1,65 @@
+name: Swarmite S66 Evidence-Guided Intervention Allocation
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s66.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install numpy
+      - name: Start S66
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S66')
+          if it.get('status')=='PENDING':
+              it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S66_EVIDENCE_GUIDED_INTERVENTION_ALLOCATION_DIAGNOSTIC_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s66_evidence_guided_intervention_allocation.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics_then_heldout_diagnostic','mechanics':'2+2','model_training':'64+64','diagnostic':'64+64'}})
+              q['version']='12.6'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker; git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Start EXP-002S66 allocation diagnostic'; git push
+      - name: Execute S66
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python swarmite_exp002_s66_evidence_guided_intervention_allocation.py > EXP-002S66_RESULT.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S66'); z=json.loads(Path('EXP-002S66_RESULT.json').read_text()); disp=z.get('disposition','BLOCKED_EXECUTION_UNKNOWN')
+          it['result_artifact']='experiments/swarmite-exp002/EXP-002S66_RESULT.json'; it['result_summary']=z.get('diagnostic',{}); it['checkpoint']={'state':'complete' if not disp.startswith('BLOCKED') else 'blocked','disposition':disp,'next_stage':'evaluate_enqueue' if not disp.startswith('BLOCKED') else 'repair_execution'}
+          it['status']=('BLOCKED_'+disp.removeprefix('BLOCKED_')) if disp.startswith('BLOCKED') else 'COMPLETE_'+disp
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S66_RESULT.json ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S66 diagnostic'; git push
+      - name: Evaluate and enqueue S67
+        if: always()
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S66'); cp=it.get('checkpoint',{}); disp=cp.get('disposition')
+          if not disp or disp.startswith('BLOCKED'): raise SystemExit(0)
+          ev=it.get('result_summary',{}); sid='EXP-002S67'
+          if disp=='ALLOCATION_SIGNAL_ALIGNED':
+              title='Frozen evidence-guided planner policy test'; rationale='S66 prospectively aligned S62/S65 localization with acquisition value. Freeze the signal and test a resource-matched planner that allocates selected intervention slots using it while preserving terminal S30/S46 inference.'
+          elif disp=='ALLOCATION_SIGNAL_WEAK':
+              title='Set-valued acquisition-utility representation diagnostic'; rationale='S66 showed weak acquisition alignment but not enough for policy promotion. Replace scalar node error probability with a set-valued intervention-utility representation rather than tuning thresholds.'
+          else:
+              title='Intervention-response disagreement acquisition diagnostic'; rationale='S66 falsified scalar localization as an acquisition signal. Redirect to a materially different intervention-response disagreement representation before modifying planning or terminal inference.'
+          if not any(x.get('id')==sid for x in q['queue']): q['queue'].append({'id':sid,'title':title,'priority':41.5,'status':'PENDING','depends_on':['EXP-002S66'],'rationale':rationale})
+          finding=f"S66 disposition {disp}. positive acquisition-value AUC {ev.get('positive_value_auc')}; Spearman {ev.get('spearman_probability_vs_value')}; evidence/EIG mean value-per-cost {ev.get('evidence_mean_value_per_cost')}/{ev.get('eig_mean_value_per_cost')}; paired difference {ev.get('paired_mean_difference')}; evidence-beats-EIG fraction {ev.get('evidence_beats_eig_fraction')}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          Path('EXP-002S66_EVALUATION.md').write_text('# EXP-002S66 Evaluation\n\n**Disposition:** '+disp+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S66_EVALUATION.md'; q['version']='12.7'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add ../swarmite-queue/QUEUE.json; test ! -f EXP-002S66_EVALUATION.md || git add EXP-002S66_EVALUATION.md; git diff --cached --quiet || git commit -m 'Evaluate EXP-002S66 and enqueue successor'; git push
