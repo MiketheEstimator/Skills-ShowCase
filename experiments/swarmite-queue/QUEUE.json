@@ -4554,13 +4554,10 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S64_CONSTRAINED_LOCAL_POSTERIOR_PROJECTION_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s64_constrained_local_posterior_projection.py",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics",
-        "mechanics": "2+2",
-        "training": "64+64",
-        "validation": "32+32",
-        "confirmation": "64+64"
-      }
+        "state": "mechanics_passed",
+        "next_stage": "training"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S64_MECHANICS_RESULT.json"
     }
   ],
   "established_findings": [
