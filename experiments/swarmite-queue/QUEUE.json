@@ -4299,7 +4299,7 @@
       "id": "EXP-002S62",
       "title": "Posterior-disagreement counterfactual parent proposal diagnostic",
       "priority": 42.4,
-      "status": "RUNNING",
+      "status": "COMPLETE_DIAGNOSTIC_SUPPORTED",
       "depends_on": [
         "EXP-002S61"
       ],
@@ -4307,10 +4307,143 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S62_POSTERIOR_DISAGREEMENT_PARENT_PROPOSAL_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s62_posterior_disagreement_parent_proposal.py",
       "checkpoint": {
-        "state": "mechanics_passed",
-        "next_stage": "diagnostic"
+        "state": "complete",
+        "disposition": "POSTERIOR_DISAGREEMENT_ALIGNED",
+        "diagnostic": {
+          "n_nodes": 640,
+          "n_anchor_rank_errors": 278,
+          "anchor_rank_error_rate": 0.434375,
+          "feature_auc": {
+            "mean_js": 0.6442426169561588,
+            "max_js": 0.628780953138042,
+            "anchor_mass_drop": 0.5170416153265233,
+            "competitor_mean_mass": 0.695745061409436,
+            "competitor_vote_share": 0.6110238880718629,
+            "switch_rate": 0.6351752851862157,
+            "margin_erosion": 0.3915398068285703,
+            "mean_entropy": 0.6308378711395525
+          },
+          "best_auc": 0.695745061409436,
+          "best_feature": "competitor_mean_mass",
+          "competitor_useful_fraction_on_error_nodes": 0.5935251798561151,
+          "competitor_exact_truth_fraction_on_error_nodes": 0.4028776978417266,
+          "mean_refits": 3.23125,
+          "best_auc_bootstrap95": [
+            0.6571494758783214,
+            0.7371545607808339
+          ],
+          "by_regime": {
+            "linear": {
+              "n_nodes": 320,
+              "n_anchor_rank_errors": 161,
+              "anchor_rank_error_rate": 0.503125,
+              "feature_auc": {
+                "mean_js": 0.6112348138599164,
+                "max_js": 0.5876792062189929,
+                "anchor_mass_drop": 0.5248642525098637,
+                "competitor_mean_mass": 0.6911598109301145,
+                "competitor_vote_share": 0.592327825305676,
+                "switch_rate": 0.6168990976210008,
+                "margin_erosion": 0.39876557678034297,
+                "mean_entropy": 0.6722918864018126
+              },
+              "best_auc": 0.6911598109301145,
+              "best_feature": "competitor_mean_mass",
+              "competitor_useful_fraction_on_error_nodes": 0.5217391304347826,
+              "competitor_exact_truth_fraction_on_error_nodes": 0.35403726708074534,
+              "mean_refits": 3.196875
+            },
+            "heteroskedastic": {
+              "n_nodes": 320,
+              "n_anchor_rank_errors": 117,
+              "anchor_rank_error_rate": 0.365625,
+              "feature_auc": {
+                "mean_js": 0.6507515473032714,
+                "max_js": 0.645320197044335,
+                "anchor_mass_drop": 0.4846111742663467,
+                "competitor_mean_mass": 0.6937392109805903,
+                "competitor_vote_share": 0.628478800892594,
+                "switch_rate": 0.6484779588227864,
+                "margin_erosion": 0.3697528525114732,
+                "mean_entropy": 0.7369373921098059
+              },
+              "best_auc": 0.7369373921098059,
+              "best_feature": "mean_entropy",
+              "competitor_useful_fraction_on_error_nodes": 0.6923076923076923,
+              "competitor_exact_truth_fraction_on_error_nodes": 0.4700854700854701,
+              "mean_refits": 3.265625
+            }
+          }
+        }
       },
-      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S62_MECHANICS_RESULT.json"
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S62_MECHANICS_RESULT.json",
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S62_DIAGNOSTIC_RESULT.json",
+      "result_summary": {
+        "n_nodes": 640,
+        "n_anchor_rank_errors": 278,
+        "anchor_rank_error_rate": 0.434375,
+        "feature_auc": {
+          "mean_js": 0.6442426169561588,
+          "max_js": 0.628780953138042,
+          "anchor_mass_drop": 0.5170416153265233,
+          "competitor_mean_mass": 0.695745061409436,
+          "competitor_vote_share": 0.6110238880718629,
+          "switch_rate": 0.6351752851862157,
+          "margin_erosion": 0.3915398068285703,
+          "mean_entropy": 0.6308378711395525
+        },
+        "best_auc": 0.695745061409436,
+        "best_feature": "competitor_mean_mass",
+        "competitor_useful_fraction_on_error_nodes": 0.5935251798561151,
+        "competitor_exact_truth_fraction_on_error_nodes": 0.4028776978417266,
+        "mean_refits": 3.23125,
+        "best_auc_bootstrap95": [
+          0.6571494758783214,
+          0.7371545607808339
+        ],
+        "by_regime": {
+          "linear": {
+            "n_nodes": 320,
+            "n_anchor_rank_errors": 161,
+            "anchor_rank_error_rate": 0.503125,
+            "feature_auc": {
+              "mean_js": 0.6112348138599164,
+              "max_js": 0.5876792062189929,
+              "anchor_mass_drop": 0.5248642525098637,
+              "competitor_mean_mass": 0.6911598109301145,
+              "competitor_vote_share": 0.592327825305676,
+              "switch_rate": 0.6168990976210008,
+              "margin_erosion": 0.39876557678034297,
+              "mean_entropy": 0.6722918864018126
+            },
+            "best_auc": 0.6911598109301145,
+            "best_feature": "competitor_mean_mass",
+            "competitor_useful_fraction_on_error_nodes": 0.5217391304347826,
+            "competitor_exact_truth_fraction_on_error_nodes": 0.35403726708074534,
+            "mean_refits": 3.196875
+          },
+          "heteroskedastic": {
+            "n_nodes": 320,
+            "n_anchor_rank_errors": 117,
+            "anchor_rank_error_rate": 0.365625,
+            "feature_auc": {
+              "mean_js": 0.6507515473032714,
+              "max_js": 0.645320197044335,
+              "anchor_mass_drop": 0.4846111742663467,
+              "competitor_mean_mass": 0.6937392109805903,
+              "competitor_vote_share": 0.628478800892594,
+              "switch_rate": 0.6484779588227864,
+              "margin_erosion": 0.3697528525114732,
+              "mean_entropy": 0.7369373921098059
+            },
+            "best_auc": 0.7369373921098059,
+            "best_feature": "mean_entropy",
+            "competitor_useful_fraction_on_error_nodes": 0.6923076923076923,
+            "competitor_exact_truth_fraction_on_error_nodes": 0.4700854700854701,
+            "mean_refits": 3.265625
+          }
+        }
+      }
     }
   ],
   "established_findings": [
