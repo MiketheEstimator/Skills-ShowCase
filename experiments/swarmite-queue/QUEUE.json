@@ -1,5 +1,5 @@
 {
-  "version": "12.3",
+  "version": "12.4",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4642,11 +4642,21 @@
       "id": "EXP-002S65",
       "title": "Decision-theoretic local structural action diagnostic",
       "priority": 42.1,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S64"
       ],
-      "rationale": "S64 retained S62 evidence but falsified global posterior projection geometry. Change the action layer to decision-theoretic local edge/parent-family actions under posterior uncertainty rather than retuning rho or IPF."
+      "rationale": "S64 retained S62 evidence but falsified global posterior projection geometry. Change the action layer to decision-theoretic local edge/parent-family actions under posterior uncertainty rather than retuning rho or IPF.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S65_DECISION_THEORETIC_LOCAL_STRUCTURAL_ACTION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s65_decision_theoretic_local_structural_action.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2+2",
+        "training": "64+64",
+        "validation": "32+32",
+        "confirmation": "64+64"
+      }
     }
   ],
   "established_findings": [
