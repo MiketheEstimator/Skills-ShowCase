@@ -1,85 +1,8 @@
-name: Swarmite S35 Structural Utility Stacking
+name: PAUSED Swarmite S35
 on:
-  push:
-    paths: ['.github/workflows/swarmite-s35.yml']
-permissions:
-  contents: write
+  workflow_dispatch:
 jobs:
-  run:
+  paused:
     runs-on: ubuntu-latest
-    timeout-minutes: 240
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install numpy
-      - name: Checkpoint S35 RUNNING
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S35')
-          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S35_STRUCTURAL_UTILITY_STACKING_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s35_stack.py','runner_commit':'416b82cb52a58a94409cd848dac3bf4eb40749bf','checkpoint':{'state':'protocol_frozen','next_stage':'training','training_seeds':[72201,72248],'validation_seeds':[72261,72296],'confirmation_seeds':[72301,72372]}})
-          q['version']='7.2'; qp.write_text(json.dumps(q,indent=2))
-          PY
-          git config user.name swarmite-worker
-          git config user.email swarmite-worker@users.noreply.github.com
-          git add experiments/swarmite-queue/QUEUE.json
-          git commit -m 'Checkpoint EXP-002S35 RUNNING'
-          git push
-      - name: Train frozen structural stack
-        working-directory: experiments/swarmite-exp002
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          import swarmite_exp002_s35_stack as s35
-          rows=[s35.components(s) for s in range(72201,72249)]; weights,obj=s35.train_weights(rows)
-          compact=[{'seed':r['seed'],'cell':r['cell'],'class_edge_errors':{n:r['class_metrics'][n]['edge_error'] for n in s35.CLASSES},'s30_edge_error':r['s30']['edge_error']} for r in rows]
-          Path('EXP-002S35_TRAINING_RESULT.json').write_text(json.dumps({'weights':weights,'objective':obj,'rows':compact},indent=2))
-          PY
-      - name: Validate and conditionally confirm
-        working-directory: experiments/swarmite-exp002
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          import swarmite_exp002_s35_stack as s35
-          tr=json.loads(Path('EXP-002S35_TRAINING_RESULT.json').read_text()); w=tr['weights']
-          vr=[s35.evaluate(s,w) for s in range(72261,72297)]; vs=s35.summarize(vr)
-          vpass=bool(vs['mechanics_ok'] and vs['mean_edge_delta_vs_s30']<=-0.10 and vs['bootstrap95_edge_delta_vs_s30'][1]<0 and vs['mean_brier_delta_vs_s30']<=0.005 and vs['large_harms_vs_s30']<=2 and max(vs['by_cell_mean_edge_delta_vs_s30'].values())<=0.05)
-          vs['promote_to_confirmation']=vpass; Path('EXP-002S35_VALIDATION_RESULT.json').write_text(json.dumps({'weights':w,'rows':vr,'summary':vs},indent=2))
-          if vpass:
-            cr=[s35.evaluate(s,w) for s in range(72301,72373)]; cs=s35.summarize(cr); cpass=bool(cs['mechanics_ok'] and cs['mean_edge_delta_vs_s30']<=-0.10 and cs['bootstrap95_edge_delta_vs_s30'][1]<0 and cs['mean_brier_delta_vs_s30']<=0.005 and cs['large_harms_vs_s30']<=4 and max(cs['by_cell_mean_edge_delta_vs_s30'].values())<=0.05); cs['promote']=cpass
-            Path('EXP-002S35_CONFIRMATION_RESULT.json').write_text(json.dumps({'weights':w,'rows':cr,'summary':cs},indent=2))
-          PY
-      - name: Evaluate and enqueue successor
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          ep=Path('experiments/swarmite-exp002'); qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S35'); tr=json.loads((ep/'EXP-002S35_TRAINING_RESULT.json').read_text()); vr=json.loads((ep/'EXP-002S35_VALIDATION_RESULT.json').read_text()); vs=vr['summary']; item['training_artifact']='experiments/swarmite-exp002/EXP-002S35_TRAINING_RESULT.json'; item['selected_weights']=tr['weights']; item['validation_artifact']='experiments/swarmite-exp002/EXP-002S35_VALIDATION_RESULT.json'
-          if not vs['mechanics_ok']:
-            status='BLOCKED_EXECUTION_REPRODUCIBILITY'; disp='MECHANICS_BLOCKED'; succ={'id':'EXP-002S36','title':'S35 reproducibility recovery','priority':52.0,'status':'PENDING','depends_on':['EXP-002S35'],'rationale':'S35 mechanics failed; recover exact execution without changing the scientific hypothesis.'}
-          elif not vs['promote_to_confirmation']:
-            status='COMPLETE_FALSIFIED_ON_VALIDATION'; disp='STRUCTURAL_STACKING_FALSIFIED_VALIDATION'; succ={'id':'EXP-002S36','title':'Global stacking transfer-failure diagnostic','priority':52.0,'status':'PENDING','depends_on':['EXP-002S35'],'rationale':'Training-optimized global structural weights failed fresh validation; diagnose training-distribution instability versus irreducible per-world heterogeneity before any adaptive stacking.'}
-          else:
-            cr=json.loads((ep/'EXP-002S35_CONFIRMATION_RESULT.json').read_text()); cs=cr['summary']; item['result_artifact']='experiments/swarmite-exp002/EXP-002S35_CONFIRMATION_RESULT.json'; item['result_summary']=cs
-            if cs['promote']:
-              status='COMPLETE_SUPPORTED'; disp='STRUCTURAL_STACKING_SUPPORTED'; succ={'id':'EXP-002S36','title':'Structural stack transfer under unseen regime families','priority':52.0,'status':'PENDING','depends_on':['EXP-002S35'],'rationale':'S35 confirmed frozen structural-utility stacking; stress the fixed science stack on unseen mechanism/noise families before reference promotion.'}
-            else:
-              status='COMPLETE_FALSIFIED_ON_CONFIRMATION'; disp='STRUCTURAL_STACKING_FALSIFIED_CONFIRMATION'; succ={'id':'EXP-002S36','title':'Structural stack confirmation failure diagnostic','priority':52.0,'status':'PENDING','depends_on':['EXP-002S35'],'rationale':'S35 passed validation but failed held-out confirmation; diagnose instability and cell-specific regression before any new stacking mechanism.'}
-          item['status']=status; item['checkpoint']={'state':'complete','disposition':disp}; item['result_summary']=item.get('result_summary',vs)
-          if not any(x.get('id')=='EXP-002S36' for x in q['queue']): q['queue'].append(succ)
-          s=item['result_summary']; finding=f"S35 {disp}: frozen training-only structural stack; edge delta vs S30 {s.get('mean_edge_delta_vs_s30'):.4f}, CI {s.get('bootstrap95_edge_delta_vs_s30')}, Brier {s.get('mean_brier_delta_vs_s30'):.4f}, harms {s.get('large_harms_vs_s30')}."
-          if finding not in q['established_findings']: q['established_findings'].append(finding)
-          q['version']='7.3'; qp.write_text(json.dumps(q,indent=2))
-          lines=['# EXP-002S35 Evaluation','',f'**Disposition:** {disp}','',f"Selected weights: `{tr['weights']}`",f"Training minimax objective: `{tr['objective']}`",'',f"Evaluation edge delta vs S30: **{s.get('mean_edge_delta_vs_s30'):.6f}**",f"95% CI: {s.get('bootstrap95_edge_delta_vs_s30')}",f"Brier delta vs S30: **{s.get('mean_brier_delta_vs_s30'):.6f}**",f"Large harms: **{s.get('large_harms_vs_s30')}**",'', '## Next',succ['rationale']]
-          (ep/'EXP-002S35_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S35_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
-          PY
-          git config user.name swarmite-worker
-          git config user.email swarmite-worker@users.noreply.github.com
-          git add experiments/swarmite-exp002/EXP-002S35_* experiments/swarmite-queue/QUEUE.json
-          git diff --cached --quiet || git commit -m 'Complete EXP-002S35 structural utility stacking'
-          git push
+      - run: echo "Swarmite paused by user request on 2026-08-12"

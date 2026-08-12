@@ -1,57 +1,8 @@
-name: Swarmite S32 Model-Set Diagnostic
+name: PAUSED Swarmite S32
 on:
-  push:
-    paths: ['.github/workflows/swarmite-s32.yml']
-permissions:
-  contents: write
+  workflow_dispatch:
 jobs:
-  run:
+  paused:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install numpy
-      - name: Execute frozen S32 factorial diagnostic
-        working-directory: experiments/swarmite-exp002
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          import swarmite_exp002_s32_modelset_diag as s32
-          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S32')
-          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S32_MODEL_SET_INSUFFICIENCY_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s32_modelset_diag.py','runner_commit':'f7ef97bfda1cb8cbf2cefc75f17371f52ec378e4','checkpoint':{'state':'protocol_frozen','next_stage':'factorial_diagnostic','seeds':[71900,72019],'T':5.0}}); qp.write_text(json.dumps(q,indent=2))
-          rows=[s32.paired(s) for s in range(71900,72020)]; sm=s32.summarize(rows); Path('EXP-002S32_RESULT.json').write_text(json.dumps({'rows':rows,'summary':sm},indent=2)); item['result_artifact']='experiments/swarmite-exp002/EXP-002S32_RESULT.json'; item['result_summary']=sm
-          disp=sm['disposition']
-          if not sm['mechanics_ok']:
-            item['status']='BLOCKED_EXECUTION_REPRODUCIBILITY'; disp='MECHANICS_BLOCKED'
-          else:
-            item['status']='COMPLETE_DIAGNOSTIC_SUPPORTED' if disp!='MECHANISM_NOISE_INTERACTION_OR_MIXED_GAP' else 'COMPLETE_DIAGNOSTIC_UNRESOLVED'
-          item['checkpoint']={'state':'complete','disposition':disp}
-          if not any(x.get('id')=='EXP-002S33' for x in q['queue']):
-            if disp=='SIN_MECHANISM_REPRESENTATION_GAP': title='Sine-aware terminal model-class expansion'; rationale='S32 isolated a sine mechanism representation gap; add a sine-aware terminal model class on fresh worlds while preserving baseline planning and decision-theoretic model averaging.'
-            elif disp=='T7_NOISE_REPRESENTATION_GAP': title='Expanded terminal noise-family model set'; rationale='S32 isolated a t7 noise representation gap; add explicit noise-family uncertainty on fresh worlds without changing planning.'
-            elif disp=='ALL_SUPPORTED_S31_SAMPLING_INSTABILITY': title='High-n frozen S31 transfer replication'; rationale='S32 supported every factorial cell, suggesting S31 failure was sampling instability; replicate frozen S30/S31 architecture at higher n before expanding models.'
-            elif disp=='MECHANICS_BLOCKED': title='S32 reproducibility recovery'; rationale='S32 mechanics failed; recover exact execution without changing the scientific hypothesis.'
-            else: title='Mechanism-noise interaction model-class expansion screen'; rationale='S32 found a mixed interaction boundary rather than a single mechanism/noise defect; test a small preregistered expanded terminal model set before changing weighting rules.'
-            q['queue'].append({'id':'EXP-002S33','title':title,'priority':52.75,'status':'PENDING','depends_on':['EXP-002S32'],'rationale':rationale})
-          finding=f"S32 {disp}: frozen S30 architecture factorized across tanh/sin/asinh mechanisms and Gaussian/t7 noise on 120 fresh worlds."
-          if finding not in q['established_findings']: q['established_findings'].append(finding)
-          q['version']='6.7'; qp.write_text(json.dumps(q,indent=2))
-          lines=['# EXP-002S32 Evaluation','',f'**Disposition:** {disp}','', '## Factorial cells']
-          for c,v in sm['by_cell'].items(): lines.append(f"- **{c}**: {v['label']}; edge {v['mean_edge_delta']:.6f}, CI {v['bootstrap95_edge_delta']}, Brier {v['mean_brier_delta']:.6f}, alpha {v['mean_alpha']:.3f}, ADEQ {v['mean_ADEQ']:.3f}, robust-edge {v['mean_robust_edge_delta']:.6f}")
-          lines += ['','## Mechanism marginals']
-          for c,v in sm['by_mechanism'].items(): lines.append(f"- **{c}**: {v['label']}; edge {v['mean_edge_delta']:.6f}, CI {v['bootstrap95_edge_delta']}, Brier {v['mean_brier_delta']:.6f}")
-          lines += ['','## Noise marginals']
-          for c,v in sm['by_noise'].items(): lines.append(f"- **{c}**: {v['label']}; edge {v['mean_edge_delta']:.6f}, CI {v['bootstrap95_edge_delta']}, Brier {v['mean_brier_delta']:.6f}")
-          lines += ['','## Next',next(x['rationale'] for x in q['queue'] if x['id']=='EXP-002S33')]; Path('EXP-002S32_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S32_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
-          PY
-      - name: Persist result
-        run: |
-          git config user.name swarmite-worker
-          git config user.email swarmite-worker@users.noreply.github.com
-          git add experiments/swarmite-exp002/EXP-002S32_* experiments/swarmite-queue/QUEUE.json
-          git diff --cached --quiet || git commit -m 'Complete EXP-002S32 model-set diagnostic'
-          git push
+      - run: echo "Swarmite paused by user request on 2026-08-12"

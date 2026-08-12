@@ -1,76 +1,8 @@
-name: Swarmite S20 Model-Class Mixture
+name: PAUSED Swarmite S20
 on:
-  push:
-    paths:
-      - '.github/workflows/swarmite-s20.yml'
-permissions:
-  contents: write
+  workflow_dispatch:
 jobs:
-  s20:
+  paused:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install numpy
-      - name: Run frozen S20 sequence and checkpoint queue
-        working-directory: experiments/swarmite-exp002
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          import swarmite_exp002_s20_mixture as s20
-
-          root=Path('../..'); qpath=root/'experiments/swarmite-queue/QUEUE.json'
-          q=json.loads(qpath.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S20')
-          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S20_MODEL_CLASS_MIXTURE_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s20_mixture.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics','mechanics_seeds':list(range(69901,69905))}})
-          qpath.write_text(json.dumps(q,indent=2))
-
-          mech_rows=[s20.paired(s) for s in range(69901,69905)]; mech=s20.mechanics(mech_rows)
-          Path('EXP-002S20_MECHANICS_RESULT.json').write_text(json.dumps({'rows':mech_rows,'mechanics':mech},indent=2))
-          item['mechanics_artifact']='experiments/swarmite-exp002/EXP-002S20_MECHANICS_RESULT.json'
-          mpass=all([mech['dag_count_ok'],mech['spend_ok'],mech['trace_identical_all'],mech['planning_reconstruction_ok'],mech['posteriors_normalized'],mech['weights_valid']])
-          if not mpass:
-              item['status']='BLOCKED_EXECUTION_MECHANICS'; item['checkpoint']={'state':'mechanics_failed','mechanics':mech}; disposition='BLOCKED_MECHANICS'; screen_rows=[]; conf_rows=[]; ss=None; cs=None; ci=None
-          else:
-              item['checkpoint']={'state':'mechanics_passed','mechanics':mech,'next_stage':'screen','screen_seeds':list(range(69911,69923))}; qpath.write_text(json.dumps(q,indent=2))
-              screen_rows=[s20.paired(s) for s in range(69911,69923)]; ss=s20.summary(screen_rows)
-              Path('EXP-002S20_SCREEN_RESULT.json').write_text(json.dumps({'rows':screen_rows,'summary':ss},indent=2)); item['screen_artifact']='experiments/swarmite-exp002/EXP-002S20_SCREEN_RESULT.json'
-              spass=bool(ss['mean_edge_delta_mix_vs_control']<=-.10 and ss['mean_brier_delta_mix_vs_control']<=.005 and ss['large_harms_mix_vs_control']<=2 and ss['mean_brier_delta_mix_vs_fixed']<=.002 and ss['trace_identical_all'] and ss['dag_count_ok'] and ss['spend_ok'] and ss['posteriors_normalized'] and ss['weights_valid'])
-              if not spass:
-                  item['status']='COMPLETE_FALSIFIED_AT_SCREEN'; item['result_summary']=ss; item['checkpoint']={'state':'complete','disposition':'screen_falsification'}; disposition='FALSIFIED_AT_SCREEN'; conf_rows=[]; cs=None; ci=None
-              else:
-                  item['checkpoint']={'state':'screen_passed','screen_summary':ss,'next_stage':'heldout_confirmation','confirmation_seeds':list(range(70001,70037))}; qpath.write_text(json.dumps(q,indent=2))
-                  conf_rows=[s20.paired(s) for s in range(70001,70037)]; cs=s20.summary(conf_rows); ci=s20.bootstrap_edge(conf_rows)
-                  Path('EXP-002S20_CONFIRMATION_RESULT.json').write_text(json.dumps({'rows':conf_rows,'summary':cs,'bootstrap95_edge_delta':ci},indent=2)); item['result_artifact']='experiments/swarmite-exp002/EXP-002S20_CONFIRMATION_RESULT.json'
-                  cpass=bool(cs['mean_edge_delta_mix_vs_control']<=-.10 and ci[1]<0 and cs['mean_brier_delta_mix_vs_control']<=.005 and cs['large_harms_mix_vs_control']<=4 and cs['mean_brier_delta_mix_vs_fixed']<=.002 and cs['trace_identical_all'] and cs['dag_count_ok'] and cs['spend_ok'] and cs['posteriors_normalized'] and cs['weights_valid'])
-                  item['status']='COMPLETE_SUPPORTED' if cpass else 'COMPLETE_FALSIFIED_ON_CONFIRMATION'; disposition='SUPPORTED' if cpass else 'FALSIFIED_ON_CONFIRMATION'; item['result_summary']={**cs,'bootstrap95_edge_delta':ci}; item['checkpoint']={'state':'complete','disposition':disposition}
-
-          # Dynamic successor: no threshold tuning. Diagnose representation/evidence mechanism if falsified; stress-transfer if supported.
-          if not any(x.get('id')=='EXP-002S21' for x in q['queue']):
-              if disposition=='SUPPORTED':
-                  rationale='S20 supported explicit model-class mixture inference; test transfer under a fresh mechanism/noise class shift without retuning model weights.'
-                  title='Model-class mixture transfer under unseen mechanism shift'
-              else:
-                  rationale='S20 did not promote; diagnose model-class evidence domination and shared likelihood misspecification before adding any new model class.'
-                  title='Model-class mixture evidence-dominance diagnostic'
-              q['queue'].append({'id':'EXP-002S21','title':title,'priority':55.75,'status':'PENDING','depends_on':['EXP-002S20'],'rationale':rationale})
-          finding=f"S20 {disposition}: explicit model-class mixture terminal inference tested at 100% coverage; disposition recorded without post-hoc class-weight tuning."
-          if finding not in q['established_findings']: q['established_findings'].append(finding)
-          q['version']='5.5'; qpath.write_text(json.dumps(q,indent=2))
-
-          lines=['# EXP-002S20 Evaluation','',f'**Disposition:** {disposition}','', '## Mechanics',f'- `{mech}`','']
-          if ss: lines += ['## Prospective screen',f"- Mean edge delta vs planning control: {ss['mean_edge_delta_mix_vs_control']:.6f}",f"- Mean Brier delta vs planning control: {ss['mean_brier_delta_mix_vs_control']:.6f}",f"- Mean Brier delta vs fixed S5: {ss['mean_brier_delta_mix_vs_fixed']:.6f}",f"- Large harms: {ss['large_harms_mix_vs_control']}",f"- Mean model weights: {ss['mean_class_weights']}",'']
-          if cs: lines += ['## Held-out confirmation',f"- Mean edge delta vs planning control: {cs['mean_edge_delta_mix_vs_control']:.6f}",f"- Bootstrap 95% edge-delta CI: {ci}",f"- Mean Brier delta vs planning control: {cs['mean_brier_delta_mix_vs_control']:.6f}",f"- Mean Brier delta vs fixed S5: {cs['mean_brier_delta_mix_vs_fixed']:.6f}",f"- Large harms: {cs['large_harms_mix_vs_control']}",f"- Mean model weights: {cs['mean_class_weights']}",'']
-          lines += ['## Next direction', next(x['rationale'] for x in q['queue'] if x['id']=='EXP-002S21')]
-          Path('EXP-002S20_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S20_EVALUATION.md'; qpath.write_text(json.dumps(q,indent=2))
-          PY
-      - name: Commit S20 results and durable queue checkpoint
-        run: |
-          git config user.name 'swarmite-worker'
-          git config user.email 'swarmite-worker@users.noreply.github.com'
-          git add experiments/swarmite-exp002/EXP-002S20_* experiments/swarmite-queue/QUEUE.json
-          git diff --cached --quiet || git commit -m 'Complete EXP-002S20 model-class mixture inference'
-          git push
+      - run: echo "Swarmite paused by user request on 2026-08-12"

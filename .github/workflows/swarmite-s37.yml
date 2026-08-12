@@ -1,65 +1,8 @@
-name: Swarmite S37 S30 Anchor Localization
+name: PAUSED Swarmite S37
 on:
-  push:
-    paths: ['.github/workflows/swarmite-s37.yml']
-permissions:
-  contents: write
+  workflow_dispatch:
 jobs:
-  run:
+  paused:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install numpy scipy
-      - name: Checkpoint S37 RUNNING
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S37')
-          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S37_S30_ANCHOR_LOCALIZATION_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s37_anchor_diag.py','runner_commit':'8b08b94b982aaac25146c928cd1974f2e2498668','checkpoint':{'state':'protocol_frozen','next_stage':'anchor_lp_diagnostic','training_seeds':[72201,72248],'validation_seeds':[72261,72296]}})
-          q['version']='7.6'; qp.write_text(json.dumps(q,indent=2))
-          PY
-          git config user.name swarmite-worker
-          git config user.email swarmite-worker@users.noreply.github.com
-          git add experiments/swarmite-queue/QUEUE.json
-          git commit -m 'Checkpoint EXP-002S37 RUNNING'
-          git push
-      - name: Execute S37 anchor diagnostic
-        working-directory: experiments/swarmite-exp002
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          import swarmite_exp002_s37_anchor_diag as s37
-          out=s37.run(); Path('EXP-002S37_RESULT.json').write_text(json.dumps(out,indent=2))
-          PY
-      - name: Evaluate and enqueue successor
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          ep=Path('experiments/swarmite-exp002'); qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S37'); sm=json.loads((ep/'EXP-002S37_RESULT.json').read_text()); disp=sm['disposition']; item['result_artifact']='experiments/swarmite-exp002/EXP-002S37_RESULT.json'; item['result_summary']=sm; item['status']='COMPLETE_DIAGNOSTIC_SUPPORTED'; item['checkpoint']={'state':'complete','disposition':disp}
-          if disp=='ANCHOR_RESOLVES_FEASIBILITY':
-            succ={'id':'EXP-002S38','title':'Prospective S30-anchored structural stack','priority':51.5,'status':'PENDING','depends_on':['EXP-002S37'],'rationale':'S37 shows that including frozen S30 as a safety anchor makes a robust convex improvement feasible on both exposed splits; prospectively train and validate an anchored stack on fresh separated worlds.'}
-          elif disp=='ANCHOR_ONLY_SAFE':
-            succ={'id':'EXP-002S38','title':'Specialist residual-value diagnostic over S30 anchor','priority':51.5,'status':'PENDING','depends_on':['EXP-002S37'],'rationale':'S37 shows S30 is the only robust global anchor; quantify where specialist posteriors add residual structural value over S30 before attempting conditional residual corrections.'}
-          elif disp=='ANCHOR_TRANSFER_UNSTABLE':
-            succ={'id':'EXP-002S38','title':'Anchor-stack split-instability diagnostic','priority':51.5,'status':'PENDING','depends_on':['EXP-002S37'],'rationale':'S37 anchor feasibility differs across exposed splits; isolate cell-level instability before any prospective anchored treatment.'}
-          else:
-            succ={'id':'EXP-002S38','title':'Anchor mixture geometry diagnostic','priority':51.5,'status':'PENDING','depends_on':['EXP-002S37'],'rationale':'S37 gives mixed anchor feasibility; diagnose whether improvement requires cell-specific expert weights or is dominated by S30.'}
-          if not any(x.get('id')=='EXP-002S38' for x in q['queue']): q['queue'].append(succ)
-          finding=f"S37 {disp}: S30-anchor exact minimax worst-cell delta train {sm['training']['worst_cell_delta']:.4f}, validation {sm['validation']['worst_cell_delta']:.4f}; S30 weights train {sm['training']['weights']['S30']:.3f}, validation {sm['validation']['weights']['S30']:.3f}."
-          if finding not in q['established_findings']: q['established_findings'].append(finding)
-          q['version']='7.7'; qp.write_text(json.dumps(q,indent=2))
-          lines=['# EXP-002S37 Evaluation','',f'**Disposition:** {disp}','',f"Training worst-cell delta: **{sm['training']['worst_cell_delta']:.6f}**",f"Validation worst-cell delta: **{sm['validation']['worst_cell_delta']:.6f}**",f"Training mean delta: **{sm['training']['mean_delta']:.6f}**",f"Validation mean delta: **{sm['validation']['mean_delta']:.6f}**",f"Training S30 anchor weight: **{sm['training']['weights']['S30']:.3f}**",f"Validation S30 anchor weight: **{sm['validation']['weights']['S30']:.3f}**",'', '## Next',succ['rationale']]
-          (ep/'EXP-002S37_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S37_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
-          PY
-          git config user.name swarmite-worker
-          git config user.email swarmite-worker@users.noreply.github.com
-          git add experiments/swarmite-exp002/EXP-002S37_* experiments/swarmite-queue/QUEUE.json
-          git diff --cached --quiet || git commit -m 'Complete EXP-002S37 anchor localization'
-          git push
+      - run: echo "Swarmite paused by user request on 2026-08-12"

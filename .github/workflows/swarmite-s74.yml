@@ -1,44 +1,8 @@
-name: Swarmite S74 Observed Response Acquisition
+name: PAUSED Swarmite S74
 on:
-  push:
-    paths: ['.github/workflows/swarmite-s74.yml']
-permissions: {contents: write}
+  workflow_dispatch:
 jobs:
- run:
-  runs-on: ubuntu-latest
-  timeout-minutes: 240
-  steps:
-   - uses: actions/checkout@v4
-   - uses: actions/setup-python@v5
-     with: {python-version: '3.11'}
-   - run: pip install numpy
-   - name: Start S74
-     run: |
-      git pull --rebase
-      python - <<'PY'
-      import json
-      from pathlib import Path
-      p=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S74')
-      if it['status']=='PENDING': it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S74_OBSERVED_RESPONSE_ACQUISITION_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s74_observed_response_acquisition.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics_training_heldout'}}); q['version']='14.2'; p.write_text(json.dumps(q,indent=2))
-      PY
-      git config user.name swarmite-worker; git config user.email swarmite-worker@users.noreply.github.com; git add experiments/swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Start EXP-002S74 observed-response acquisition'; git push
-   - name: Execute evaluate and enqueue S75
-     working-directory: experiments/swarmite-exp002
-     run: |
-      git pull --rebase
-      python swarmite_exp002_s74_observed_response_acquisition.py > EXP-002S74_RESULT.json
-      python - <<'PY'
-      import json
-      from pathlib import Path
-      root=Path('../..'); p=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S74'); z=json.loads(Path('EXP-002S74_RESULT.json').read_text()); d=z.get('disposition','BLOCKED_EXECUTION_UNKNOWN')
-      it['result_artifact']='experiments/swarmite-exp002/EXP-002S74_RESULT.json'; it['result_summary']=z.get('diagnostic',{}); it['checkpoint']={'state':'blocked' if d.startswith('BLOCKED') else 'complete','disposition':d}; it['status']=('BLOCKED_'+d.removeprefix('BLOCKED_')) if d.startswith('BLOCKED') else 'COMPLETE_'+d
-      if not d.startswith('BLOCKED'):
-       if d=='OBSERVED_RESPONSE_ACQUISITION_SUPPORTED': title='Frozen observed-response planner policy test'; rationale='S74 supported empirical observed-transition acquisition prediction. Freeze the S74 model and test resource-matched sequential planning against EIG without retuning.'
-       elif d=='OBSERVED_RESPONSE_ACQUISITION_WEAK': title='Set-valued observed-transition acquisition diagnostic'; rationale='S74 retained weak empirical transition signal but failed promotion. Preserve raw transition histories and test uncertainty-aware/set-valued empirical acquisition rather than retuning ridge coefficients.'
-       else: title='Target-conditional intervention transition geometry diagnostic'; rationale='S74 falsified simple scalar acquisition prediction from observed intervention transitions after posterior-predictive acquisition families also failed. Replace hand summaries with target-conditional transition geometry/representation learning; do not retune S74 regression.'
-       if not any(x.get('id')=='EXP-002S75' for x in q['queue']): q['queue'].append({'id':'EXP-002S75','title':title,'priority':39.5,'status':'PENDING','depends_on':['EXP-002S74'],'rationale':rationale})
-       finding=f"S74 disposition {d}. Observed intervention-response acquisition diagnostic: {z.get('diagnostic')}."; q['established_findings'].append(finding) if finding not in q['established_findings'] else None
-       Path('EXP-002S74_EVALUATION.md').write_text('# EXP-002S74 Evaluation\n\n**Disposition:** '+d+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S74_EVALUATION.md'
-      q['version']='14.3'; p.write_text(json.dumps(q,indent=2))
-      PY
-      git add EXP-002S74_RESULT.json EXP-002S74_EVALUATION.md ../swarmite-queue/QUEUE.json 2>/dev/null || git add EXP-002S74_RESULT.json ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Complete EXP-002S74 and enqueue successor'; git push
+  paused:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Swarmite paused by user request on 2026-08-12"

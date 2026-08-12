@@ -1,65 +1,8 @@
-name: Swarmite S67 Intervention-Response Disagreement Acquisition
+name: PAUSED Swarmite S67
 on:
-  push:
-    paths: ['.github/workflows/swarmite-s67.yml']
-permissions:
-  contents: write
+  workflow_dispatch:
 jobs:
-  run:
+  paused:
     runs-on: ubuntu-latest
-    timeout-minutes: 240
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: {python-version: '3.11'}
-      - run: pip install numpy
-      - name: Start S67
-        run: |
-          git pull --rebase
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S67')
-          if it.get('status')=='PENDING':
-              it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S67_INTERVENTION_RESPONSE_DISAGREEMENT_ACQUISITION_DIAGNOSTIC_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s67_intervention_response_disagreement.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics_then_heldout_diagnostic','mechanics':'2+2','diagnostic':'64+64'}})
-              q['version']='12.8'; qp.write_text(json.dumps(q,indent=2))
-          PY
-          git config user.name swarmite-worker; git config user.email swarmite-worker@users.noreply.github.com
-          git add experiments/swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Start EXP-002S67 response disagreement diagnostic'; git push
-      - name: Execute S67
-        working-directory: experiments/swarmite-exp002
-        run: |
-          git pull --rebase
-          python swarmite_exp002_s67_intervention_response_disagreement.py > EXP-002S67_RESULT.json
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S67'); z=json.loads(Path('EXP-002S67_RESULT.json').read_text()); disp=z.get('disposition','BLOCKED_EXECUTION_UNKNOWN')
-          it['result_artifact']='experiments/swarmite-exp002/EXP-002S67_RESULT.json'; it['result_summary']=z.get('diagnostic',{}); it['checkpoint']={'state':'complete' if not disp.startswith('BLOCKED') else 'blocked','disposition':disp,'next_stage':'evaluate_enqueue' if not disp.startswith('BLOCKED') else 'repair_execution'}
-          it['status']=('BLOCKED_'+disp.removeprefix('BLOCKED_')) if disp.startswith('BLOCKED') else 'COMPLETE_'+disp
-          qp.write_text(json.dumps(q,indent=2))
-          PY
-          git add EXP-002S67_RESULT.json ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S67 diagnostic'; git push
-      - name: Evaluate and enqueue S68
-        if: always()
-        working-directory: experiments/swarmite-exp002
-        run: |
-          git pull --rebase
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S67'); cp=it.get('checkpoint',{}); disp=cp.get('disposition')
-          if not disp or disp.startswith('BLOCKED'): raise SystemExit(0)
-          ev=it.get('result_summary',{}); sid='EXP-002S68'
-          if disp=='RESPONSE_DISAGREEMENT_ALIGNED':
-              title='Frozen response-disagreement planner policy test'; rationale='S67 prospectively aligned a truth-free intervention-response disagreement representation with realized acquisition value. Freeze it and test a resource-matched planner policy while preserving terminal S30/S46 inference.'
-          elif disp=='RESPONSE_DISAGREEMENT_WEAK':
-              title='Set-valued intervention-response utility diagnostic'; rationale='S67 showed partial acquisition alignment but not enough for policy promotion. Preserve outcome-branch structure explicitly as a set-valued utility representation rather than tuning the scalar disagreement score.'
-          else:
-              title='Sequential branch-aware value-of-information diagnostic'; rationale='S67 falsified both terminal localization reuse and static posterior-response disagreement as scalar acquisition scores. Redirect to explicit sequential outcome-branch value-of-information before changing planning or terminal inference.'
-          if not any(x.get('id')==sid for x in q['queue']): q['queue'].append({'id':sid,'title':title,'priority':41.0,'status':'PENDING','depends_on':['EXP-002S67'],'rationale':rationale})
-          finding=f"S67 disposition {disp}. positive acquisition-value AUC {ev.get('positive_value_auc')}; Spearman {ev.get('spearman_score_vs_value')}; disagreement/EIG mean value-per-cost {ev.get('disagreement_mean_value_per_cost')}/{ev.get('eig_mean_value_per_cost')}; paired difference {ev.get('paired_mean_difference')}; disagreement-beats-EIG fraction {ev.get('disagreement_beats_eig_fraction')}."
-          if finding not in q['established_findings']: q['established_findings'].append(finding)
-          Path('EXP-002S67_EVALUATION.md').write_text('# EXP-002S67 Evaluation\n\n**Disposition:** '+disp+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S67_EVALUATION.md'; q['version']='12.9'; qp.write_text(json.dumps(q,indent=2))
-          PY
-          git add ../swarmite-queue/QUEUE.json; test ! -f EXP-002S67_EVALUATION.md || git add EXP-002S67_EVALUATION.md; git diff --cached --quiet || git commit -m 'Evaluate EXP-002S67 and enqueue successor'; git push
+      - run: echo "Swarmite paused by user request on 2026-08-12"

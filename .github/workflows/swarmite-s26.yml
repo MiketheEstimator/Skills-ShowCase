@@ -1,49 +1,8 @@
-name: Swarmite S26 Regime Diagnostic
+name: PAUSED Swarmite S26
 on:
-  push:
-    paths: ['.github/workflows/swarmite-s26.yml']
-permissions:
-  contents: write
+  workflow_dispatch:
 jobs:
-  run:
+  paused:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install numpy
-      - name: Execute frozen S26 diagnostic
-        working-directory: experiments/swarmite-exp002
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          import swarmite_exp002_s26_regime_diag as s26
-          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S26')
-          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S26_REGIME_DIAGNOSTIC_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s26_regime_diag.py','checkpoint':{'state':'protocol_frozen','next_stage':'fresh_regime_diagnostic','seeds':list(range(71000,71096))}}); qp.write_text(json.dumps(q,indent=2))
-          rows=[s26.paired(s) for s in range(71000,71096)]; sm=s26.summarize(rows); Path('EXP-002S26_RESULT.json').write_text(json.dumps({'rows':rows,'summary':sm},indent=2)); item['result_artifact']='experiments/swarmite-exp002/EXP-002S26_RESULT.json'; item['result_summary']=sm
-          labels={k:v['label'] for k,v in sm['by_regime'].items()}; tanh_ok=labels['tanh_t3']=='ROBUST_SUPPORTED'; shifted_ok=labels['softsign_t5']=='ROBUST_SUPPORTED' and labels['arctan_laplace']=='ROBUST_SUPPORTED'; linear_harm=labels['linear_gaussian']=='ROBUST_HARMFUL'
-          if not tanh_ok: disposition='TANH_REPLICATION_CONFLICT'
-          elif linear_harm and shifted_ok: disposition='REGIME_SPECIFIC_SELECTOR_JUSTIFIED'
-          elif sum(v=='ROBUST_HARMFUL' for v in labels.values())>=2: disposition='MULTI_REGIME_MODEL_FAILURE'
-          else: disposition='REGIME_EFFECTS_MIXED_UNRESOLVED'
-          item['status']='COMPLETE_DIAGNOSTIC_SUPPORTED'; item['checkpoint']={'state':'complete','disposition':disposition}
-          if not any(x.get('id')=='EXP-002S27' for x in q['queue']):
-              if disposition=='REGIME_SPECIFIC_SELECTOR_JUSTIFIED': title='Observable baseline-versus-robust science selector'; rationale='S26 supports robust inference on shifted regimes but harms in-distribution linear-Gaussian worlds; learn an observable selector on separate worlds, with no truth inputs at deployment.'
-              elif disposition=='TANH_REPLICATION_CONFLICT': title='S23 tanh replication audit'; rationale='S26 conflicts with S23 on tanh+t3; reconcile seed/world differences before adapting inference.'
-              else: title='Robust science regime representation diagnostic'; rationale='S26 did not isolate a clean baseline-vs-robust selection problem; diagnose represented regime gaps before another selector or likelihood change.'
-              q['queue'].append({'id':'EXP-002S27','title':title,'priority':54.25,'status':'PENDING','depends_on':['EXP-002S26'],'rationale':rationale})
-          q['version']='6.1'; finding=f"S26 {disposition}: 24 fresh worlds per regime resolved heterogeneous transfer effects for frozen S23 inference."; q['established_findings'].append(finding) if finding not in q['established_findings'] else None; qp.write_text(json.dumps(q,indent=2))
-          lines=['# EXP-002S26 Evaluation','',f'**Disposition:** {disposition}','', '## Regimes']
-          for reg,v in sm['by_regime'].items(): lines += [f"- **{reg}**: {v['label']}; edge {v['mean_edge_delta']:.6f}, CI {v['bootstrap95_edge_delta']}, Brier {v['mean_brier_delta']:.6f}, harms {v['large_harms']}, D {v['mean_D_robust']:.3f}, tail {v['mean_PPC_tail']:.3f}, nonlinear {v['mean_PPC_nonlinear']:.3f}"]
-          lines += ['','## Next',next(x['rationale'] for x in q['queue'] if x['id']=='EXP-002S27')]; Path('EXP-002S26_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S26_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
-          PY
-      - name: Persist result
-        run: |
-          git config user.name swarmite-worker
-          git config user.email swarmite-worker@users.noreply.github.com
-          git add experiments/swarmite-exp002/EXP-002S26_* experiments/swarmite-queue/QUEUE.json
-          git diff --cached --quiet || git commit -m 'Complete EXP-002S26 regime diagnostic'
-          git push
+      - run: echo "Swarmite paused by user request on 2026-08-12"

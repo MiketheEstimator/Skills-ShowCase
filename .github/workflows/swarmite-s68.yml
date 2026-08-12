@@ -1,57 +1,8 @@
-name: Swarmite S68 Sequential Branch-Aware VOI
+name: PAUSED Swarmite S68
 on:
-  push:
-    paths: ['.github/workflows/swarmite-s68.yml']
-permissions:
-  contents: write
+  workflow_dispatch:
 jobs:
-  run:
+  paused:
     runs-on: ubuntu-latest
-    timeout-minutes: 240
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: {python-version: '3.11'}
-      - run: pip install numpy
-      - name: Start S68
-        run: |
-          git pull --rebase
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          p=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S68')
-          if it.get('status')=='PENDING':
-            it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S68_SEQUENTIAL_BRANCH_AWARE_VOI_DIAGNOSTIC_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s68_sequential_branch_voi.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics_then_heldout_diagnostic','mechanics':'2+2','diagnostic':'64+64'}}); q['version']='13.0'; p.write_text(json.dumps(q,indent=2))
-          PY
-          git config user.name swarmite-worker; git config user.email swarmite-worker@users.noreply.github.com
-          git add experiments/swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Start EXP-002S68 branch-aware VOI'; git push
-      - name: Execute S68
-        working-directory: experiments/swarmite-exp002
-        run: |
-          git pull --rebase
-          python swarmite_exp002_s68_sequential_branch_voi.py > EXP-002S68_RESULT.json
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          root=Path('../..'); p=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S68'); z=json.loads(Path('EXP-002S68_RESULT.json').read_text()); d=z.get('disposition','BLOCKED_EXECUTION_UNKNOWN'); it['result_artifact']='experiments/swarmite-exp002/EXP-002S68_RESULT.json'; it['result_summary']=z.get('diagnostic',{}); it['checkpoint']={'state':'blocked' if d.startswith('BLOCKED') else 'complete','disposition':d,'next_stage':'repair_execution' if d.startswith('BLOCKED') else 'evaluate_enqueue'}; it['status']=('BLOCKED_'+d.removeprefix('BLOCKED_')) if d.startswith('BLOCKED') else 'COMPLETE_'+d; p.write_text(json.dumps(q,indent=2))
-          PY
-          git add EXP-002S68_RESULT.json ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S68 diagnostic'; git push
-      - name: Evaluate and enqueue S69
-        if: always()
-        working-directory: experiments/swarmite-exp002
-        run: |
-          git pull --rebase
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          root=Path('../..'); p=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S68'); d=it.get('checkpoint',{}).get('disposition'); ev=it.get('result_summary',{})
-          if not d or d.startswith('BLOCKED'): raise SystemExit(0)
-          if d=='BRANCH_VOI_ALIGNED': title='Frozen sequential branch-aware planner policy test'; rationale='S68 prospectively aligned explicit two-stage outcome-branch VOI with realized acquisition value. Freeze the representation and test a resource-matched sequential planner without terminal changes.'
-          elif d=='BRANCH_VOI_WEAK': title='Risk-sensitive set-valued branch utility diagnostic'; rationale='S68 retained partial branch-aware signal but expected-value scalarization did not qualify. Preserve outcome branches and test risk-sensitive/set-valued utility rather than retuning scalar weights.'
-          else: title='Intervention-response predictive calibration diagnostic'; rationale='S68 falsified sequential posterior-derived scalar VOI after S66/S67 failures. Diagnose intervention-response predictive model calibration/misspecification directly before any further planner scoring.'
-          if not any(x.get('id')=='EXP-002S69' for x in q['queue']): q['queue'].append({'id':'EXP-002S69','title':title,'priority':40.5,'status':'PENDING','depends_on':['EXP-002S68'],'rationale':rationale})
-          finding=f"S68 disposition {d}. positive acquisition-value AUC {ev.get('positive_value_auc')}; Spearman {ev.get('spearman_score_vs_value')}; candidate/EIG mean value-per-cost {ev.get('candidate_mean_value_per_cost')}/{ev.get('eig_mean_value_per_cost')}; paired difference {ev.get('paired_mean_difference')}; candidate-beats-EIG fraction {ev.get('candidate_beats_eig_fraction')}."
-          if finding not in q['established_findings']: q['established_findings'].append(finding)
-          Path('EXP-002S68_EVALUATION.md').write_text('# EXP-002S68 Evaluation\n\n**Disposition:** '+d+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S68_EVALUATION.md'; q['version']='13.1'; p.write_text(json.dumps(q,indent=2))
-          PY
-          git add ../swarmite-queue/QUEUE.json; test ! -f EXP-002S68_EVALUATION.md || git add EXP-002S68_EVALUATION.md; git diff --cached --quiet || git commit -m 'Evaluate EXP-002S68 and enqueue successor'; git push
+      - run: echo "Swarmite paused by user request on 2026-08-12"

@@ -1,51 +1,8 @@
-name: Swarmite S31 Continuous Combination Transfer
+name: PAUSED Swarmite S31
 on:
-  push:
-    paths: ['.github/workflows/swarmite-s31.yml']
-permissions:
-  contents: write
+  workflow_dispatch:
 jobs:
-  run:
+  paused:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install numpy
-      - name: Execute S31 mechanics and transfer confirmation
-        working-directory: experiments/swarmite-exp002
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          import swarmite_exp002_s31_transfer as s31
-          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S31')
-          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S31_CONTINUOUS_COMBINATION_TRANSFER_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s31_transfer.py','runner_commit':'459138fa5384cb75f3e0205b2ff24b0d7776c8d0','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics','mechanics_seeds':[71700,71701,71702,71703],'confirmation_seeds':[71800,71895],'T':5.0}}); qp.write_text(json.dumps(q,indent=2))
-          mech=[s31.paired(s) for s in range(71700,71704)]; msm=s31.summarize(mech); Path('EXP-002S31_MECHANICS_RESULT.json').write_text(json.dumps({'rows':mech,'summary':msm},indent=2)); item['mechanics_artifact']='experiments/swarmite-exp002/EXP-002S31_MECHANICS_RESULT.json'
-          if not msm['mechanics_ok']:
-            disposition='MECHANICS_BLOCKED'; item['status']='BLOCKED_EXECUTION_REPRODUCIBILITY'; final=msm
-          else:
-            rows=[s31.paired(s) for s in range(71800,71896)]; sm=s31.summarize(rows); ok=s31.passes(sm); Path('EXP-002S31_CONFIRMATION_RESULT.json').write_text(json.dumps({'rows':rows,'summary':sm,'passes':ok},indent=2)); item['result_artifact']='experiments/swarmite-exp002/EXP-002S31_CONFIRMATION_RESULT.json'; item['result_summary']=sm; final=sm
-            disposition='TRANSFER_SUPPORTED' if ok else 'TRANSFER_FALSIFIED'; item['status']='COMPLETE_TRANSFER_SUPPORTED' if ok else 'COMPLETE_FALSIFIED_ON_TRANSFER'
-          item['checkpoint']={'state':'complete','disposition':disposition}
-          if not any(x.get('id')=='EXP-002S32' for x in q['queue']):
-            if disposition=='TRANSFER_SUPPORTED': title='Larger graph-space continuous combination scaling'; rationale='S31 transferred the frozen S30 science architecture to unseen mechanism/noise families; test whether the gain survives a larger hypothesis/graph space with matched planning budgets.'
-            elif disposition=='TRANSFER_FALSIFIED': title='Unseen-regime model-set insufficiency diagnostic'; rationale='S31 exposed a transfer boundary for the baseline+S23 model set; isolate the failing unseen mechanism/noise family before expanding terminal model classes.'
-            else: title='S31 reproducibility recovery'; rationale='S31 mechanics gate failed; recover exact execution mechanics without changing the scientific hypothesis.'
-            q['queue'].append({'id':'EXP-002S32','title':title,'priority':53.0,'status':'PENDING','depends_on':['EXP-002S31'],'rationale':rationale})
-          finding=f"S31 {disposition}: frozen T=5 ADEQ-weighted posterior combination stress-tested on unseen mechanism/noise families."
-          if finding not in q['established_findings']: q['established_findings'].append(finding)
-          q['version']='6.6'; qp.write_text(json.dumps(q,indent=2))
-          lines=['# EXP-002S31 Evaluation','',f'**Disposition:** {disposition}','',f"Overall edge delta {final['mean_edge_delta']:.6f}; CI {final['bootstrap95_edge_delta']}; Brier {final['mean_brier_delta']:.6f}; harms {final['large_harms']}; mean alpha {final['mean_alpha']:.3f}.",'','## By regime']
-          for reg,v in final['by_regime'].items(): lines.append(f"- **{reg}**: edge {v['mean_edge_delta']:.6f}, CI {v['bootstrap95_edge_delta']}, Brier {v['mean_brier_delta']:.6f}, alpha {v['mean_alpha']:.3f}, ADEQ {v['mean_ADEQ']:.3f}, harms {v['large_harms']}")
-          lines += ['','## Next',next(x['rationale'] for x in q['queue'] if x['id']=='EXP-002S32')]; Path('EXP-002S31_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S31_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
-          PY
-      - name: Persist result
-        run: |
-          git config user.name swarmite-worker
-          git config user.email swarmite-worker@users.noreply.github.com
-          git add experiments/swarmite-exp002/EXP-002S31_* experiments/swarmite-queue/QUEUE.json
-          git diff --cached --quiet || git commit -m 'Run EXP-002S31 continuous combination transfer stress'
-          git push
+      - run: echo "Swarmite paused by user request on 2026-08-12"
