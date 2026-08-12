@@ -1,0 +1,117 @@
+name: Swarmite S65 Decision-Theoretic Local Structural Action
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s65.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install numpy
+      - name: Start S65
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S65')
+          if it.get('status')=='PENDING':
+              it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S65_DECISION_THEORETIC_LOCAL_STRUCTURAL_ACTION_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s65_decision_theoretic_local_structural_action.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics','mechanics':'2+2','training':'64+64','validation':'32+32','confirmation':'64+64'}}); q['version']='12.4'
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker; git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Start EXP-002S65 decision-theoretic action'; git push
+      - name: Mechanics
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s65_decision_theoretic_local_structural_action as s65
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S65')
+          if it.get('status')!='RUNNING': raise SystemExit(0)
+          rows=s65.generate(98001,2); ok=s65.mechanics(rows,2); Path('EXP-002S65_MECHANICS_RESULT.json').write_text(json.dumps({'passed':ok},indent=2)); it['mechanics_artifact']='experiments/swarmite-exp002/EXP-002S65_MECHANICS_RESULT.json'
+          if ok: it['checkpoint']={'state':'mechanics_passed','next_stage':'training'}
+          else: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_mechanics','next_action':'repair S65 without opening training'}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S65_MECHANICS_RESULT.json ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S65 mechanics'; git push
+      - name: Training
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s65_decision_theoretic_local_structural_action as s65
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S65')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='mechanics_passed': raise SystemExit(0)
+          rows=s65.generate(98101,64); ok=s65.mechanics(rows,64)
+          if not ok: Path('EXP-002S65_TRAINING_RESULT.json').write_text(json.dumps({'mechanics_ok':False},indent=2)); it['status']='BLOCKED_EXECUTION_TRAINING_MECHANICS'; it['checkpoint']={'state':'blocked_training_mechanics','next_action':'repair without validation'}
+          else:
+              model=s65.train_model(rows); ev=s65.evaluate(rows,model,26565); passed=s65.qualifies(ev); Path('EXP-002S65_TRAINING_RESULT.json').write_text(json.dumps({'mechanics_ok':True,'model':model,'evaluation':ev,'qualified':passed},indent=2)); Path('EXP-002S65_MODEL.json').write_text(json.dumps(model,indent=2)); it['model_artifact']='experiments/swarmite-exp002/EXP-002S65_MODEL.json'
+              if passed: it['checkpoint']={'state':'training_passed','next_stage':'validation','training':ev}
+              else: disp=s65.failclass(ev)+'_AT_TRAINING'; it['status']='COMPLETE_'+disp; it['checkpoint']={'state':'complete','disposition':disp,'training':ev}; it['result_summary']=ev
+          it['training_artifact']='experiments/swarmite-exp002/EXP-002S65_TRAINING_RESULT.json'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S65_TRAINING_RESULT.json ../swarmite-queue/QUEUE.json; test ! -f EXP-002S65_MODEL.json || git add EXP-002S65_MODEL.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S65 training'; git push
+      - name: Validation
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s65_decision_theoretic_local_structural_action as s65
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S65')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='training_passed': raise SystemExit(0)
+          model=json.loads(Path('EXP-002S65_MODEL.json').read_text()); rows=s65.generate(98501,32); ok=s65.mechanics(rows,32); ev=s65.evaluate(rows,model,26566) if ok else None; passed=bool(ok and s65.qualifies(ev,True)); Path('EXP-002S65_VALIDATION_RESULT.json').write_text(json.dumps({'mechanics_ok':ok,'evaluation':ev,'qualified':passed},indent=2)); it['validation_artifact']='experiments/swarmite-exp002/EXP-002S65_VALIDATION_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_VALIDATION_MECHANICS'; it['checkpoint']={'state':'blocked_validation_mechanics','next_action':'repair without confirmation'}
+          elif passed: it['checkpoint']={'state':'validation_passed','next_stage':'confirmation','validation':ev}
+          else: disp=s65.failclass(ev)+'_ON_VALIDATION'; it['status']='COMPLETE_'+disp; it['checkpoint']={'state':'complete','disposition':disp,'validation':ev}; it['result_summary']=ev
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          test ! -f EXP-002S65_VALIDATION_RESULT.json || git add EXP-002S65_VALIDATION_RESULT.json; git add ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S65 validation'; git push
+      - name: Confirmation
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s65_decision_theoretic_local_structural_action as s65
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S65')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='validation_passed': raise SystemExit(0)
+          model=json.loads(Path('EXP-002S65_MODEL.json').read_text()); rows=s65.generate(98801,64); ok=s65.mechanics(rows,64); ev=s65.evaluate(rows,model,26567) if ok else None; passed=bool(ok and s65.qualifies(ev,True,True)); Path('EXP-002S65_CONFIRMATION_RESULT.json').write_text(json.dumps({'mechanics_ok':ok,'evaluation':ev,'qualified':passed},indent=2)); it['confirmation_artifact']='experiments/swarmite-exp002/EXP-002S65_CONFIRMATION_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_CONFIRMATION_MECHANICS'; it['checkpoint']={'state':'blocked_confirmation_mechanics','next_action':'repair confirmation mechanics'}
+          elif passed: it['status']='COMPLETE_SUPPORTED'; it['checkpoint']={'state':'complete','disposition':'SUPPORTED','confirmation':ev}; it['result_summary']=ev
+          else: disp=s65.failclass(ev)+'_ON_CONFIRMATION'; it['status']='COMPLETE_'+disp; it['checkpoint']={'state':'complete','disposition':disp,'confirmation':ev}; it['result_summary']=ev
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          test ! -f EXP-002S65_CONFIRMATION_RESULT.json || git add EXP-002S65_CONFIRMATION_RESULT.json; git add ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S65 confirmation'; git push
+      - name: Evaluate and enqueue S66
+        if: always()
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S65'); cp=it.get('checkpoint',{}); disp=cp.get('disposition')
+          if not disp: raise SystemExit(0)
+          ev=it.get('result_summary') or cp.get('confirmation') or cp.get('validation') or cp.get('training') or {}; sid='EXP-002S66'
+          if disp=='SUPPORTED': title='Frozen S65 structural-action breadth transfer'; rationale='S65 supported action-layer use of S62 evidence. Freeze the entire mechanism and test breadth and mechanism shift without retuning.'
+          elif 'EVIDENCE_TRANSFER' in disp: title='Set-valued intervention-invariance evidence diagnostic'; rationale='S65 lost prospective S62 evidence. Change the evidence representation to set-valued intervention invariance rather than tuning the action rule.'
+          else: title='Evidence-guided intervention allocation diagnostic'; rationale='S65 retained S62 evidence but terminal structural action failed. Test whether the supported localization signal is more valuable for choosing the next intervention/information acquisition than for modifying terminal inference.'
+          if not any(x.get('id')==sid for x in q['queue']): q['queue'].append({'id':sid,'title':title,'priority':42.0,'status':'PENDING','depends_on':['EXP-002S65'],'rationale':rationale})
+          finding=f"S65 disposition {disp}. paired action-edge difference {ev.get('paired_mean_action_edge_difference')}; AUC {ev.get('error_localization_auc')}; proposal usefulness {ev.get('competitor_useful_fraction_on_error_nodes')}; action-change fraction {ev.get('action_change_fraction')}; harms candidate/control {ev.get('candidate_large_action_harms')}/{ev.get('control_large_action_harms')}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          Path('EXP-002S65_EVALUATION.md').write_text('# EXP-002S65 Evaluation\n\n**Disposition:** '+str(disp)+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S65_EVALUATION.md'; q['version']='12.5'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S65_EVALUATION.md ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Evaluate EXP-002S65 and enqueue successor'; git push
