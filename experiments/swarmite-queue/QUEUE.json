@@ -1,5 +1,5 @@
 {
-  "version": "13.9",
+  "version": "14.0",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -5132,11 +5132,17 @@
       "id": "EXP-002S73",
       "title": "Set-valued empirical acquisition utility diagnostic",
       "priority": 39.7,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S72"
       ],
-      "rationale": "S72 falsified empirical conformal response-set calibration after S70/S71 moment calibration failures. Abandon calibration retuning and test acquisition utility directly from empirical intervention-response outcome families."
+      "rationale": "S72 falsified empirical conformal response-set calibration after S70/S71 moment calibration failures. Abandon calibration retuning and test acquisition utility directly from empirical intervention-response outcome families.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S73_SET_VALUED_ACQUISITION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s73_set_valued_acquisition.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics_diagnostic"
+      }
     }
   ],
   "established_findings": [
