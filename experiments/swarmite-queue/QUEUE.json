@@ -1,5 +1,5 @@
 {
-  "version": "13.4",
+  "version": "13.5",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4984,7 +4984,18 @@
             }
           }
         }
-      }
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S70_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S71",
+      "title": "Observable response-state conditional calibration diagnostic",
+      "priority": 39.9,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S70"
+      ],
+      "rationale": "S70 falsified global predictive-dispersion conditioning. Test richer truth-free response-state features for calibration heterogeneity before any further planner modification; do not retune S70 bins or shrinkage."
     }
   ],
   "established_findings": [
@@ -5054,7 +5065,8 @@
     "S66 disposition ALLOCATION_SIGNAL_FALSIFIED. positive acquisition-value AUC 0.5450620615218564; Spearman 0.11592870404957047; evidence/EIG mean value-per-cost 0.06819125610406981/0.07862152696859487; paired difference -0.010430270864525054; evidence-beats-EIG fraction 0.328125.",
     "S67 disposition RESPONSE_DISAGREEMENT_FALSIFIED. positive acquisition-value AUC 0.5230826345213138; Spearman 0.20115388770480397; disagreement/EIG mean value-per-cost 0.056451730245156276/0.04317759674970712; paired difference 0.013274133495449158; disagreement-beats-EIG fraction 0.4140625.",
     "S68 disposition BRANCH_VOI_FALSIFIED. positive acquisition-value AUC 0.5232663989290496; Spearman 0.15174248167109786; candidate/EIG mean value-per-cost 0.059504553419725874/0.04622881937637953; paired difference 0.013275734043346345; candidate-beats-EIG fraction 0.390625.",
-    "S69 disposition PREDICTIVE_MISCALIBRATION_SUPPORTED. Predictive intervention-response calibration by regime: {'linear': {'n_response_cells': 2560, 'mean_standardized_residual': -0.006772905635903747, 'rms_standardized_residual': 1.0599041811871397, 'coverage80': 0.7546875, 'coverage95': 0.900390625}, 'heteroskedastic': {'n_response_cells': 2560, 'mean_standardized_residual': 0.022766061408813272, 'rms_standardized_residual': 0.6997770505823854, 'coverage80': 0.905859375, 'coverage95': 0.977734375}}."
+    "S69 disposition PREDICTIVE_MISCALIBRATION_SUPPORTED. Predictive intervention-response calibration by regime: {'linear': {'n_response_cells': 2560, 'mean_standardized_residual': -0.006772905635903747, 'rms_standardized_residual': 1.0599041811871397, 'coverage80': 0.7546875, 'coverage95': 0.900390625}, 'heteroskedastic': {'n_response_cells': 2560, 'mean_standardized_residual': 0.022766061408813272, 'rms_standardized_residual': 0.6997770505823854, 'coverage80': 0.905859375, 'coverage95': 0.977734375}}.",
+    "S70 disposition RESPONSE_CALIBRATION_FALSIFIED. Held-out calibration: {'linear': {'raw': {'mean': -0.00340779803276193, 'rms': 1.0483747101584382, 'coverage80': 0.786328125, 'coverage95': 0.934375}, 'calibrated': {'mean': 0.0011569964963933476, 'rms': 1.214731894372649, 'coverage80': 0.71484375, 'coverage95': 0.8953125}}, 'heteroskedastic': {'raw': {'mean': -0.002256112586164241, 'rms': 0.7014113811742843, 'coverage80': 0.925390625, 'coverage95': 0.98984375}, 'calibrated': {'mean': 0.0012396982104340634, 'rms': 0.8060548082584313, 'coverage80': 0.8875, 'coverage95': 0.97890625}}}; coverage-error summary: {'raw_mean': 0.09726562500000002, 'calibrated_mean': 0.128125, 'relative_improvement': -0.31726907630522044}."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
