@@ -27,7 +27,7 @@ def t_loglik(res,scale):
 
 def context_posterior(data,targets):
     fs,models=b.build_family_models(data,targets); cs=fs.copy(); adjustments=[]; finite=True
-    targets=np.asarray(targets)
+    targets=np.asarray(targets,dtype=object)
     for v in range(b.N):
         keep=np.asarray([t!=v for t in targets],bool); y=np.asarray(data[keep,v],float); labs=targets[keep]; n=len(y)
         if n<8: continue
@@ -36,8 +36,11 @@ def context_posterior(data,targets):
             cols,mu,_=models[(v,pm)]
             X=data[keep][:,cols] if cols else np.empty((n,0)); Xd=np.column_stack([np.ones(n),X]); pred=Xd@mu; res=y-pred
             sg=robust_scale(res); ll0=t_loglik(res,np.full(n,sg)); scale=np.full(n,sg,float); extra=0
-            for lab in np.unique(labs):
-                idx=(labs==lab); ng=int(idx.sum())
+            unique_labs=[]
+            for lab in labs.tolist():
+                if not any((lab is x) or (lab==x) for x in unique_labs): unique_labs.append(lab)
+            for lab in unique_labs:
+                idx=np.asarray([(x is lab) or (x==lab) for x in labs],bool); ng=int(idx.sum())
                 if ng<3: continue
                 sl=robust_scale(res[idx]); w=ng/(ng+SHRINK_K); logs=(1-w)*math.log(sg)+w*math.log(sl); scale[idx]=math.exp(logs); extra+=1
             ll1=t_loglik(res,scale); penalty=0.5*max(extra-1,0)*math.log(max(n,2)); adj=float(np.clip(ll1-ll0-penalty,-ADJ_CLIP,ADJ_CLIP))
