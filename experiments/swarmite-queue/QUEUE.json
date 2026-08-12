@@ -1,5 +1,5 @@
 {
-  "version": "11.8",
+  "version": "11.9",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4443,7 +4443,18 @@
             "mean_refits": 3.265625
           }
         }
-      }
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S62_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S63",
+      "title": "Posterior-mass counterfactual parent-family repair",
+      "priority": 42.3,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S62"
+      ],
+      "rationale": "S62 supported both error localization and parent-family proposal. Prospectively test a bounded correction using S62 posterior-mass proposals, with fresh train/validation/confirmation panels and frozen S46/S30 controls."
     }
   ],
   "established_findings": [
@@ -4505,7 +4516,8 @@
     "S58 disposition FALSIFIED_AT_TRAINING. Intervention-conditional robust residual-scale evidence was compared prospectively against frozen S46/S30. Training paired edge difference 0.5101479493392345, heteroskedastic difference 0.9297556834753999, linear difference 0.09054021520306874, mean absolute score adjustment 1.7943561217967567.",
     "S59 disposition EVIDENCE_NOT_ALIGNED. Best observable residual-state AUC for anchor parent-ranking errors 0.5833002106602011; mean S58 correction delta on anchor-error nodes -0.05002213870980036; positive-correction fraction 0.48201438848920863; repaired-error fraction 0.04316546762589928.",
     "S60 disposition PREDICTIVE_STATE_ALIGNED. Best counterfactual predictive-state AUC for frozen anchor parent-ranking errors 0.652229387561323; bootstrap95 [0.607182554094821, 0.6933916075546676]; best feature cv_competitor_advantage; mean CV states 3.2296875.",
-    "S61 disposition FALSIFIED_TARGETING_AT_TRAINING. paired edge difference 0.012820018042227464; error-localization AUC 0.6561103771015925; competitor useful fraction on anchor-error nodes 0.29277566539923955; promoted large harms candidate/control 0/0."
+    "S61 disposition FALSIFIED_TARGETING_AT_TRAINING. paired edge difference 0.012820018042227464; error-localization AUC 0.6561103771015925; competitor useful fraction on anchor-error nodes 0.29277566539923955; promoted large harms candidate/control 0/0.",
+    "S62 disposition POSTERIOR_DISAGREEMENT_ALIGNED. best posterior-disagreement AUC 0.695745061409436; bootstrap95 [0.6571494758783214, 0.7371545607808339]; best feature competitor_mean_mass; competitor usefulness on anchor-error nodes 0.5935251798561151; exact-truth nomination 0.4028776978417266."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
