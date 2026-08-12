@@ -1,5 +1,5 @@
 {
-  "version": "13.7",
+  "version": "13.8",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -5076,11 +5076,17 @@
       "id": "EXP-002S72",
       "title": "Empirical conformal intervention-response set diagnostic",
       "priority": 39.8,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S71"
       ],
-      "rationale": "S71 falsified conditional Gaussian moment calibration. Test distribution-free empirical/conformal response sets using truth-free grouping; do not retune S70/S71 moment models."
+      "rationale": "S71 falsified conditional Gaussian moment calibration. Test distribution-free empirical/conformal response sets using truth-free grouping; do not retune S70/S71 moment models.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S72_CONFORMAL_RESPONSE_SET_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s72_conformal_response_sets.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics_calibration_heldout"
+      }
     }
   ],
   "established_findings": [
