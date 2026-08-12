@@ -1,5 +1,5 @@
 {
-  "version": "11.7",
+  "version": "11.8",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4299,11 +4299,19 @@
       "id": "EXP-002S62",
       "title": "Posterior-disagreement counterfactual parent proposal diagnostic",
       "priority": 42.4,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S61"
       ],
-      "rationale": "S61 falsified the predictive-state targeting/proposal mechanism. Replace mean held-out-loss competitor nomination with intervention-conditioned posterior family disagreement; do not tune S61 activation or tilt strength."
+      "rationale": "S61 falsified the predictive-state targeting/proposal mechanism. Replace mean held-out-loss competitor nomination with intervention-conditioned posterior family disagreement; do not tune S61 activation or tilt strength.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S62_POSTERIOR_DISAGREEMENT_PARENT_PROPOSAL_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s62_posterior_disagreement_parent_proposal.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "diagnostic": "64 + 64"
+      }
     }
   ],
   "established_findings": [
