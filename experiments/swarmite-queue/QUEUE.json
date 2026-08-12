@@ -1,5 +1,5 @@
 {
-  "version": "13.6",
+  "version": "13.7",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4991,7 +4991,7 @@
       "id": "EXP-002S71",
       "title": "Observable response-state conditional calibration diagnostic",
       "priority": 39.9,
-      "status": "RUNNING",
+      "status": "COMPLETE_RESPONSE_STATE_CALIBRATION_FALSIFIED",
       "depends_on": [
         "EXP-002S70"
       ],
@@ -4999,9 +4999,88 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S71_RESPONSE_STATE_CALIBRATION_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s71_response_state_calibration.py",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics_crossfit_heldout"
-      }
+        "state": "complete",
+        "disposition": "RESPONSE_STATE_CALIBRATION_FALSIFIED"
+      },
+      "result_artifact": "experiments/swarmite-exp002/EXP-002S71_RESULT.json",
+      "result_summary": {
+        "heldout": {
+          "linear": {
+            "raw": {
+              "mean": -0.007553812154990252,
+              "rms": 1.0482071901786238,
+              "coverage80": 0.783984375,
+              "coverage95": 0.943359375
+            },
+            "calibrated": {
+              "mean": -0.03549845802401659,
+              "rms": 1.9813873616903053,
+              "coverage80": 0.48125,
+              "coverage95": 0.67421875
+            }
+          },
+          "heteroskedastic": {
+            "raw": {
+              "mean": 0.0001336232761186898,
+              "rms": 0.6977648233463519,
+              "coverage80": 0.93359375,
+              "coverage95": 0.988671875
+            },
+            "calibrated": {
+              "mean": 0.027533787367992408,
+              "rms": 1.3804204653369783,
+              "coverage80": 0.6765625,
+              "coverage95": 0.857421875
+            }
+          }
+        },
+        "coverage_error": {
+          "raw_mean": 0.09746093750000001,
+          "calibrated_mean": 0.4052734375,
+          "relative_improvement": -3.1583166332665327
+        },
+        "crossfit_training": {
+          "linear": {
+            "raw": {
+              "mean": 0.016063779865700473,
+              "rms": 1.0721755455901278,
+              "coverage80": 0.7765625,
+              "coverage95": 0.925
+            },
+            "calibrated": {
+              "mean": 0.006352653562530936,
+              "rms": 1.9962410001702053,
+              "coverage80": 0.505859375,
+              "coverage95": 0.6875
+            }
+          },
+          "heteroskedastic": {
+            "raw": {
+              "mean": -0.01879943200031804,
+              "rms": 0.6874097903277154,
+              "coverage80": 0.939453125,
+              "coverage95": 0.993359375
+            },
+            "calibrated": {
+              "mean": -0.010740626154354593,
+              "rms": 1.368495276677778,
+              "coverage80": 0.67734375,
+              "coverage95": 0.860546875
+            }
+          }
+        }
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S71_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S72",
+      "title": "Empirical conformal intervention-response set diagnostic",
+      "priority": 39.8,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S71"
+      ],
+      "rationale": "S71 falsified conditional Gaussian moment calibration. Test distribution-free empirical/conformal response sets using truth-free grouping; do not retune S70/S71 moment models."
     }
   ],
   "established_findings": [
@@ -5072,7 +5151,8 @@
     "S67 disposition RESPONSE_DISAGREEMENT_FALSIFIED. positive acquisition-value AUC 0.5230826345213138; Spearman 0.20115388770480397; disagreement/EIG mean value-per-cost 0.056451730245156276/0.04317759674970712; paired difference 0.013274133495449158; disagreement-beats-EIG fraction 0.4140625.",
     "S68 disposition BRANCH_VOI_FALSIFIED. positive acquisition-value AUC 0.5232663989290496; Spearman 0.15174248167109786; candidate/EIG mean value-per-cost 0.059504553419725874/0.04622881937637953; paired difference 0.013275734043346345; candidate-beats-EIG fraction 0.390625.",
     "S69 disposition PREDICTIVE_MISCALIBRATION_SUPPORTED. Predictive intervention-response calibration by regime: {'linear': {'n_response_cells': 2560, 'mean_standardized_residual': -0.006772905635903747, 'rms_standardized_residual': 1.0599041811871397, 'coverage80': 0.7546875, 'coverage95': 0.900390625}, 'heteroskedastic': {'n_response_cells': 2560, 'mean_standardized_residual': 0.022766061408813272, 'rms_standardized_residual': 0.6997770505823854, 'coverage80': 0.905859375, 'coverage95': 0.977734375}}.",
-    "S70 disposition RESPONSE_CALIBRATION_FALSIFIED. Held-out calibration: {'linear': {'raw': {'mean': -0.00340779803276193, 'rms': 1.0483747101584382, 'coverage80': 0.786328125, 'coverage95': 0.934375}, 'calibrated': {'mean': 0.0011569964963933476, 'rms': 1.214731894372649, 'coverage80': 0.71484375, 'coverage95': 0.8953125}}, 'heteroskedastic': {'raw': {'mean': -0.002256112586164241, 'rms': 0.7014113811742843, 'coverage80': 0.925390625, 'coverage95': 0.98984375}, 'calibrated': {'mean': 0.0012396982104340634, 'rms': 0.8060548082584313, 'coverage80': 0.8875, 'coverage95': 0.97890625}}}; coverage-error summary: {'raw_mean': 0.09726562500000002, 'calibrated_mean': 0.128125, 'relative_improvement': -0.31726907630522044}."
+    "S70 disposition RESPONSE_CALIBRATION_FALSIFIED. Held-out calibration: {'linear': {'raw': {'mean': -0.00340779803276193, 'rms': 1.0483747101584382, 'coverage80': 0.786328125, 'coverage95': 0.934375}, 'calibrated': {'mean': 0.0011569964963933476, 'rms': 1.214731894372649, 'coverage80': 0.71484375, 'coverage95': 0.8953125}}, 'heteroskedastic': {'raw': {'mean': -0.002256112586164241, 'rms': 0.7014113811742843, 'coverage80': 0.925390625, 'coverage95': 0.98984375}, 'calibrated': {'mean': 0.0012396982104340634, 'rms': 0.8060548082584313, 'coverage80': 0.8875, 'coverage95': 0.97890625}}}; coverage-error summary: {'raw_mean': 0.09726562500000002, 'calibrated_mean': 0.128125, 'relative_improvement': -0.31726907630522044}.",
+    "S71 disposition RESPONSE_STATE_CALIBRATION_FALSIFIED. Held-out calibration: {'linear': {'raw': {'mean': -0.007553812154990252, 'rms': 1.0482071901786238, 'coverage80': 0.783984375, 'coverage95': 0.943359375}, 'calibrated': {'mean': -0.03549845802401659, 'rms': 1.9813873616903053, 'coverage80': 0.48125, 'coverage95': 0.67421875}}, 'heteroskedastic': {'raw': {'mean': 0.0001336232761186898, 'rms': 0.6977648233463519, 'coverage80': 0.93359375, 'coverage95': 0.988671875}, 'calibrated': {'mean': 0.027533787367992408, 'rms': 1.3804204653369783, 'coverage80': 0.6765625, 'coverage95': 0.857421875}}}; coverage-error summary: {'raw_mean': 0.09746093750000001, 'calibrated_mean': 0.4052734375, 'relative_improvement': -3.1583166332665327}."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
