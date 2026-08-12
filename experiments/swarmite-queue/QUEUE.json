@@ -3782,13 +3782,10 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S58_INTERVENTION_CONDITIONAL_RESIDUAL_PROCESS_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s58_intervention_conditional_residual_process.py",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics",
-        "mechanics": "2 linear + 2 heteroskedastic",
-        "training": "64 + 64",
-        "validation": "32 + 32",
-        "confirmation": "64 + 64"
-      }
+        "state": "mechanics_passed",
+        "next_stage": "training"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S58_MECHANICS_RESULT.json"
     }
   ],
   "established_findings": [
