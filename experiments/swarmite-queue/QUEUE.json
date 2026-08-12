@@ -1,5 +1,5 @@
 {
-  "version": "13.5",
+  "version": "13.6",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4991,11 +4991,17 @@
       "id": "EXP-002S71",
       "title": "Observable response-state conditional calibration diagnostic",
       "priority": 39.9,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S70"
       ],
-      "rationale": "S70 falsified global predictive-dispersion conditioning. Test richer truth-free response-state features for calibration heterogeneity before any further planner modification; do not retune S70 bins or shrinkage."
+      "rationale": "S70 falsified global predictive-dispersion conditioning. Test richer truth-free response-state features for calibration heterogeneity before any further planner modification; do not retune S70 bins or shrinkage.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S71_RESPONSE_STATE_CALIBRATION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s71_response_state_calibration.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics_crossfit_heldout"
+      }
     }
   ],
   "established_findings": [
