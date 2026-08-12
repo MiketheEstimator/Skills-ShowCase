@@ -1,5 +1,5 @@
 {
-  "version": "10.2",
+  "version": "10.3",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3606,7 +3606,18 @@
         }
       },
       "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S54_MECHANICS_RESULT.json",
-      "training_artifact": "experiments/swarmite-exp002/EXP-002S54_TRAINING_RESULT.json"
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S54_TRAINING_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S54_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S55",
+      "title": "Explicit residual-process class posterior",
+      "priority": 47.25,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S54"
+      ],
+      "rationale": "S54 retained nodewise specialist discrimination but local Bernoulli composition did not deliver structural gain. Replace deterministic local mixing with explicit posterior uncertainty over residual-process classes; do not retune S54 weights."
     }
   ],
   "established_findings": [
@@ -3660,7 +3671,8 @@
     "S51 ADJUDICATION_DOMINANT: heteroskedastic oracle two-posterior headroom 0.133 with 95% bootstrap [0.04402237771386583, 0.24754094497894613]; q_het specialist-win AUC 0.3783783783783784.",
     "S52 was falsified at training: the 42-feature latent residual-state model showed useful specialist-win discrimination (training AUC 0.8360836083608361, Brier 0.12439288888984713 versus constant 0.1664478922540713) but every preregistered hard-selection rule used the specialist zero times, so no rule qualified. Hard selection, not the latent representation itself, is the immediate failure mode.",
     "S53 disposition FALSIFIED_AT_TRAINING. Continuous terminal-only averaging driven by the frozen S52 latent residual-state model was tested prospectively against the frozen S46/S30 matched control with planning unchanged.",
-    "S53 was falsified at training: continuous graph-level posterior averaging driven by the S52 latent residual-state model did not qualify. Because S52 retained useful latent discrimination, the next justified change is node-local residual-process composition rather than graph-level cap, temperature, or threshold retuning."
+    "S53 was falsified at training: continuous graph-level posterior averaging driven by the S52 latent residual-state model did not qualify. Because S52 retained useful latent discrimination, the next justified change is node-local residual-process composition rather than graph-level cap, temperature, or threshold retuning.",
+    "S54 disposition FALSIFIED_AT_TRAINING. Nodewise residual-process posterior composition was evaluated prospectively against the frozen S46/S30 matched control with planning unchanged. Training paired edge difference -0.10876620460835856, node AUC 0.6520412315204123, node Brier 0.20296171938872742, mean node specialist mass 0.00017965051798812099."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
