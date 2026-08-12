@@ -1,5 +1,5 @@
 {
-  "version": "13.1",
+  "version": "13.2",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4865,11 +4865,19 @@
       "id": "EXP-002S69",
       "title": "Intervention-response predictive calibration diagnostic",
       "priority": 40.5,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S68"
       ],
-      "rationale": "S68 falsified sequential posterior-derived scalar VOI after S66/S67 failures. Diagnose intervention-response predictive model calibration/misspecification directly before any further planner scoring."
+      "rationale": "S68 falsified sequential posterior-derived scalar VOI after S66/S67 failures. Diagnose intervention-response predictive model calibration/misspecification directly before any further planner scoring.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S69_INTERVENTION_RESPONSE_PREDICTIVE_CALIBRATION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s69_predictive_calibration.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics_then_diagnostic",
+        "mechanics": "2+2",
+        "diagnostic": "64+64"
+      }
     }
   ],
   "established_findings": [
