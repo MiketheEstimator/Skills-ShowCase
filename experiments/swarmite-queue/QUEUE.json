@@ -1,5 +1,5 @@
 {
-  "version": "13.3",
+  "version": "13.4",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4905,11 +4905,20 @@
       "id": "EXP-002S70",
       "title": "Cross-fitted intervention-response calibration layer",
       "priority": 40.0,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S69"
       ],
-      "rationale": "S69 directly identified posterior-predictive intervention-response miscalibration. Build a cross-fitted regime-agnostic bias/dispersion calibration layer and retest predictive coverage before any planner promotion."
+      "rationale": "S69 directly identified posterior-predictive intervention-response miscalibration. Build a cross-fitted regime-agnostic bias/dispersion calibration layer and retest predictive coverage before any planner promotion.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S70_RESPONSE_CALIBRATION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s70_response_calibration.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics_crossfit_heldout",
+        "mechanics": "2+2",
+        "training": "64+64",
+        "heldout": "64+64"
+      }
     }
   ],
   "established_findings": [
