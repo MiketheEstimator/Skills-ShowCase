@@ -3730,13 +3730,10 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S57_ROBUST_CONTINUOUS_RESIDUAL_PROCESS_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s57_robust_continuous_residual_process.py",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics",
-        "mechanics": "2 linear + 2 heteroskedastic",
-        "training": "64 + 64",
-        "validation": "32 + 32",
-        "confirmation": "64 + 64"
-      }
+        "state": "mechanics_passed",
+        "next_stage": "training"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S57_MECHANICS_RESULT.json"
     }
   ],
   "established_findings": [
