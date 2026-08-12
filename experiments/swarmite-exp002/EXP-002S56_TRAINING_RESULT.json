@@ -1,0 +1,36 @@
+{
+  "mechanics_ok": true,
+  "evaluation": {
+    "coverage": 0.8984375,
+    "control_hybrid_mean_edge_delta": -0.37213203671514017,
+    "candidate_hybrid_mean_edge_delta": -0.04926335474794945,
+    "paired_mean_edge_difference": 0.32286868196719076,
+    "bootstrap95_paired_edge_difference": [
+      0.20683596580925392,
+      0.44437725091916763
+    ],
+    "control_hybrid_mean_brier_delta": -0.002418448700836673,
+    "candidate_hybrid_mean_brier_delta": 0.009819038261966145,
+    "control_promoted_large_harms": 2,
+    "candidate_promoted_large_harms": 10,
+    "mean_abs_family_score_adjustment": 0.9946234840492849,
+    "mean_fraction_adjusted_families": 0.9339843750000001,
+    "by_regime": {
+      "linear": {
+        "n": 64,
+        "coverage": 0.84375,
+        "control_hybrid_mean_edge_delta": -0.008374340370310264,
+        "candidate_hybrid_mean_edge_delta": -0.021838199136194544,
+        "paired_mean_edge_difference": -0.013463858765884285
+      },
+      "heteroskedastic": {
+        "n": 64,
+        "coverage": 0.953125,
+        "control_hybrid_mean_edge_delta": -0.7358897330599701,
+        "candidate_hybrid_mean_edge_delta": -0.07668851035970436,
+        "paired_mean_edge_difference": 0.6592012227002657
+      }
+    },
+    "mechanics_ok": true
+  }
+}
