@@ -1,5 +1,5 @@
 {
-  "version": "11.3",
+  "version": "11.4",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4029,11 +4029,19 @@
       "id": "EXP-002S60",
       "title": "Counterfactual predictive residual-state representation diagnostic",
       "priority": 43.0,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S59"
       ],
-      "rationale": "S59 falsified the S56-S58 residual-state evidence family as a locator of structural ranking errors. Change representation upstream to intervention-conditioned predictive residual behavior rather than retuning residual likelihood scores."
+      "rationale": "S59 falsified the S56-S58 residual-state evidence family as a locator of structural ranking errors. Change representation upstream to intervention-conditioned predictive residual behavior rather than retuning residual likelihood scores.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S60_COUNTERFACTUAL_PREDICTIVE_RESIDUAL_STATE_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s60_counterfactual_predictive_residual_state.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "diagnostic": "64 + 64"
+      }
     }
   ],
   "established_findings": [
