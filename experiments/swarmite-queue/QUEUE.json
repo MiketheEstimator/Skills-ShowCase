@@ -4212,13 +4212,10 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S61_BOUNDED_PREDICTIVE_STATE_STRUCTURAL_CORRECTION_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s61_bounded_predictive_state_structural_correction.py",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics",
-        "mechanics": "2 linear + 2 heteroskedastic",
-        "training": "64 + 64",
-        "validation": "32 + 32",
-        "confirmation": "64 + 64"
-      }
+        "state": "mechanics_passed",
+        "next_stage": "training"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S61_MECHANICS_RESULT.json"
     }
   ],
   "established_findings": [
