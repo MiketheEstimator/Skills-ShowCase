@@ -1,5 +1,5 @@
 {
-  "version": "12.5",
+  "version": "12.6",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4736,11 +4736,20 @@
       "id": "EXP-002S66",
       "title": "Evidence-guided intervention allocation diagnostic",
       "priority": 42.0,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S65"
       ],
-      "rationale": "S65 retained S62 evidence but terminal structural action failed. Test whether the supported localization signal is more valuable for choosing the next intervention/information acquisition than for modifying terminal inference."
+      "rationale": "S65 retained S62 evidence but terminal structural action failed. Test whether the supported localization signal is more valuable for choosing the next intervention/information acquisition than for modifying terminal inference.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S66_EVIDENCE_GUIDED_INTERVENTION_ALLOCATION_DIAGNOSTIC_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s66_evidence_guided_intervention_allocation.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics_then_heldout_diagnostic",
+        "mechanics": "2+2",
+        "model_training": "64+64",
+        "diagnostic": "64+64"
+      }
     }
   ],
   "established_findings": [
