@@ -4546,7 +4546,7 @@
       "id": "EXP-002S64",
       "title": "Constrained local posterior projection repair",
       "priority": 42.2,
-      "status": "RUNNING",
+      "status": "COMPLETE_FALSIFIED_PROJECTION_GEOMETRY_AT_TRAINING",
       "depends_on": [
         "EXP-002S63"
       ],
@@ -4554,10 +4554,88 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S64_CONSTRAINED_LOCAL_POSTERIOR_PROJECTION_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s64_constrained_local_posterior_projection.py",
       "checkpoint": {
-        "state": "mechanics_passed",
-        "next_stage": "training"
+        "state": "complete",
+        "disposition": "FALSIFIED_PROJECTION_GEOMETRY_AT_TRAINING",
+        "training": {
+          "coverage": 0.90625,
+          "mean_projection_fraction": 0.013236990092278758,
+          "nonzero_projection_fraction": 0.4390625,
+          "mean_final_ipf_residual": 0.01046516765930532,
+          "control_hybrid_mean_edge_delta": -0.3923247479739813,
+          "candidate_hybrid_mean_edge_delta": -0.3666832153729124,
+          "paired_mean_edge_difference": 0.02564153260106894,
+          "bootstrap95_paired_edge_difference": [
+            0.01893148933478463,
+            0.03306001841523039
+          ],
+          "control_hybrid_mean_brier_delta": -0.0016084367758395688,
+          "candidate_hybrid_mean_brier_delta": -0.0016231451455962949,
+          "control_promoted_large_harms": 0,
+          "candidate_promoted_large_harms": 0,
+          "error_localization_auc": 0.7108021390374332,
+          "error_localization_brier": 0.20772383354615803,
+          "constant_prevalence_brier": 0.23968508369819969,
+          "competitor_useful_fraction_on_error_nodes": 0.5686274509803921,
+          "by_regime": {
+            "linear": {
+              "n": 64,
+              "coverage": 0.890625,
+              "control_hybrid_mean_edge_delta": -0.012278397049263153,
+              "candidate_hybrid_mean_edge_delta": 0.024370198846806045,
+              "paired_mean_edge_difference": 0.0366485958960692
+            },
+            "heteroskedastic": {
+              "n": 64,
+              "coverage": 0.921875,
+              "control_hybrid_mean_edge_delta": -0.7723710988986995,
+              "candidate_hybrid_mean_edge_delta": -0.7577366295926308,
+              "paired_mean_edge_difference": 0.01463446930606868
+            }
+          },
+          "mechanics_ok": true
+        }
       },
-      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S64_MECHANICS_RESULT.json"
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S64_MECHANICS_RESULT.json",
+      "model_artifact": "experiments/swarmite-exp002/EXP-002S64_MODEL.json",
+      "result_summary": {
+        "coverage": 0.90625,
+        "mean_projection_fraction": 0.013236990092278758,
+        "nonzero_projection_fraction": 0.4390625,
+        "mean_final_ipf_residual": 0.01046516765930532,
+        "control_hybrid_mean_edge_delta": -0.3923247479739813,
+        "candidate_hybrid_mean_edge_delta": -0.3666832153729124,
+        "paired_mean_edge_difference": 0.02564153260106894,
+        "bootstrap95_paired_edge_difference": [
+          0.01893148933478463,
+          0.03306001841523039
+        ],
+        "control_hybrid_mean_brier_delta": -0.0016084367758395688,
+        "candidate_hybrid_mean_brier_delta": -0.0016231451455962949,
+        "control_promoted_large_harms": 0,
+        "candidate_promoted_large_harms": 0,
+        "error_localization_auc": 0.7108021390374332,
+        "error_localization_brier": 0.20772383354615803,
+        "constant_prevalence_brier": 0.23968508369819969,
+        "competitor_useful_fraction_on_error_nodes": 0.5686274509803921,
+        "by_regime": {
+          "linear": {
+            "n": 64,
+            "coverage": 0.890625,
+            "control_hybrid_mean_edge_delta": -0.012278397049263153,
+            "candidate_hybrid_mean_edge_delta": 0.024370198846806045,
+            "paired_mean_edge_difference": 0.0366485958960692
+          },
+          "heteroskedastic": {
+            "n": 64,
+            "coverage": 0.921875,
+            "control_hybrid_mean_edge_delta": -0.7723710988986995,
+            "candidate_hybrid_mean_edge_delta": -0.7577366295926308,
+            "paired_mean_edge_difference": 0.01463446930606868
+          }
+        },
+        "mechanics_ok": true
+      },
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S64_TRAINING_RESULT.json"
     }
   ],
   "established_findings": [
