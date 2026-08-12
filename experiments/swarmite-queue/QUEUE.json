@@ -1,5 +1,5 @@
 {
-  "version": "11.1",
+  "version": "11.2",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3826,11 +3826,19 @@
       "id": "EXP-002S59",
       "title": "Residual-state evidence decomposition diagnostic",
       "priority": 44.0,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S58"
       ],
-      "rationale": "S58 produced nontrivial intervention-context evidence but did not qualify. Diagnose whether residual-state evidence is correlated with true parent-set ranking errors before introducing another likelihood family."
+      "rationale": "S58 produced nontrivial intervention-context evidence but did not qualify. Diagnose whether residual-state evidence is correlated with true parent-set ranking errors before introducing another likelihood family.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S59_RESIDUAL_STATE_EVIDENCE_DECOMPOSITION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s59_residual_state_evidence_decomposition.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "diagnostic": "64 + 64"
+      }
     }
   ],
   "established_findings": [
