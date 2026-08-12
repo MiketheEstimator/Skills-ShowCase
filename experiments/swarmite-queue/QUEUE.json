@@ -4642,7 +4642,7 @@
       "id": "EXP-002S65",
       "title": "Decision-theoretic local structural action diagnostic",
       "priority": 42.1,
-      "status": "RUNNING",
+      "status": "COMPLETE_FALSIFIED_ACTION_GEOMETRY_AT_TRAINING",
       "depends_on": [
         "EXP-002S64"
       ],
@@ -4650,10 +4650,86 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S65_DECISION_THEORETIC_LOCAL_STRUCTURAL_ACTION_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s65_decision_theoretic_local_structural_action.py",
       "checkpoint": {
-        "state": "mechanics_passed",
-        "next_stage": "training"
+        "state": "complete",
+        "disposition": "FALSIFIED_ACTION_GEOMETRY_AT_TRAINING",
+        "training": {
+          "coverage": 0.8359375,
+          "control_mean_action_edge_error": 1.3125,
+          "candidate_mean_action_edge_error": 1.453125,
+          "paired_mean_action_edge_difference": 0.140625,
+          "bootstrap95_paired_action_edge_difference": [
+            0.046875,
+            0.234375
+          ],
+          "action_change_fraction": 0.25,
+          "control_large_action_harms": 0,
+          "candidate_large_action_harms": 2,
+          "error_localization_auc": 0.7186628143647177,
+          "error_localization_brier": 0.21216607392914338,
+          "constant_prevalence_brier": 0.24589600608205298,
+          "competitor_useful_fraction_on_error_nodes": 0.6415770609318996,
+          "posterior_calibration_changed": false,
+          "by_regime": {
+            "linear": {
+              "n": 64,
+              "coverage": 0.71875,
+              "control_mean_action_edge_error": 0.796875,
+              "candidate_mean_action_edge_error": 0.90625,
+              "paired_mean_action_edge_difference": 0.109375,
+              "action_change_fraction": 0.140625
+            },
+            "heteroskedastic": {
+              "n": 64,
+              "coverage": 0.953125,
+              "control_mean_action_edge_error": 1.828125,
+              "candidate_mean_action_edge_error": 2.0,
+              "paired_mean_action_edge_difference": 0.171875,
+              "action_change_fraction": 0.359375
+            }
+          },
+          "mechanics_ok": true
+        }
       },
-      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S65_MECHANICS_RESULT.json"
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S65_MECHANICS_RESULT.json",
+      "model_artifact": "experiments/swarmite-exp002/EXP-002S65_MODEL.json",
+      "result_summary": {
+        "coverage": 0.8359375,
+        "control_mean_action_edge_error": 1.3125,
+        "candidate_mean_action_edge_error": 1.453125,
+        "paired_mean_action_edge_difference": 0.140625,
+        "bootstrap95_paired_action_edge_difference": [
+          0.046875,
+          0.234375
+        ],
+        "action_change_fraction": 0.25,
+        "control_large_action_harms": 0,
+        "candidate_large_action_harms": 2,
+        "error_localization_auc": 0.7186628143647177,
+        "error_localization_brier": 0.21216607392914338,
+        "constant_prevalence_brier": 0.24589600608205298,
+        "competitor_useful_fraction_on_error_nodes": 0.6415770609318996,
+        "posterior_calibration_changed": false,
+        "by_regime": {
+          "linear": {
+            "n": 64,
+            "coverage": 0.71875,
+            "control_mean_action_edge_error": 0.796875,
+            "candidate_mean_action_edge_error": 0.90625,
+            "paired_mean_action_edge_difference": 0.109375,
+            "action_change_fraction": 0.140625
+          },
+          "heteroskedastic": {
+            "n": 64,
+            "coverage": 0.953125,
+            "control_mean_action_edge_error": 1.828125,
+            "candidate_mean_action_edge_error": 2.0,
+            "paired_mean_action_edge_difference": 0.171875,
+            "action_change_fraction": 0.359375
+          }
+        },
+        "mechanics_ok": true
+      },
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S65_TRAINING_RESULT.json"
     }
   ],
   "established_findings": [
