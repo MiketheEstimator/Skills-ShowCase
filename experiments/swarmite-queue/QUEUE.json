@@ -1,5 +1,5 @@
 {
-  "version": "10.7",
+  "version": "10.8",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3722,11 +3722,21 @@
       "id": "EXP-002S57",
       "title": "Robust continuous residual-process likelihood",
       "priority": 46.0,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S56"
       ],
-      "rationale": "S56 produced nontrivial continuous variance-process evidence but did not qualify structurally. Replace Gaussian residual likelihood with a robust heavy-tailed residual process while preserving continuous variance marginalization; do not retune the gamma grid."
+      "rationale": "S56 produced nontrivial continuous variance-process evidence but did not qualify structurally. Replace Gaussian residual likelihood with a robust heavy-tailed residual process while preserving continuous variance marginalization; do not retune the gamma grid.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S57_ROBUST_CONTINUOUS_RESIDUAL_PROCESS_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s57_robust_continuous_residual_process.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "training": "64 + 64",
+        "validation": "32 + 32",
+        "confirmation": "64 + 64"
+      }
     }
   ],
   "established_findings": [
