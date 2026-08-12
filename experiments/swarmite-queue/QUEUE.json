@@ -1,5 +1,5 @@
 {
-  "version": "11.5",
+  "version": "11.6",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4204,11 +4204,21 @@
       "id": "EXP-002S61",
       "title": "Bounded predictive-state targeted structural correction",
       "priority": 42.5,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S60"
       ],
-      "rationale": "S60 found intervention-state counterfactual predictive behavior reliably localizes frozen anchor family-ranking errors. Prospectively fit a bounded targeted correction or abstention using only frozen S60 features, with independent training, validation, and confirmation panels against S46/S30."
+      "rationale": "S60 found intervention-state counterfactual predictive behavior reliably localizes frozen anchor family-ranking errors. Prospectively fit a bounded targeted correction or abstention using only frozen S60 features, with independent training, validation, and confirmation panels against S46/S30.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S61_BOUNDED_PREDICTIVE_STATE_STRUCTURAL_CORRECTION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s61_bounded_predictive_state_structural_correction.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "training": "64 + 64",
+        "validation": "32 + 32",
+        "confirmation": "64 + 64"
+      }
     }
   ],
   "established_findings": [
