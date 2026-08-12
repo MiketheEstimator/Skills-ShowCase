@@ -4037,11 +4037,10 @@
       "protocol": "experiments/swarmite-exp002/EXP-002S60_COUNTERFACTUAL_PREDICTIVE_RESIDUAL_STATE_PROTOCOL.md",
       "runner": "experiments/swarmite-exp002/swarmite_exp002_s60_counterfactual_predictive_residual_state.py",
       "checkpoint": {
-        "state": "protocol_frozen",
-        "next_stage": "mechanics",
-        "mechanics": "2 linear + 2 heteroskedastic",
-        "diagnostic": "64 + 64"
-      }
+        "state": "mechanics_passed",
+        "next_stage": "diagnostic"
+      },
+      "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S60_MECHANICS_RESULT.json"
     }
   ],
   "established_findings": [
