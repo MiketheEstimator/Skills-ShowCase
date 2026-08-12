@@ -1,5 +1,5 @@
 {
-  "version": "11.0",
+  "version": "11.1",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3819,7 +3819,18 @@
         }
       },
       "mechanics_artifact": "experiments/swarmite-exp002/EXP-002S58_MECHANICS_RESULT.json",
-      "training_artifact": "experiments/swarmite-exp002/EXP-002S58_TRAINING_RESULT.json"
+      "training_artifact": "experiments/swarmite-exp002/EXP-002S58_TRAINING_RESULT.json",
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S58_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S59",
+      "title": "Residual-state evidence decomposition diagnostic",
+      "priority": 44.0,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S58"
+      ],
+      "rationale": "S58 produced nontrivial intervention-context evidence but did not qualify. Diagnose whether residual-state evidence is correlated with true parent-set ranking errors before introducing another likelihood family."
     }
   ],
   "established_findings": [
@@ -3877,7 +3888,8 @@
     "S54 disposition FALSIFIED_AT_TRAINING. Nodewise residual-process posterior composition was evaluated prospectively against the frozen S46/S30 matched control with planning unchanged. Training paired edge difference -0.10876620460835856, node AUC 0.6520412315204123, node Brier 0.20296171938872742, mean node specialist mass 0.00017965051798812099.",
     "S55 disposition FALSIFIED_AT_TRAINING. Explicit posterior uncertainty over nodewise residual-process classes was tested prospectively against the frozen S46/S30 matched control with planning unchanged. Training paired edge difference 0.055398038249583476, node AUC 0.6075445503747329, node Brier 0.21856553471947127, mean H-class mass 0.34218750001054704.",
     "S56 disposition FALSIFIED_AT_TRAINING. Continuous variance-process evidence was marginalized within node/parent likelihoods and compared prospectively against frozen S46/S30 with planning unchanged. Training paired edge difference 0.32286868196719076, heteroskedastic difference 0.6592012227002657, linear difference -0.013463858765884285, mean absolute score adjustment 0.9946234840492849.",
-    "S57 disposition FALSIFIED_AT_TRAINING. A fixed Student-t residual likelihood with inherited continuous variance-slope marginalization was compared prospectively against frozen S46/S30. Training paired edge difference 0.2626579661993035, heteroskedastic difference 0.6422346231686005, linear difference -0.11691869076999337, mean absolute score adjustment 0.871683936571051."
+    "S57 disposition FALSIFIED_AT_TRAINING. A fixed Student-t residual likelihood with inherited continuous variance-slope marginalization was compared prospectively against frozen S46/S30. Training paired edge difference 0.2626579661993035, heteroskedastic difference 0.6422346231686005, linear difference -0.11691869076999337, mean absolute score adjustment 0.871683936571051.",
+    "S58 disposition FALSIFIED_AT_TRAINING. Intervention-conditional robust residual-scale evidence was compared prospectively against frozen S46/S30. Training paired edge difference 0.5101479493392345, heteroskedastic difference 0.9297556834753999, linear difference 0.09054021520306874, mean absolute score adjustment 1.7943561217967567."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
