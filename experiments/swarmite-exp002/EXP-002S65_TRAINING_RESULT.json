@@ -1,0 +1,75 @@
+{
+  "mechanics_ok": true,
+  "model": {
+    "mean": [
+      0.04015662925315441,
+      0.10440939061560894,
+      0.08388885323369037,
+      0.17616280780310778,
+      0.134609375,
+      0.18557291666666664,
+      0.06960691307702778,
+      0.5867898664586675
+    ],
+    "std": [
+      0.04753688924323894,
+      0.12976905697746985,
+      0.07851000775484211,
+      0.07506178786574942,
+      0.21355258959614787,
+      0.25723257060023463,
+      0.08165458993123165,
+      0.11020310362720846
+    ],
+    "beta": [
+      -0.2961334446303158,
+      0.4432028616172962,
+      0.2727616889834462,
+      -0.3801712501869174,
+      0.4074566589822646,
+      0.04708452992289401,
+      -0.1733415174795846,
+      -0.03303112586185206,
+      0.4487170406452008
+    ],
+    "train_error_prevalence": 0.4360374414976599
+  },
+  "evaluation": {
+    "coverage": 0.8359375,
+    "control_mean_action_edge_error": 1.3125,
+    "candidate_mean_action_edge_error": 1.453125,
+    "paired_mean_action_edge_difference": 0.140625,
+    "bootstrap95_paired_action_edge_difference": [
+      0.046875,
+      0.234375
+    ],
+    "action_change_fraction": 0.25,
+    "control_large_action_harms": 0,
+    "candidate_large_action_harms": 2,
+    "error_localization_auc": 0.7186628143647177,
+    "error_localization_brier": 0.21216607392914338,
+    "constant_prevalence_brier": 0.24589600608205298,
+    "competitor_useful_fraction_on_error_nodes": 0.6415770609318996,
+    "posterior_calibration_changed": false,
+    "by_regime": {
+      "linear": {
+        "n": 64,
+        "coverage": 0.71875,
+        "control_mean_action_edge_error": 0.796875,
+        "candidate_mean_action_edge_error": 0.90625,
+        "paired_mean_action_edge_difference": 0.109375,
+        "action_change_fraction": 0.140625
+      },
+      "heteroskedastic": {
+        "n": 64,
+        "coverage": 0.953125,
+        "control_mean_action_edge_error": 1.828125,
+        "candidate_mean_action_edge_error": 2.0,
+        "paired_mean_action_edge_difference": 0.171875,
+        "action_change_fraction": 0.359375
+      }
+    },
+    "mechanics_ok": true
+  },
+  "qualified": false
+}

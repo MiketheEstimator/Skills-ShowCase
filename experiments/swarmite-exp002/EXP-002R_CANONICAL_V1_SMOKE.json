@@ -1,0 +1,44 @@
+{
+  "experiment": "EXP-002R",
+  "engine": "swarmite_canonical_v1",
+  "status": "FAILED_RECONSTRUCTION",
+  "n_worlds": 8,
+  "invariants": {
+    "dag_count": 29281,
+    "finite_dag_self_tests": "PASS",
+    "rng_streams": "isolated deterministic SHA256-derived streams for world, proposal, planner, and environment"
+  },
+  "frozen_v1_assumptions": {
+    "observational_samples": 30,
+    "intervention_budget": 10,
+    "world_edge_probability": 0.35,
+    "coefficient_abs_range": [0.4, 0.9],
+    "perfect_intervention_noise_sd": 0.15,
+    "proposal_scoring": "heuristic edge-uncertainty proxy",
+    "note": "These assumptions were specified before repository archaeology recovered the original README statement that the corrected historical benchmark used total cost budget 15."
+  },
+  "primary": {
+    "metric": "paired posterior expected edge error; width2 - width1",
+    "mean_width1": 1.8472187901,
+    "mean_width2": 2.1052783312,
+    "mean_delta": 0.2580595411,
+    "historical_EXP_002M2_delta": -0.0986638353,
+    "direction_compatible_with_historical_M2": false
+  },
+  "secondary": {
+    "map_accuracy_width1": 0.75,
+    "map_accuracy_width2": 0.75
+  },
+  "paired_world_deltas": [
+    -0.17671716,
+    -0.10621950,
+    0.03949205,
+    -0.10865180,
+    2.44510464,
+    0.50827929,
+    -0.20495884,
+    -0.33185235
+  ],
+  "decision": "Do not certify this reconstruction and do not use it to resume or pool with historical EXP-002J4. The primary breadth effect is directionally incompatible with the supported historical benchmark. No parameters were tuned to historical outputs.",
+  "scientific_interpretation": "The durable invariants are insufficient to uniquely recover historical EXP-002 behavior. A new explicitly versioned benchmark may still be constructed, but it must establish its own baseline before transfer experiments."
+}

@@ -1,0 +1,17 @@
+{
+  "experiment":"EXP-002N2",
+  "status":"COMPLETE_PROMISING_WITH_RESOLVED_MAP_GAIN",
+  "design":"Frozen COMBO2 adaptive breadth gate, aggregate prospective n=48",
+  "means":{
+    "ONE":{"edge_error":1.0305450545834391,"true_mass":0.3348119165171435,"map":0.7708333333333334,"entropy":2.809629591694178,"seconds":0.8486036409934362},
+    "TWO":{"edge_error":1.024090568434246,"true_mass":0.335646926714343,"map":0.875,"entropy":2.8603496996292734,"seconds":1.654353529214859},
+    "COMBO2":{"edge_error":0.9692243624514827,"true_mass":0.3506680899991473,"map":0.9375,"entropy":2.827375915439823,"spawn_rate":0.5915178571428571,"seconds":1.2849824329217274}
+  },
+  "paired":{
+    "COMBO2_minus_ONE":{"edge_error":{"delta":-0.061320692131956345,"ci95":[-0.16790936,0.04231334]},"map":{"delta":0.16666666666666666,"ci95":[0.04166667,0.29166667]}},
+    "COMBO2_minus_TWO":{"edge_error":{"delta":-0.05486620598276338,"ci95":[-0.13719836,0.01664165]},"map":{"delta":0.0625,"ci95":[-0.02083333,0.14583333]}}
+  },
+  "compute_ratios":{"TWO_over_ONE":1.949500861530778,"COMBO2_over_ONE":1.5142315809739337,"COMBO2_over_TWO":0.7767278337004354},
+  "interpretation":"Adaptive breadth has the best mean edge recovery and a statistically resolved MAP improvement over width-1 while using about 22% less inference compute than always-width2. Superiority on edge error remains unresolved.",
+  "next":"EXP-002N3 independent preregistered noninferiority test against width2: edge-error margin +0.05 and >=15% compute reduction."
+}

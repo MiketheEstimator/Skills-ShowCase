@@ -1,0 +1,58 @@
+name: Swarmite S23 Robust Likelihood
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s23.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Execute frozen S23 sequence
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s23_robust_likelihood as s23
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S23')
+          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S23_HEAVY_TAIL_NONLINEAR_LIKELIHOOD_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s23_robust_likelihood.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics','mechanics_seeds':list(range(70401,70405))}}); qp.write_text(json.dumps(q,indent=2))
+          mr=[s23.paired(s) for s in range(70401,70405)]; ms=s23.summarize(mr); Path('EXP-002S23_MECHANICS_RESULT.json').write_text(json.dumps({'rows':mr,'summary':ms},indent=2)); item['mechanics_artifact']='experiments/swarmite-exp002/EXP-002S23_MECHANICS_RESULT.json'
+          mpass=all([ms['trace_identical_all'],ms['dag_count_ok'],ms['spend_ok'],ms['planning_reconstruction_ok'],ms['scores_finite'],ms['posterior_normalized']])
+          if not mpass:
+              disposition='BLOCKED_MECHANICS'; item['status']='BLOCKED_EXECUTION_MECHANICS'; item['result_summary']=ms; ss=None; cs=None; ci=None
+          else:
+              item['checkpoint']={'state':'mechanics_passed','next_stage':'screen','screen_seeds':list(range(70411,70423))}; qp.write_text(json.dumps(q,indent=2))
+              sr=[s23.paired(s) for s in range(70411,70423)]; ss=s23.summarize(sr); Path('EXP-002S23_SCREEN_RESULT.json').write_text(json.dumps({'rows':sr,'summary':ss},indent=2)); item['screen_artifact']='experiments/swarmite-exp002/EXP-002S23_SCREEN_RESULT.json'
+              spass=bool(ss['mean_edge_delta']<=-.10 and ss['mean_brier_delta']<=.005 and ss['large_harms']<=2 and ss['trace_identical_all'] and ss['scores_finite'] and ss['posterior_normalized'])
+              if not spass:
+                  disposition='FALSIFIED_AT_SCREEN'; item['status']='COMPLETE_FALSIFIED_AT_SCREEN'; item['result_summary']=ss; cs=None; ci=None
+              else:
+                  item['checkpoint']={'state':'screen_passed','screen_summary':ss,'next_stage':'confirmation','confirmation_seeds':list(range(70501,70537))}; qp.write_text(json.dumps(q,indent=2))
+                  cr=[s23.paired(s) for s in range(70501,70537)]; cs=s23.summarize(cr); ci=s23.bootstrap(cr); Path('EXP-002S23_CONFIRMATION_RESULT.json').write_text(json.dumps({'rows':cr,'summary':cs,'bootstrap95_edge_delta':ci},indent=2)); item['result_artifact']='experiments/swarmite-exp002/EXP-002S23_CONFIRMATION_RESULT.json'
+                  cpass=bool(cs['mean_edge_delta']<=-.10 and ci[1]<0 and cs['mean_brier_delta']<=.005 and cs['large_harms']<=4 and cs['trace_identical_all'] and cs['scores_finite'] and cs['posterior_normalized'])
+                  disposition='SUPPORTED' if cpass else 'FALSIFIED_ON_CONFIRMATION'; item['status']='COMPLETE_SUPPORTED' if cpass else 'COMPLETE_FALSIFIED_ON_CONFIRMATION'; item['result_summary']={**cs,'bootstrap95_edge_delta':ci}
+          item['checkpoint']={'state':'complete','disposition':disposition}
+          if not any(x.get('id')=='EXP-002S24' for x in q['queue']):
+              if disposition=='SUPPORTED': title='Robust likelihood transfer beyond matched t3 shift'; rationale='S23 supported the robust nonlinear likelihood on the compound benchmark; test frozen inference under unseen tail thickness and mechanism shape.'
+              else: title='Robust likelihood failure-mode diagnostic'; rationale='S23 failed despite matching nonlinear heavy-tail structure; separate functional-form, coefficient-prior, and quasi-evidence scoring errors before another inference change.'
+              q['queue'].append({'id':'EXP-002S24','title':title,'priority':55.0,'status':'PENDING','depends_on':['EXP-002S23'],'rationale':rationale})
+          q['version']='5.8'; finding=f"S23 {disposition}: tanh-parent Student-t robust quasi-evidence terminal inference tested under unchanged baseline planning."; q['established_findings'].append(finding) if finding not in q['established_findings'] else None; qp.write_text(json.dumps(q,indent=2))
+          lines=['# EXP-002S23 Evaluation','',f'**Disposition:** {disposition}','']
+          if ss: lines += ['## Screen',f"- Mean edge delta: {ss['mean_edge_delta']:.6f}",f"- Mean Brier delta: {ss['mean_brier_delta']:.6f}",f"- Mean edge delta vs S5: {ss['mean_edge_delta_vs_s5']:.6f}",f"- Large harms: {ss['large_harms']}",'']
+          if cs: lines += ['## Confirmation',f"- Mean edge delta: {cs['mean_edge_delta']:.6f}",f"- Bootstrap 95% edge CI: {ci}",f"- Mean Brier delta: {cs['mean_brier_delta']:.6f}",f"- Mean edge delta vs S5: {cs['mean_edge_delta_vs_s5']:.6f}",f"- Large harms: {cs['large_harms']}",'']
+          lines += ['## Next',next(x['rationale'] for x in q['queue'] if x['id']=='EXP-002S24')]; Path('EXP-002S23_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S23_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
+          PY
+      - name: Persist result
+        run: |
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-exp002/EXP-002S23_* experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Complete EXP-002S23 robust likelihood'
+          git push

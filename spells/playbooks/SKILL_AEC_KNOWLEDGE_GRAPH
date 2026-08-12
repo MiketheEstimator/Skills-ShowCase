@@ -1,0 +1,1785 @@
+---
+name: SKILL_AEC_KNOWLEDGE_GRAPH
+description: "Build, populate, query, traverse, and export an AEC Knowledge Graph (AEC-KG). Use when connecting scope items, RFIs, submittals, documents, trades, spec sections, drawings, GIS features, and personnel into a traversable, queryable graph structure. Enables multi-hop reasoning that flat JSON registers cannot support: 'which trades are blocked by open FATAL RFIs whose source documents have been superseded?' or 'what scope items share a drawing reference with a scope item that has a contradictory evidence status?'. Covers: graph data model design, entity and relationship taxonomy, Python construction with NetworkX and Neo4j, SPARQL-adjacent Cypher queries, traversal algorithms, subgraph extraction, snapshot export, and integration with the AEC pipeline (corpus → scope → RFI → submittal → GIS). Triggers: 'knowledge graph', 'AEC KG', 'graph database', 'entity relationships', 'multi-hop query', 'graph traversal', 'Neo4j', 'NetworkX', 'scope graph', 'RFI dependency graph', 'document graph'."
+---
+
+# SKILL_AEC_KNOWLEDGE_GRAPH — AEC Knowledge Graph
+
+> **Purpose:** The AEC Knowledge Graph (AEC-KG) is the single structure that connects
+> every artifact the pipeline produces — documents, scope items, RFIs, submittals,
+> trades, spec sections, drawings, personnel, and GIS features — into a traversable
+> graph. Flat JSON registers answer "what are all the FATAL RFIs?" A knowledge graph
+> answers "which trades are blocked by open FATAL RFIs whose source documents are
+> superseded, and what submittals are still pending for those trades?"
+>
+> **Integration point:**
+> ```
+> SKILL_AEC_DOCUMENT_CORPUS   → document nodes + family edges
+> SKILL_AEC_SCOPE_EXTRACTION  → scope item nodes + evidence edges
+> SKILL_AEC_RFI_SUBMITTAL     → RFI/submittal nodes + blocking edges
+> SKILL_GIS_GEOSPATIAL        → site feature nodes + spatial edges
+> SKILL_OPENAPI_SPEC          → API contract for graph query endpoints
+> SKILL_DATABASE_ONTOLOGY_EXPORT → RDF/OWL export of the graph
+> ```
+
+---
+
+## Quick Reference
+
+| Task | Section |
+|------|---------|
+| Entity and relationship taxonomy | [Graph Data Model](#graph-data-model) |
+| Python in-memory graph (NetworkX) | [NetworkX Implementation](#networkx-implementation) |
+| Persistent graph (Neo4j + Cypher) | [Neo4j Implementation](#neo4j-implementation) |
+| Graph construction from pipeline registers | [Graph Population](#graph-population) |
+| Multi-hop queries and traversals | [Queries and Traversals](#queries-and-traversals) |
+| Subgraph extraction (trade, discipline, zone) | [Subgraph Extraction](#subgraph-extraction) |
+| Risk and impact analysis | [Risk and Impact Analysis](#risk-and-impact-analysis) |
+| Graph metrics and centrality | [Graph Metrics](#graph-metrics) |
+| Snapshot export (JSON, GraphML, RDF) | [Snapshot and Export](#snapshot-and-export) |
+| Visualization | [Visualization](#visualization) |
+| Integration with pipeline scripts | [Pipeline Integration](#pipeline-integration) |
+| Validation & QA | [Validation & QA](#validation--qa) |
+| Common Issues & Fixes | [Common Issues & Fixes](#common-issues--fixes) |
+| Dependencies | [Dependencies](#dependencies) |
+
+---
+
+## Graph Data Model
+
+The AEC-KG uses a **labeled property graph** model: every node and every edge carries
+a type label and a dictionary of properties. Both NetworkX and Neo4j implement this
+model natively.
+
+### Node Taxonomy
+
+| Node Type | Label | Key Property | Description |
+|-----------|-------|-------------|-------------|
+| Document | `Document` | `doc_id` | Any corpus artifact (addendum, RFI, spec, drawing, geotech) |
+| Scope Item | `ScopeItem` | `item_id` | Extracted scope item from SKILL_AEC_SCOPE_EXTRACTION |
+| RFI | `RFI` | `rfi_number` | Request for Information record |
+| Submittal | `Submittal` | `submittal_number` | Submittal record (shop drawing, product data, etc.) |
+| Trade | `Trade` | `name` | Construction trade (Structural, MEP, Enclosure, Civil, …) |
+| SpecSection | `SpecSection` | `section_number` | CSI MasterFormat section, e.g. "03 30 00" |
+| Drawing | `Drawing` | `drawing_number` | Individual drawing sheet, e.g. "S2.1", "A-101" |
+| Person | `Person` | `name` | Any named party (GC, design team, reviewer) |
+| Organization | `Organization` | `name` | Firm-level entity (GC, AOR, Structural EOR, …) |
+| Zone | `Zone` | `zone_id` | Spatial zone or phase area |
+| GISFeature | `GISFeature` | `feature_id` | Site boundary, utility corridor, control point |
+| Conflict | `Conflict` | `conflict_id` | Detected contradiction between two document nodes |
+| Assumption | `Assumption` | `assumption_id` | Priced assumption tied to an unanswered question |
+
+### Relationship (Edge) Taxonomy
+
+| Edge Type | From → To | Properties | Meaning |
+|-----------|-----------|-----------|---------|
+| `EXTRACTED_FROM` | ScopeItem → Document | `confidence`, `page`, `anchor_text` | Scope item sourced from document |
+| `CONTRADICTS` | Document → Document | `conflict_id`, `field`, `value_a`, `value_b` | Two documents give conflicting values |
+| `SUPERSEDES` | Document → Document | `issue_date` | Addendum or revision supersedes earlier document |
+| `REFERENCES` | ScopeItem → Drawing | `sheet`, `detail` | Scope item references a drawing |
+| `GOVERNED_BY` | ScopeItem → SpecSection | `section_number` | Scope item falls under a spec section |
+| `BELONGS_TO` | ScopeItem → Trade | — | Trade ownership of scope item |
+| `BLOCKS` | RFI → ScopeItem | `priority`, `since_date` | Open RFI prevents pricing of scope item |
+| `GENERATED_BY` | RFI → Conflict | — | Conflict detection created this RFI |
+| `REQUIRES` | SpecSection → Submittal | `lead_days`, `submittal_type` | Spec section mandates a submittal |
+| `COVERS` | Submittal → ScopeItem | — | Submittal covers the scope item |
+| `ISSUED_BY` | RFI → Person | `role` | Party who issued the RFI |
+| `ISSUED_TO` | RFI → Person | `role` | Party who must answer the RFI |
+| `EMPLOYED_BY` | Person → Organization | `role` | Org relationship |
+| `LOCATED_IN` | ScopeItem → Zone | `confidence` | Scope item located in spatial zone |
+| `CORRESPONDS_TO` | ScopeItem → GISFeature | `distance_m` | Scope item linked to a GIS feature |
+| `ANSWERS` | Document → RFI | `date`, `disposition` | A document (addendum, response letter) answers an RFI |
+| `DEPENDS_ON` | ScopeItem → ScopeItem | `dependency_type` | Scope item cannot price without another |
+
+### Property Constraints
+
+```
+Every node MUST have:
+  - node_type    : str   (matches label)
+  - node_id      : str   (globally unique — use {type_prefix}:{key})
+  - created_at   : str   (ISO datetime)
+  - project_id   : str   (project scoping)
+
+Every edge MUST have:
+  - rel_type     : str   (matches relationship label)
+  - created_at   : str
+  - source       : str   (script or session that created this edge)
+
+Recommended on most edges:
+  - confidence   : float (0.0–1.0)
+  - evidence     : str   (quote or pointer supporting the relationship)
+```
+
+### Node ID Convention
+
+```
+Format:  {TYPE_PREFIX}:{KEY}
+Examples:
+  DOC:ADD-003          — Document, addendum 003
+  SCOPE:STRUCT-042     — Scope item, structural, sequence 42
+  RFI:RFI-017          — RFI 017
+  SUB:SUB-0042         — Submittal 0042
+  TRADE:Structural     — Trade node
+  SPEC:03.30.00        — Spec section (dots, not spaces, for IDs)
+  DWG:S2.1             — Drawing sheet
+  ZONE:LEVEL-03-NORTH  — Zone
+  GIS:UTIL-CORRIDOR-01 — GIS feature
+  PERSON:J.Smith.GC    — Person (disambiguate by org suffix)
+  ORG:AcmeCorp         — Organization
+  CONFLICT:CONF-001    — Conflict record
+```
+
+---
+
+## NetworkX Implementation
+
+NetworkX is the right choice for in-memory, single-session, or CI graph work.
+Use when: graph fits in RAM, no concurrent writers, scripts are Python-first.
+
+### Graph Initialization
+
+```python
+import networkx as nx
+from datetime import datetime, date
+from typing import Any
+import json
+
+class AECKnowledgeGraph:
+    """
+    In-memory AEC Knowledge Graph backed by NetworkX MultiDiGraph.
+    MultiDiGraph: directed, allows multiple edges between same node pair
+    (e.g. a ScopeItem can REFERENCES multiple Drawings).
+    """
+
+    def __init__(self, project_id: str):
+        self.project_id = project_id
+        self.G = nx.MultiDiGraph(
+            project_id = project_id,
+            created_at = datetime.utcnow().isoformat(),
+        )
+        self._node_index: dict[str, dict] = {}  # node_id → attrs for fast lookup
+
+    # ── Node addition ─────────────────────────────────────────────────────────
+
+    def add_node(self, node_id: str, node_type: str, **attrs) -> str:
+        """
+        Add or update a node. Returns node_id.
+        Merges attrs with existing node data (upsert semantics).
+        """
+        base = {
+            "node_id":    node_id,
+            "node_type":  node_type,
+            "project_id": self.project_id,
+            "created_at": datetime.utcnow().isoformat(),
+        }
+        base.update(attrs)
+
+        if node_id in self.G:
+            self.G.nodes[node_id].update(base)
+        else:
+            self.G.add_node(node_id, **base)
+
+        self._node_index[node_id] = self.G.nodes[node_id]
+        return node_id
+
+    # ── Typed node helpers ────────────────────────────────────────────────────
+
+    def add_document(self, doc_id: str, family: str, title: str,
+                      issue_date: str = "", status: str = "CURRENT",
+                      file_path: str = "", **kwargs) -> str:
+        return self.add_node(
+            f"DOC:{doc_id}", "Document",
+            doc_id=doc_id, family=family, title=title,
+            issue_date=issue_date, status=status, file_path=file_path,
+            **kwargs
+        )
+
+    def add_scope_item(self, item_id: str, trade: str, description: str,
+                        csi_division: str, condition_class: str,
+                        evidence_status: str, cost_ability: str,
+                        **kwargs) -> str:
+        return self.add_node(
+            f"SCOPE:{item_id}", "ScopeItem",
+            item_id=item_id, trade=trade, description=description,
+            csi_division=csi_division, condition_class=condition_class,
+            evidence_status=evidence_status, cost_ability=cost_ability,
+            **kwargs
+        )
+
+    def add_rfi(self, rfi_number: str, priority: str, subject: str,
+                 discipline: str, status: str, response_due: str,
+                 **kwargs) -> str:
+        return self.add_node(
+            f"RFI:{rfi_number}", "RFI",
+            rfi_number=rfi_number, priority=priority, subject=subject,
+            discipline=discipline, status=status, response_due=response_due,
+            **kwargs
+        )
+
+    def add_submittal(self, submittal_number: str, spec_section: str,
+                       submittal_type: str, disposition: str,
+                       required_on_site: str = "", **kwargs) -> str:
+        return self.add_node(
+            f"SUB:{submittal_number}", "Submittal",
+            submittal_number=submittal_number, spec_section=spec_section,
+            submittal_type=submittal_type, disposition=disposition,
+            required_on_site=required_on_site, **kwargs
+        )
+
+    def add_trade(self, name: str, **kwargs) -> str:
+        return self.add_node(f"TRADE:{name}", "Trade", name=name, **kwargs)
+
+    def add_spec_section(self, section_number: str, title: str,
+                          **kwargs) -> str:
+        clean = section_number.replace(" ", ".")
+        return self.add_node(
+            f"SPEC:{clean}", "SpecSection",
+            section_number=section_number, title=title, **kwargs
+        )
+
+    def add_drawing(self, drawing_number: str, title: str = "",
+                     discipline: str = "", **kwargs) -> str:
+        return self.add_node(
+            f"DWG:{drawing_number}", "Drawing",
+            drawing_number=drawing_number, title=title,
+            discipline=discipline, **kwargs
+        )
+
+    def add_person(self, name: str, role: str = "",
+                    organization: str = "", **kwargs) -> str:
+        node_id = f"PERSON:{name}.{organization}" if organization else f"PERSON:{name}"
+        return self.add_node(
+            node_id, "Person",
+            name=name, role=role, organization=organization, **kwargs
+        )
+
+    def add_organization(self, name: str, role: str = "", **kwargs) -> str:
+        return self.add_node(
+            f"ORG:{name}", "Organization", name=name, role=role, **kwargs
+        )
+
+    def add_zone(self, zone_id: str, description: str = "",
+                  level: str = "", **kwargs) -> str:
+        return self.add_node(
+            f"ZONE:{zone_id}", "Zone",
+            zone_id=zone_id, description=description, level=level, **kwargs
+        )
+
+    def add_gis_feature(self, feature_id: str, feature_type: str,
+                          geometry_type: str = "", **kwargs) -> str:
+        return self.add_node(
+            f"GIS:{feature_id}", "GISFeature",
+            feature_id=feature_id, feature_type=feature_type,
+            geometry_type=geometry_type, **kwargs
+        )
+
+    def add_conflict(self, conflict_id: str, field: str,
+                      value_a: str, value_b: str,
+                      doc_a_id: str, doc_b_id: str, **kwargs) -> str:
+        return self.add_node(
+            f"CONFLICT:{conflict_id}", "Conflict",
+            conflict_id=conflict_id, field=field,
+            value_a=value_a, value_b=value_b,
+            doc_a_id=doc_a_id, doc_b_id=doc_b_id, **kwargs
+        )
+
+    # ── Edge addition ─────────────────────────────────────────────────────────
+
+    def add_edge(self, from_id: str, to_id: str, rel_type: str,
+                  confidence: float = 1.0, source: str = "pipeline",
+                  evidence: str = "", **attrs) -> None:
+        """
+        Add a directed edge. Raises KeyError if either node is missing.
+        """
+        if from_id not in self.G:
+            raise KeyError(f"Source node not found: {from_id}")
+        if to_id not in self.G:
+            raise KeyError(f"Target node not found: {to_id}")
+        self.G.add_edge(
+            from_id, to_id,
+            rel_type   = rel_type,
+            confidence = confidence,
+            source     = source,
+            evidence   = evidence,
+            created_at = datetime.utcnow().isoformat(),
+            **attrs
+        )
+
+    # ── Typed edge helpers ────────────────────────────────────────────────────
+
+    def link_scope_to_document(self, item_id: str, doc_id: str,
+                                 confidence: float = 1.0,
+                                 anchor_text: str = "", page: int = 0) -> None:
+        self.add_edge(
+            f"SCOPE:{item_id}", f"DOC:{doc_id}",
+            rel_type="EXTRACTED_FROM",
+            confidence=confidence, evidence=anchor_text, page=page,
+        )
+
+    def link_contradiction(self, doc_a_id: str, doc_b_id: str,
+                             field: str, value_a: str, value_b: str,
+                             conflict_id: str) -> None:
+        self.add_edge(
+            f"DOC:{doc_a_id}", f"DOC:{doc_b_id}",
+            rel_type="CONTRADICTS",
+            field=field, value_a=value_a, value_b=value_b,
+            conflict_id=conflict_id,
+        )
+
+    def link_supersession(self, newer_doc_id: str, older_doc_id: str,
+                           issue_date: str = "") -> None:
+        self.add_edge(
+            f"DOC:{newer_doc_id}", f"DOC:{older_doc_id}",
+            rel_type="SUPERSEDES", issue_date=issue_date,
+        )
+
+    def link_rfi_blocks_scope(self, rfi_number: str, item_id: str,
+                               priority: str = "") -> None:
+        self.add_edge(
+            f"RFI:{rfi_number}", f"SCOPE:{item_id}",
+            rel_type="BLOCKS", priority=priority,
+        )
+
+    def link_scope_to_drawing(self, item_id: str, drawing_number: str,
+                               detail: str = "") -> None:
+        self.add_edge(
+            f"SCOPE:{item_id}", f"DWG:{drawing_number}",
+            rel_type="REFERENCES", detail=detail,
+        )
+
+    def link_scope_to_spec(self, item_id: str,
+                            section_number: str) -> None:
+        clean = section_number.replace(" ", ".")
+        self.add_edge(
+            f"SCOPE:{item_id}", f"SPEC:{clean}",
+            rel_type="GOVERNED_BY",
+        )
+
+    def link_scope_to_trade(self, item_id: str, trade_name: str) -> None:
+        self.add_edge(
+            f"SCOPE:{item_id}", f"TRADE:{trade_name}",
+            rel_type="BELONGS_TO",
+        )
+
+    def link_rfi_conflict(self, rfi_number: str, conflict_id: str) -> None:
+        self.add_edge(
+            f"RFI:{rfi_number}", f"CONFLICT:{conflict_id}",
+            rel_type="GENERATED_BY",
+        )
+
+    def link_spec_requires_submittal(self, section_number: str,
+                                      submittal_number: str,
+                                      lead_days: int = 0,
+                                      submittal_type: str = "") -> None:
+        clean = section_number.replace(" ", ".")
+        self.add_edge(
+            f"SPEC:{clean}", f"SUB:{submittal_number}",
+            rel_type="REQUIRES",
+            lead_days=lead_days, submittal_type=submittal_type,
+        )
+
+    def link_scope_to_zone(self, item_id: str, zone_id: str,
+                            confidence: float = 1.0) -> None:
+        self.add_edge(
+            f"SCOPE:{item_id}", f"ZONE:{zone_id}",
+            rel_type="LOCATED_IN", confidence=confidence,
+        )
+
+    def link_scope_to_gis(self, item_id: str, feature_id: str,
+                           distance_m: float = 0.0) -> None:
+        self.add_edge(
+            f"SCOPE:{item_id}", f"GIS:{feature_id}",
+            rel_type="CORRESPONDS_TO", distance_m=distance_m,
+        )
+
+    # ── Lookups ───────────────────────────────────────────────────────────────
+
+    def node(self, node_id: str) -> dict:
+        """Return node attribute dict. Raises KeyError if missing."""
+        return self.G.nodes[node_id]
+
+    def nodes_of_type(self, node_type: str) -> list[dict]:
+        return [
+            data for _, data in self.G.nodes(data=True)
+            if data.get("node_type") == node_type
+        ]
+
+    def edges_of_type(self, rel_type: str) -> list[tuple]:
+        """Return list of (from_id, to_id, attrs) for edges of a given type."""
+        return [
+            (u, v, d)
+            for u, v, d in self.G.edges(data=True)
+            if d.get("rel_type") == rel_type
+        ]
+
+    def neighbors_of_type(self, node_id: str,
+                            rel_type: str = None,
+                            node_type: str = None,
+                            direction: str = "out") -> list[dict]:
+        """
+        Return neighbor nodes, optionally filtered by edge type and/or node type.
+        direction: 'out' (successors), 'in' (predecessors), 'both'
+        """
+        if direction == "out":
+            neighbors = list(self.G.successors(node_id))
+        elif direction == "in":
+            neighbors = list(self.G.predecessors(node_id))
+        else:
+            neighbors = list(self.G.successors(node_id)) + \
+                        list(self.G.predecessors(node_id))
+
+        result = []
+        for nid in neighbors:
+            # Filter by edge type
+            if rel_type:
+                edges = (
+                    self.G.get_edge_data(node_id, nid) or
+                    self.G.get_edge_data(nid, node_id) or {}
+                )
+                has_rel = any(
+                    e.get("rel_type") == rel_type
+                    for e in edges.values()
+                )
+                if not has_rel:
+                    continue
+            # Filter by node type
+            ndata = self.G.nodes[nid]
+            if node_type and ndata.get("node_type") != node_type:
+                continue
+            result.append(ndata)
+        return result
+
+    # ── Summary ───────────────────────────────────────────────────────────────
+
+    def summary(self) -> dict:
+        node_counts = {}
+        for _, data in self.G.nodes(data=True):
+            t = data.get("node_type", "Unknown")
+            node_counts[t] = node_counts.get(t, 0) + 1
+
+        edge_counts = {}
+        for _, _, data in self.G.edges(data=True):
+            t = data.get("rel_type", "Unknown")
+            edge_counts[t] = edge_counts.get(t, 0) + 1
+
+        return {
+            "project_id":   self.project_id,
+            "total_nodes":  self.G.number_of_nodes(),
+            "total_edges":  self.G.number_of_edges(),
+            "node_counts":  node_counts,
+            "edge_counts":  edge_counts,
+        }
+```
+
+---
+
+## Neo4j Implementation
+
+Neo4j is the right choice for: persistent multi-session graphs, concurrent readers,
+large projects (10,000+ nodes), or when Cypher queries are more natural than Python
+traversals.
+
+### Connection and Schema Setup
+
+```python
+from neo4j import GraphDatabase
+from contextlib import contextmanager
+
+class AECNeo4jGraph:
+    """
+    Neo4j-backed AEC Knowledge Graph.
+    Uses the official neo4j Python driver.
+    """
+
+    def __init__(self, uri: str, user: str, password: str,
+                  project_id: str):
+        self.project_id = project_id
+        self._driver = GraphDatabase.driver(uri, auth=(user, password))
+
+    def close(self):
+        self._driver.close()
+
+    @contextmanager
+    def session(self):
+        with self._driver.session() as s:
+            yield s
+
+    def create_schema_constraints(self):
+        """Idempotent — run once per database/project."""
+        constraints = [
+            "CREATE CONSTRAINT IF NOT EXISTS FOR (n:Document)   REQUIRE n.doc_id IS UNIQUE",
+            "CREATE CONSTRAINT IF NOT EXISTS FOR (n:ScopeItem)  REQUIRE n.item_id IS UNIQUE",
+            "CREATE CONSTRAINT IF NOT EXISTS FOR (n:RFI)        REQUIRE n.rfi_number IS UNIQUE",
+            "CREATE CONSTRAINT IF NOT EXISTS FOR (n:Submittal)  REQUIRE n.submittal_number IS UNIQUE",
+            "CREATE CONSTRAINT IF NOT EXISTS FOR (n:Trade)      REQUIRE n.name IS UNIQUE",
+            "CREATE CONSTRAINT IF NOT EXISTS FOR (n:SpecSection)REQUIRE n.section_number IS UNIQUE",
+            "CREATE CONSTRAINT IF NOT EXISTS FOR (n:Drawing)    REQUIRE n.drawing_number IS UNIQUE",
+            "CREATE CONSTRAINT IF NOT EXISTS FOR (n:Zone)       REQUIRE n.zone_id IS UNIQUE",
+            "CREATE CONSTRAINT IF NOT EXISTS FOR (n:GISFeature) REQUIRE n.feature_id IS UNIQUE",
+            "CREATE CONSTRAINT IF NOT EXISTS FOR (n:Conflict)   REQUIRE n.conflict_id IS UNIQUE",
+        ]
+        with self.session() as s:
+            for c in constraints:
+                s.run(c)
+        print("Schema constraints applied")
+
+    # ── Node upsert helpers ───────────────────────────────────────────────────
+
+    def merge_scope_item(self, item_id: str, trade: str,
+                          description: str, csi_division: str,
+                          condition_class: str, evidence_status: str,
+                          cost_ability: str, **kwargs) -> None:
+        props = {
+            "item_id": item_id, "trade": trade,
+            "description": description, "csi_division": csi_division,
+            "condition_class": condition_class,
+            "evidence_status": evidence_status,
+            "cost_ability": cost_ability,
+            "project_id": self.project_id,
+            **kwargs
+        }
+        with self.session() as s:
+            s.run("""
+                MERGE (n:ScopeItem {item_id: $item_id})
+                SET n += $props
+            """, item_id=item_id, props=props)
+
+    def merge_rfi(self, rfi_number: str, priority: str, subject: str,
+                   discipline: str, status: str, response_due: str,
+                   **kwargs) -> None:
+        props = {
+            "rfi_number": rfi_number, "priority": priority,
+            "subject": subject, "discipline": discipline,
+            "status": status, "response_due": response_due,
+            "project_id": self.project_id, **kwargs
+        }
+        with self.session() as s:
+            s.run("""
+                MERGE (n:RFI {rfi_number: $rfi_number})
+                SET n += $props
+            """, rfi_number=rfi_number, props=props)
+
+    # ── Edge upsert helpers ───────────────────────────────────────────────────
+
+    def merge_blocks(self, rfi_number: str, item_id: str,
+                      priority: str = "") -> None:
+        """RFI BLOCKS ScopeItem."""
+        with self.session() as s:
+            s.run("""
+                MATCH (r:RFI {rfi_number: $rfi_number})
+                MATCH (s:ScopeItem {item_id: $item_id})
+                MERGE (r)-[e:BLOCKS]->(s)
+                SET e.priority = $priority
+            """, rfi_number=rfi_number, item_id=item_id, priority=priority)
+
+    def merge_extracted_from(self, item_id: str, doc_id: str,
+                              confidence: float = 1.0,
+                              anchor_text: str = "") -> None:
+        with self.session() as s:
+            s.run("""
+                MATCH (s:ScopeItem {item_id: $item_id})
+                MATCH (d:Document  {doc_id:  $doc_id})
+                MERGE (s)-[e:EXTRACTED_FROM]->(d)
+                SET e.confidence = $confidence,
+                    e.anchor_text = $anchor_text
+            """, item_id=item_id, doc_id=doc_id,
+                 confidence=confidence, anchor_text=anchor_text)
+
+    def merge_supersedes(self, newer_doc_id: str,
+                          older_doc_id: str, issue_date: str = "") -> None:
+        with self.session() as s:
+            s.run("""
+                MATCH (a:Document {doc_id: $newer})
+                MATCH (b:Document {doc_id: $older})
+                MERGE (a)-[e:SUPERSEDES]->(b)
+                SET e.issue_date = $issue_date
+            """, newer=newer_doc_id, older=older_doc_id,
+                 issue_date=issue_date)
+```
+
+### Cypher Query Reference
+
+```cypher
+// ── Node lookups ──────────────────────────────────────────────────────────────
+
+// All FATAL open RFIs
+MATCH (r:RFI {priority: "FATAL", status: "ISSUED"})
+RETURN r.rfi_number, r.subject, r.response_due
+ORDER BY r.response_due;
+
+// All scope items that are NOT_COSTABLE
+MATCH (s:ScopeItem {cost_ability: "NOT_COSTABLE"})
+RETURN s.item_id, s.trade, s.description;
+
+
+// ── Single-hop traversals ─────────────────────────────────────────────────────
+
+// All scope items blocked by a specific RFI
+MATCH (r:RFI {rfi_number: "RFI-017"})-[:BLOCKS]->(s:ScopeItem)
+RETURN s.item_id, s.description, s.trade;
+
+// Which documents does a scope item trace back to?
+MATCH (s:ScopeItem {item_id: "STRUCT-042"})-[:EXTRACTED_FROM]->(d:Document)
+RETURN d.doc_id, d.family, d.title, d.status;
+
+// All drawings referenced by Structural scope items
+MATCH (s:ScopeItem)-[:BELONGS_TO]->(:Trade {name: "Structural"}),
+      (s)-[:REFERENCES]->(dw:Drawing)
+RETURN DISTINCT dw.drawing_number, dw.title
+ORDER BY dw.drawing_number;
+
+
+// ── Multi-hop traversals ──────────────────────────────────────────────────────
+
+// Which trades are blocked by open FATAL RFIs
+// whose source documents have been superseded?
+MATCH (r:RFI {priority: "FATAL", status: "ISSUED"})-[:BLOCKS]->(s:ScopeItem)
+      -[:EXTRACTED_FROM]->(d:Document)<-[:SUPERSEDES]-(:Document)
+MATCH (s)-[:BELONGS_TO]->(t:Trade)
+RETURN DISTINCT t.name AS trade,
+       COUNT(DISTINCT s) AS blocked_scope_items,
+       COUNT(DISTINCT r) AS blocking_rfis
+ORDER BY blocked_scope_items DESC;
+
+// What scope items share a drawing with a contradictory scope item?
+MATCH (s1:ScopeItem {evidence_status: "CONTRADICTORY"})
+      -[:REFERENCES]->(dw:Drawing)<-[:REFERENCES]-(s2:ScopeItem)
+WHERE s1.item_id <> s2.item_id
+RETURN s1.item_id AS problem_item,
+       dw.drawing_number AS shared_drawing,
+       s2.item_id AS related_item,
+       s2.evidence_status;
+
+// Full impact chain: Conflict → RFI → blocked ScopeItems → Trade → Submittals still pending
+MATCH (c:Conflict)<-[:GENERATED_BY]-(r:RFI)-[:BLOCKS]->(s:ScopeItem)
+      -[:BELONGS_TO]->(t:Trade)
+MATCH (spec:SpecSection)-[:REQUIRES]->(sub:Submittal {disposition: "REVISE_AND_RESUBMIT"})
+MATCH (s)-[:GOVERNED_BY]->(spec)
+RETURN c.conflict_id, r.rfi_number, s.item_id, t.name,
+       spec.section_number, sub.submittal_number
+ORDER BY c.conflict_id;
+
+
+// ── Path queries ──────────────────────────────────────────────────────────────
+
+// Shortest path between a scope item and a GIS feature
+MATCH path = shortestPath(
+  (s:ScopeItem {item_id: "CIVIL-008"})-[*]-(g:GISFeature {feature_id: "UTIL-CORRIDOR-01"})
+)
+RETURN [n IN nodes(path) | n.node_id] AS path_nodes,
+       length(path) AS hops;
+
+// All scope items reachable from a superseded document (impact of doc retirement)
+MATCH (superseded:Document {doc_id: "SPEC-V1"})
+      <-[:SUPERSEDES*1..3]-(:Document)
+MATCH (s:ScopeItem)-[:EXTRACTED_FROM]->(superseded)
+RETURN s.item_id, s.description, s.evidence_status;
+
+
+// ── Aggregations ──────────────────────────────────────────────────────────────
+
+// Scope item count by trade × evidence_status (heat map input)
+MATCH (s:ScopeItem)-[:BELONGS_TO]->(t:Trade)
+RETURN t.name AS trade, s.evidence_status, COUNT(s) AS count
+ORDER BY trade, s.evidence_status;
+
+// Overdue RFI count per discipline
+MATCH (r:RFI {status: "OVERDUE"})
+RETURN r.discipline, COUNT(r) AS overdue_count
+ORDER BY overdue_count DESC;
+
+// Submittal compliance: approved vs pending per spec section
+MATCH (spec:SpecSection)-[:REQUIRES]->(sub:Submittal)
+RETURN spec.section_number,
+       COUNT(sub) AS total,
+       SUM(CASE WHEN sub.disposition IN ["APPROVED","APPROVED_AS_NOTED"] THEN 1 ELSE 0 END) AS approved,
+       SUM(CASE WHEN sub.disposition NOT IN ["APPROVED","APPROVED_AS_NOTED"] THEN 1 ELSE 0 END) AS pending;
+```
+
+---
+
+## Graph Population
+
+Load the AEC-KG from the JSON registers produced by the pipeline scripts.
+
+```python
+import json
+from pathlib import Path
+from datetime import date, datetime
+
+def populate_from_pipeline_registers(
+    kg: AECKnowledgeGraph,
+    corpus_registry_path: str,
+    scope_baseline_path:  str,
+    rfi_log_path:         str,
+    submittal_log_path:   str,
+) -> dict:
+    """
+    Populate the AEC-KG from the four canonical pipeline outputs.
+    Returns a population report.
+    """
+    report = {
+        "documents": 0, "scope_items": 0,
+        "rfis": 0,       "submittals": 0,
+        "edges": 0,      "errors": [],
+    }
+
+    # ── 1. Corpus Registry → Document nodes ──────────────────────────────────
+    corpus_path = Path(corpus_registry_path)
+    if corpus_path.exists():
+        with open(corpus_path) as f:
+            corpus = json.load(f)
+        for doc in corpus.get("documents", []):
+            kg.add_document(
+                doc_id     = doc["identifier"],
+                family     = doc["family_code"],
+                title      = doc.get("title", ""),
+                issue_date = doc.get("issue_date", ""),
+                status     = doc.get("status", "CURRENT"),
+                file_path  = doc.get("file_path", ""),
+            )
+            report["documents"] += 1
+        # Supersession edges from corpus
+        for sup in corpus.get("supersessions", []):
+            try:
+                kg.link_supersession(
+                    newer_doc_id = sup["newer"],
+                    older_doc_id = sup["older"],
+                    issue_date   = sup.get("issue_date", ""),
+                )
+                report["edges"] += 1
+            except KeyError as e:
+                report["errors"].append(f"Supersession edge: {e}")
+
+    # ── 2. Scope Baseline → ScopeItem + Trade + Spec + Drawing nodes/edges ───
+    scope_path = Path(scope_baseline_path)
+    if scope_path.exists():
+        with open(scope_path) as f:
+            baseline = json.load(f)
+        for item in baseline.get("scope_items", []):
+            # Ensure trade node exists
+            kg.add_trade(item.get("trade", "Unassigned"))
+            # Scope item node
+            kg.add_scope_item(
+                item_id        = item["item_id"],
+                trade          = item.get("trade", "Unassigned"),
+                description    = item.get("description", ""),
+                csi_division   = item.get("csi_division", ""),
+                condition_class= item.get("condition_class", ""),
+                evidence_status= item.get("evidence_status", "UNDEFINED"),
+                cost_ability   = item.get("cost_ability", "NOT_COSTABLE"),
+                quantity       = item.get("quantity"),
+                unit           = item.get("unit", ""),
+            )
+            report["scope_items"] += 1
+
+            # Edges: BELONGS_TO trade
+            try:
+                kg.link_scope_to_trade(item["item_id"], item.get("trade", "Unassigned"))
+                report["edges"] += 1
+            except KeyError as e:
+                report["errors"].append(f"BELONGS_TO edge {item['item_id']}: {e}")
+
+            # Edges: EXTRACTED_FROM documents
+            for src in item.get("source_documents", []):
+                doc_id = src.get("doc_id", "")
+                if doc_id and f"DOC:{doc_id}" in kg.G:
+                    kg.link_scope_to_document(
+                        item["item_id"], doc_id,
+                        confidence  = src.get("confidence", 1.0),
+                        anchor_text = src.get("anchor_text", ""),
+                    )
+                    report["edges"] += 1
+
+            # Edges: GOVERNED_BY spec section
+            spec = item.get("spec_section", "")
+            if spec:
+                kg.add_spec_section(spec, title="")
+                kg.link_scope_to_spec(item["item_id"], spec)
+                report["edges"] += 1
+
+            # Edges: REFERENCES drawings
+            for dwg in item.get("drawing_refs", []):
+                kg.add_drawing(dwg)
+                kg.link_scope_to_drawing(item["item_id"], dwg)
+                report["edges"] += 1
+
+    # ── 3. RFI Log → RFI nodes + BLOCKS + GENERATED_BY edges ────────────────
+    rfi_path = Path(rfi_log_path)
+    if rfi_path.exists():
+        with open(rfi_path) as f:
+            rfi_data = json.load(f)
+        for rfi in rfi_data.get("rfis", []):
+            kg.add_rfi(
+                rfi_number   = rfi["rfi_number"],
+                priority     = rfi.get("priority", "ADVISORY"),
+                subject      = rfi.get("subject", ""),
+                discipline   = rfi.get("discipline", ""),
+                status       = rfi.get("status", "ISSUED"),
+                response_due = rfi.get("response_due", ""),
+                issued_by    = rfi.get("issued_by", ""),
+                issued_to    = rfi.get("issued_to", ""),
+            )
+            report["rfis"] += 1
+
+            # BLOCKS edges
+            for item_id in rfi.get("affected_scope", []):
+                scope_nid = f"SCOPE:{item_id}"
+                if scope_nid in kg.G:
+                    kg.link_rfi_blocks_scope(
+                        rfi["rfi_number"], item_id,
+                        priority=rfi.get("priority", ""),
+                    )
+                    report["edges"] += 1
+
+    # ── 4. Submittal Log → Submittal nodes + REQUIRES edges ──────────────────
+    sub_path = Path(submittal_log_path)
+    if sub_path.exists():
+        with open(sub_path) as f:
+            sub_data = json.load(f)
+        for sub in sub_data.get("submittals", []):
+            kg.add_submittal(
+                submittal_number = sub["submittal_number"],
+                spec_section     = sub.get("spec_section", ""),
+                submittal_type   = sub.get("submittal_type", "SHOP_DRAWING"),
+                disposition      = sub.get("disposition", "PENDING"),
+                required_on_site = sub.get("required_on_site", ""),
+            )
+            report["submittals"] += 1
+            spec = sub.get("spec_section", "")
+            if spec:
+                clean = spec.replace(" ", ".")
+                if f"SPEC:{clean}" in kg.G:
+                    kg.link_spec_requires_submittal(
+                        spec, sub["submittal_number"],
+                        lead_days      = sub.get("lead_days", 0),
+                        submittal_type = sub.get("submittal_type", ""),
+                    )
+                    report["edges"] += 1
+
+    # ── Summary ───────────────────────────────────────────────────────────────
+    print(f"Graph population complete for project {kg.project_id}")
+    print(f"  Documents:   {report['documents']:>4}")
+    print(f"  Scope Items: {report['scope_items']:>4}")
+    print(f"  RFIs:        {report['rfis']:>4}")
+    print(f"  Submittals:  {report['submittals']:>4}")
+    print(f"  Edges:       {report['edges']:>4}")
+    if report["errors"]:
+        print(f"  Errors:      {len(report['errors'])}")
+        for e in report["errors"][:5]:
+            print(f"    {e}")
+    return report
+```
+
+---
+
+## Queries and Traversals
+
+### Multi-hop Reasoning Patterns (NetworkX)
+
+```python
+from collections import defaultdict
+
+# ── Pattern 1: Trades blocked by FATAL RFIs from superseded documents ────────
+
+def blocked_trades_from_superseded_sources(kg: AECKnowledgeGraph) -> list[dict]:
+    """
+    Multi-hop: FATAL RFI → blocked ScopeItems → source Documents
+    → check if Document is target of a SUPERSEDES edge → aggregate by Trade.
+    """
+    superseded_docs = {
+        v for u, v, d in kg.edges_of_type("SUPERSEDES")
+    }
+
+    fatal_rfis = [
+        n for n in kg.nodes_of_type("RFI")
+        if n.get("priority") == "FATAL"
+        and n.get("status") in ("ISSUED", "UNDER_REVIEW", "OVERDUE")
+    ]
+
+    results = defaultdict(lambda: {"trade": "", "blocked_items": [],
+                                    "blocking_rfis": [], "superseded_sources": []})
+    for rfi in fatal_rfis:
+        rfi_nid = f"RFI:{rfi['rfi_number']}"
+        # Scope items blocked by this RFI
+        for scope in kg.neighbors_of_type(rfi_nid, rel_type="BLOCKS",
+                                           node_type="ScopeItem"):
+            scope_nid = f"SCOPE:{scope['item_id']}"
+            # Source documents for this scope item
+            for doc in kg.neighbors_of_type(scope_nid, rel_type="EXTRACTED_FROM",
+                                             node_type="Document"):
+                doc_nid = f"DOC:{doc['doc_id']}"
+                if doc_nid in superseded_docs:
+                    # Find trade
+                    trades = kg.neighbors_of_type(scope_nid, rel_type="BELONGS_TO",
+                                                   node_type="Trade")
+                    trade_name = trades[0]["name"] if trades else "Unassigned"
+                    r = results[trade_name]
+                    r["trade"] = trade_name
+                    if scope["item_id"] not in r["blocked_items"]:
+                        r["blocked_items"].append(scope["item_id"])
+                    if rfi["rfi_number"] not in r["blocking_rfis"]:
+                        r["blocking_rfis"].append(rfi["rfi_number"])
+                    if doc["doc_id"] not in r["superseded_sources"]:
+                        r["superseded_sources"].append(doc["doc_id"])
+
+    return sorted(results.values(),
+                  key=lambda x: len(x["blocked_items"]), reverse=True)
+
+
+# ── Pattern 2: Scope items sharing drawings with contradictory items ──────────
+
+def scope_sharing_drawings_with_contradictory(kg: AECKnowledgeGraph) -> list[dict]:
+    """
+    Find scope items that reference the same drawing as a contradictory item.
+    Surface potential contagion zones.
+    """
+    contradictory_items = {
+        n["item_id"]
+        for n in kg.nodes_of_type("ScopeItem")
+        if n.get("evidence_status") == "CONTRADICTORY"
+    }
+
+    result = []
+    for item_id in contradictory_items:
+        item_nid = f"SCOPE:{item_id}"
+        # Drawings referenced by this contradictory item
+        drawings = kg.neighbors_of_type(item_nid, rel_type="REFERENCES",
+                                         node_type="Drawing")
+        for dwg in drawings:
+            dwg_nid = f"DWG:{dwg['drawing_number']}"
+            # Other scope items referencing same drawing
+            for other in kg.G.predecessors(dwg_nid):
+                if other == item_nid:
+                    continue
+                other_data = kg.G.nodes[other]
+                if other_data.get("node_type") == "ScopeItem":
+                    result.append({
+                        "contradictory_item":   item_id,
+                        "shared_drawing":       dwg["drawing_number"],
+                        "potentially_affected":  other_data["item_id"],
+                        "affected_status":      other_data.get("evidence_status"),
+                        "affected_trade":       other_data.get("trade"),
+                    })
+    return result
+
+
+# ── Pattern 3: Full impact chain from a conflict ──────────────────────────────
+
+def conflict_impact_chain(kg: AECKnowledgeGraph,
+                           conflict_id: str) -> dict:
+    """
+    Starting from a Conflict node, trace:
+    Conflict → RFI → blocked ScopeItems → Trades → pending Submittals
+    """
+    conflict_nid = f"CONFLICT:{conflict_id}"
+    if conflict_nid not in kg.G:
+        raise KeyError(f"Conflict not found: {conflict_id}")
+
+    chain = {
+        "conflict_id": conflict_id,
+        "rfis":        [],
+        "blocked_scope": [],
+        "affected_trades": [],
+        "pending_submittals": [],
+    }
+
+    # RFIs generated by this conflict
+    rfis = kg.neighbors_of_type(conflict_nid, rel_type="GENERATED_BY",
+                                  node_type="RFI", direction="in")
+    for rfi in rfis:
+        chain["rfis"].append(rfi["rfi_number"])
+        rfi_nid = f"RFI:{rfi['rfi_number']}"
+
+        # Scope items blocked
+        for scope in kg.neighbors_of_type(rfi_nid, rel_type="BLOCKS",
+                                           node_type="ScopeItem"):
+            chain["blocked_scope"].append(scope["item_id"])
+            scope_nid = f"SCOPE:{scope['item_id']}"
+
+            # Trade
+            for trade in kg.neighbors_of_type(scope_nid, rel_type="BELONGS_TO",
+                                               node_type="Trade"):
+                if trade["name"] not in chain["affected_trades"]:
+                    chain["affected_trades"].append(trade["name"])
+
+            # Spec sections → pending submittals
+            for spec in kg.neighbors_of_type(scope_nid, rel_type="GOVERNED_BY",
+                                              node_type="SpecSection"):
+                spec_nid = f"SPEC:{spec['section_number'].replace(' ','.')}"
+                for sub in kg.neighbors_of_type(spec_nid, rel_type="REQUIRES",
+                                                 node_type="Submittal"):
+                    if sub.get("disposition") not in ("APPROVED", "APPROVED_AS_NOTED"):
+                        if sub["submittal_number"] not in chain["pending_submittals"]:
+                            chain["pending_submittals"].append(sub["submittal_number"])
+    return chain
+
+
+# ── Pattern 4: Costability report by trade ────────────────────────────────────
+
+def costability_report(kg: AECKnowledgeGraph) -> list[dict]:
+    """
+    Summarize scope item costability breakdown per trade.
+    Output usable directly as dashboard table data.
+    """
+    from collections import Counter
+    trade_buckets: dict[str, Counter] = defaultdict(Counter)
+
+    for scope in kg.nodes_of_type("ScopeItem"):
+        scope_nid = f"SCOPE:{scope['item_id']}"
+        trades = kg.neighbors_of_type(scope_nid, rel_type="BELONGS_TO",
+                                       node_type="Trade")
+        trade_name = trades[0]["name"] if trades else "Unassigned"
+        trade_buckets[trade_name][scope.get("cost_ability", "NOT_COSTABLE")] += 1
+
+    rows = []
+    for trade, counts in sorted(trade_buckets.items()):
+        total = sum(counts.values())
+        rows.append({
+            "trade":         trade,
+            "total":         total,
+            "costable":      counts.get("COSTABLE", 0),
+            "partial":       counts.get("PARTIAL", 0),
+            "not_costable":  counts.get("NOT_COSTABLE", 0),
+            "not_scope":     counts.get("NOT_SCOPE", 0),
+            "pct_costable":  round(counts.get("COSTABLE", 0) / total * 100, 1)
+                             if total else 0,
+        })
+    return rows
+```
+
+---
+
+## Subgraph Extraction
+
+Extract a focused subgraph for a single trade, discipline, zone, or document family.
+
+```python
+def extract_trade_subgraph(kg: AECKnowledgeGraph,
+                            trade_name: str) -> nx.MultiDiGraph:
+    """
+    Extract all nodes and edges relevant to a single trade.
+    Includes: trade's scope items, their source docs, RFIs blocking them,
+    spec sections, drawings, and submittals.
+    """
+    # Seed: scope items belonging to trade
+    trade_nid    = f"TRADE:{trade_name}"
+    scope_nids   = set(kg.G.predecessors(trade_nid))
+
+    # Expand to all neighbors within 2 hops
+    relevant = set(scope_nids) | {trade_nid}
+    for scope_nid in scope_nids:
+        relevant.update(kg.G.successors(scope_nid))     # docs, spec, drawing
+        relevant.update(kg.G.predecessors(scope_nid))   # RFIs blocking this scope
+
+    # Build subgraph
+    sub = kg.G.subgraph(relevant).copy()
+    sub.graph["trade_filter"] = trade_name
+    sub.graph["extracted_at"] = datetime.utcnow().isoformat()
+    return sub
+
+
+def extract_zone_subgraph(kg: AECKnowledgeGraph,
+                           zone_id: str) -> nx.MultiDiGraph:
+    """All scope items and their dependencies within a spatial zone."""
+    zone_nid   = f"ZONE:{zone_id}"
+    scope_nids = set(kg.G.predecessors(zone_nid))
+    relevant   = set(scope_nids) | {zone_nid}
+    for s in scope_nids:
+        relevant.update(kg.G.successors(s))
+        relevant.update(kg.G.predecessors(s))
+    return kg.G.subgraph(relevant).copy()
+
+
+def extract_rfi_neighbourhood(kg: AECKnowledgeGraph,
+                               rfi_number: str,
+                               hops: int = 2) -> nx.MultiDiGraph:
+    """
+    BFS neighbourhood around an RFI node up to `hops` edges.
+    Useful for presenting context when reviewing a single RFI.
+    """
+    rfi_nid = f"RFI:{rfi_number}"
+    reachable = {rfi_nid}
+    frontier  = {rfi_nid}
+    for _ in range(hops):
+        next_frontier = set()
+        for nid in frontier:
+            next_frontier.update(kg.G.successors(nid))
+            next_frontier.update(kg.G.predecessors(nid))
+        next_frontier -= reachable
+        reachable |= next_frontier
+        frontier   = next_frontier
+    return kg.G.subgraph(reachable).copy()
+```
+
+---
+
+## Risk and Impact Analysis
+
+```python
+def compute_rfi_risk_scores(kg: AECKnowledgeGraph) -> list[dict]:
+    """
+    Score each open RFI by: priority weight × blocked scope count
+    × source document supersession status × days overdue.
+    High scores = highest risk items to surface in dashboards.
+    """
+    from datetime import date
+    PRIORITY_WEIGHT = {"FATAL": 10, "HIGH": 5, "ADVISORY": 1}
+    today = date.today()
+    superseded_docs = {
+        v for _, v, d in kg.edges_of_type("SUPERSEDES")
+    }
+
+    results = []
+    for rfi in kg.nodes_of_type("RFI"):
+        if rfi.get("status") in ("CLOSED_ANSWERED", "CLOSED_VOID",
+                                  "CLOSED_SUPERSEDED"):
+            continue
+
+        rfi_nid = f"RFI:{rfi['rfi_number']}"
+        blocked = list(kg.G.successors(rfi_nid))
+        n_blocked = sum(
+            1 for b in blocked
+            if kg.G.nodes[b].get("node_type") == "ScopeItem"
+        )
+
+        # Check superseded sources
+        superseded_source = False
+        for scope_nid in blocked:
+            for doc_nid in kg.G.successors(scope_nid):
+                if doc_nid in superseded_docs:
+                    superseded_source = True
+                    break
+
+        # Days overdue
+        due_str = rfi.get("response_due", "")
+        days_overdue = 0
+        if due_str:
+            try:
+                due = date.fromisoformat(due_str)
+                days_overdue = max(0, (today - due).days)
+            except ValueError:
+                pass
+
+        pw = PRIORITY_WEIGHT.get(rfi.get("priority", "ADVISORY"), 1)
+        score = (
+            pw
+            * max(1, n_blocked)
+            * (2 if superseded_source else 1)
+            * (1 + days_overdue / 10)
+        )
+
+        results.append({
+            "rfi_number":        rfi["rfi_number"],
+            "priority":          rfi.get("priority"),
+            "subject":           rfi.get("subject"),
+            "blocked_items":     n_blocked,
+            "superseded_source": superseded_source,
+            "days_overdue":      days_overdue,
+            "risk_score":        round(score, 2),
+        })
+
+    return sorted(results, key=lambda x: x["risk_score"], reverse=True)
+
+
+def submittal_compliance_by_trade(kg: AECKnowledgeGraph) -> list[dict]:
+    """
+    For each trade: how many required submittals are approved vs pending?
+    Joins: Trade ← ScopeItem → SpecSection → Submittal.
+    """
+    from collections import defaultdict
+    trade_subs = defaultdict(lambda: {"approved": set(), "pending": set()})
+
+    for scope in kg.nodes_of_type("ScopeItem"):
+        scope_nid = f"SCOPE:{scope['item_id']}"
+        trades = kg.neighbors_of_type(scope_nid, rel_type="BELONGS_TO",
+                                       node_type="Trade")
+        trade_name = trades[0]["name"] if trades else "Unassigned"
+
+        specs = kg.neighbors_of_type(scope_nid, rel_type="GOVERNED_BY",
+                                      node_type="SpecSection")
+        for spec in specs:
+            spec_nid = f"SPEC:{spec['section_number'].replace(' ','.')}"
+            subs = kg.neighbors_of_type(spec_nid, rel_type="REQUIRES",
+                                         node_type="Submittal")
+            for sub in subs:
+                sub_num = sub["submittal_number"]
+                if sub.get("disposition") in ("APPROVED", "APPROVED_AS_NOTED"):
+                    trade_subs[trade_name]["approved"].add(sub_num)
+                else:
+                    trade_subs[trade_name]["pending"].add(sub_num)
+
+    rows = []
+    for trade, buckets in sorted(trade_subs.items()):
+        approved = len(buckets["approved"])
+        pending  = len(buckets["pending"])
+        total    = approved + pending
+        rows.append({
+            "trade":       trade,
+            "approved":    approved,
+            "pending":     pending,
+            "total":       total,
+            "pct_approved": round(approved / total * 100, 1) if total else 100,
+        })
+    return rows
+```
+
+---
+
+## Graph Metrics
+
+```python
+def compute_graph_metrics(kg: AECKnowledgeGraph) -> dict:
+    """
+    Compute centrality and connectivity metrics that identify
+    the highest-impact nodes in the AEC-KG.
+    """
+    G = kg.G
+    undirected = G.to_undirected()
+
+    # Degree centrality — most connected nodes
+    degree_cent = nx.degree_centrality(undirected)
+    top_degree  = sorted(degree_cent.items(), key=lambda x: x[1], reverse=True)[:10]
+
+    # Betweenness centrality — nodes on most shortest paths (bottlenecks)
+    # WARNING: O(n³) for large graphs — sample if >5000 nodes
+    if G.number_of_nodes() < 5000:
+        between_cent = nx.betweenness_centrality(undirected, normalized=True)
+        top_between  = sorted(between_cent.items(), key=lambda x: x[1], reverse=True)[:10]
+    else:
+        # Approximate with k samples
+        between_cent = nx.betweenness_centrality(undirected, k=500, normalized=True)
+        top_between  = sorted(between_cent.items(), key=lambda x: x[1], reverse=True)[:10]
+
+    # In-degree centrality for directed graph — what nodes are most depended upon?
+    in_degree_cent = nx.in_degree_centrality(G)
+    top_in_degree  = sorted(in_degree_cent.items(), key=lambda x: x[1], reverse=True)[:10]
+
+    # Strongly connected components
+    sccs = list(nx.strongly_connected_components(G))
+
+    # Weakly connected components (isolated subgraphs)
+    wccs = list(nx.weakly_connected_components(G))
+
+    # Annotate top nodes with labels for readability
+    def label(nid):
+        data = G.nodes.get(nid, {})
+        return f"{data.get('node_type','?')}:{nid}"
+
+    return {
+        "total_nodes": G.number_of_nodes(),
+        "total_edges": G.number_of_edges(),
+        "top_degree_centrality":      [(label(n), round(v, 4)) for n, v in top_degree],
+        "top_betweenness_centrality": [(label(n), round(v, 4)) for n, v in top_between],
+        "top_in_degree_centrality":   [(label(n), round(v, 4)) for n, v in top_in_degree],
+        "strongly_connected_components": len(sccs),
+        "weakly_connected_components":   len(wccs),
+        "largest_wcc_size":              max(len(c) for c in wccs) if wccs else 0,
+        "isolated_nodes": [
+            label(n) for n in G.nodes
+            if G.degree(n) == 0
+        ],
+    }
+```
+
+---
+
+## Snapshot and Export
+
+```python
+import json
+from pathlib import Path
+
+# ── JSON snapshot ─────────────────────────────────────────────────────────────
+
+def export_json_snapshot(kg: AECKnowledgeGraph,
+                          output_path: str) -> None:
+    """
+    Export full graph as a JSON snapshot.
+    Format: {nodes: [...], edges: [...], meta: {...}}
+    Suitable for version control, diffing, and API responses.
+    """
+    nodes = [dict(data) for _, data in kg.G.nodes(data=True)]
+    edges = []
+    for u, v, key, data in kg.G.edges(data=True, keys=True):
+        edges.append({
+            "from": u, "to": v, "key": key,
+            **{k: v2 for k, v2 in data.items()}
+        })
+
+    snapshot = {
+        "meta":  kg.summary(),
+        "nodes": nodes,
+        "edges": edges,
+    }
+    Path(output_path).write_text(json.dumps(snapshot, indent=2, default=str))
+    print(f"JSON snapshot: {output_path}  ({len(nodes)} nodes, {len(edges)} edges)")
+
+
+# ── GraphML export (for Gephi, yEd, Cytoscape) ───────────────────────────────
+
+def export_graphml(kg: AECKnowledgeGraph, output_path: str) -> None:
+    """
+    Export to GraphML. Gephi/yEd can import this directly for visual analysis.
+    Note: NetworkX GraphML serializer requires all attribute values to be
+    str, int, float, or bool — convert anything else before export.
+    """
+    G_clean = nx.MultiDiGraph()
+    for nid, data in kg.G.nodes(data=True):
+        clean = {k: (str(v) if not isinstance(v, (str, int, float, bool))
+                     else v)
+                 for k, v in data.items()}
+        G_clean.add_node(nid, **clean)
+    for u, v, key, data in kg.G.edges(data=True, keys=True):
+        clean = {k: (str(v2) if not isinstance(v2, (str, int, float, bool))
+                     else v2)
+                 for k, v2 in data.items()}
+        G_clean.add_edge(u, v, key=key, **clean)
+    nx.write_graphml(G_clean, output_path)
+    print(f"GraphML export: {output_path}")
+
+
+# ── Cytoscape JSON (for web visualization) ────────────────────────────────────
+
+def export_cytoscape_json(kg: AECKnowledgeGraph,
+                           output_path: str,
+                           subgraph: nx.MultiDiGraph = None) -> None:
+    """
+    Export to Cytoscape.js JSON format for web-based graph rendering.
+    If subgraph is provided, only that subgraph is exported.
+    """
+    G = subgraph if subgraph is not None else kg.G
+
+    elements = {"nodes": [], "edges": []}
+    for nid, data in G.nodes(data=True):
+        elements["nodes"].append({
+            "data": {"id": nid, **{k: str(v) for k, v in data.items()}}
+        })
+    for u, v, key, data in G.edges(data=True, keys=True):
+        elements["edges"].append({
+            "data": {
+                "id":     f"{u}__{v}__{key}",
+                "source": u, "target": v,
+                **{k: str(v2) for k, v2 in data.items()}
+            }
+        })
+    Path(output_path).write_text(json.dumps(elements, indent=2))
+    print(f"Cytoscape JSON: {output_path}")
+
+
+# ── RDF/Turtle export (for ontology tools) ───────────────────────────────────
+
+def export_rdf_turtle(kg: AECKnowledgeGraph,
+                       output_path: str,
+                       base_uri: str = "https://aec-kg.internal/") -> None:
+    """
+    Export graph as RDF Turtle. Pairs with SKILL_DATABASE_ONTOLOGY_EXPORT.
+    Each node → an RDF resource; each edge → an RDF triple.
+    """
+    lines = [
+        "@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .",
+        "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .",
+        "@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .",
+        f"@prefix aec:  <{base_uri}> .",
+        "@prefix aecr: <https://aec-kg.internal/rel/> .",
+        "",
+    ]
+
+    def uri(node_id: str) -> str:
+        safe = node_id.replace(":", "_").replace(" ", "_").replace("/", "_")
+        return f"aec:{safe}"
+
+    # Nodes
+    for nid, data in kg.G.nodes(data=True):
+        u = uri(nid)
+        lines.append(f"{u}")
+        lines.append(f"    a aec:{data.get('node_type', 'Node')} ;")
+        lines.append(f'    rdfs:label "{nid}"^^xsd:string ;')
+        for k, v in data.items():
+            if k in ("node_type", "node_id"):
+                continue
+            safe_v = str(v).replace('"', '\\"')
+            lines.append(f'    aec:{k} "{safe_v}"^^xsd:string ;')
+        lines[-1] = lines[-1].rstrip(";") + " ."
+        lines.append("")
+
+    # Edges
+    for u_id, v_id, data in kg.G.edges(data=True):
+        rel = data.get("rel_type", "RELATED_TO")
+        lines.append(f"{uri(u_id)} aecr:{rel} {uri(v_id)} .")
+
+    Path(output_path).write_text("\n".join(lines))
+    print(f"RDF Turtle export: {output_path}")
+
+
+# ── Delta / diff between two snapshots ───────────────────────────────────────
+
+def diff_snapshots(old_path: str, new_path: str) -> dict:
+    """
+    Compare two JSON snapshots. Returns added/removed nodes and edges.
+    Useful for change tracking between pipeline runs.
+    """
+    with open(old_path) as f:
+        old = json.load(f)
+    with open(new_path) as f:
+        new = json.load(f)
+
+    old_node_ids = {n["node_id"] for n in old["nodes"]}
+    new_node_ids = {n["node_id"] for n in new["nodes"]}
+
+    def edge_key(e):
+        return (e.get("from"), e.get("to"), e.get("rel_type"))
+
+    old_edge_keys = {edge_key(e) for e in old["edges"]}
+    new_edge_keys = {edge_key(e) for e in new["edges"]}
+
+    return {
+        "nodes_added":   sorted(new_node_ids - old_node_ids),
+        "nodes_removed": sorted(old_node_ids - new_node_ids),
+        "edges_added":   sorted(str(k) for k in (new_edge_keys - old_edge_keys)),
+        "edges_removed": sorted(str(k) for k in (old_edge_keys - new_edge_keys)),
+    }
+```
+
+---
+
+## Visualization
+
+### Terminal ASCII Summary
+
+```python
+def print_kg_summary(kg: AECKnowledgeGraph) -> None:
+    s = kg.summary()
+    print(f"\n{'='*55}")
+    print(f"  AEC Knowledge Graph — Project {s['project_id']}")
+    print(f"{'='*55}")
+    print(f"  Nodes: {s['total_nodes']:>5}    Edges: {s['total_edges']:>5}")
+    print(f"  {'─'*49}")
+    print(f"  {'Node Type':<22} {'Count':>8}")
+    print(f"  {'─'*49}")
+    for ntype, count in sorted(s["node_counts"].items()):
+        bar = "█" * min(count // 2, 30)
+        print(f"  {ntype:<22} {count:>5}  {bar}")
+    print(f"  {'─'*49}")
+    print(f"  {'Edge Type':<28} {'Count':>8}")
+    print(f"  {'─'*49}")
+    for etype, count in sorted(s["edge_counts"].items()):
+        print(f"  {etype:<28} {count:>5}")
+    print(f"{'='*55}\n")
+```
+
+### Plotly Network Visualization
+
+```python
+def visualize_subgraph_plotly(G: nx.MultiDiGraph,
+                               title: str = "AEC Knowledge Graph") -> None:
+    """
+    Interactive Plotly network chart. Run in Jupyter or save as HTML.
+    Layout: spring with seed for reproducibility.
+    """
+    import plotly.graph_objects as go
+
+    TYPE_COLORS = {
+        "Document":    "#4E79A7",
+        "ScopeItem":   "#F28E2B",
+        "RFI":         "#E15759",
+        "Submittal":   "#76B7B2",
+        "Trade":       "#59A14F",
+        "SpecSection": "#EDC948",
+        "Drawing":     "#B07AA1",
+        "Zone":        "#FF9DA7",
+        "GISFeature":  "#9C755F",
+        "Conflict":    "#BAB0AC",
+    }
+
+    pos = nx.spring_layout(G, seed=42, k=2.0)
+
+    # Edges
+    edge_x, edge_y = [], []
+    for u, v in G.edges():
+        x0, y0 = pos[u]
+        x1, y1 = pos[v]
+        edge_x += [x0, x1, None]
+        edge_y += [y0, y1, None]
+
+    # Nodes
+    node_x, node_y, node_text, node_colors = [], [], [], []
+    for nid, data in G.nodes(data=True):
+        x, y = pos[nid]
+        node_x.append(x)
+        node_y.append(y)
+        label = f"{data.get('node_type','')}:{nid}"
+        node_text.append(label)
+        node_colors.append(TYPE_COLORS.get(data.get("node_type", ""), "#CCCCCC"))
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(x=edge_x, y=edge_y, mode="lines",
+                       line=dict(width=0.5, color="#AAAAAA"),
+                       hoverinfo="none"),
+            go.Scatter(x=node_x, y=node_y, mode="markers+text",
+                       marker=dict(size=10, color=node_colors,
+                                   line=dict(width=1, color="#333333")),
+                       text=node_text, textposition="top center",
+                       hoverinfo="text"),
+        ],
+        layout=go.Layout(
+            title=title,
+            showlegend=False,
+            hovermode="closest",
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        )
+    )
+    fig.show()
+```
+
+---
+
+## Pipeline Integration
+
+### End-to-End Script
+
+```python
+def build_project_kg(
+    project_id:           str,
+    corpus_registry_path: str,
+    scope_baseline_path:  str,
+    rfi_log_path:         str,
+    submittal_log_path:   str,
+    output_dir:           str = ".",
+) -> AECKnowledgeGraph:
+    """
+    Full pipeline: populate → analyse → export.
+    Run after each pipeline session to keep the KG current.
+    """
+    from pathlib import Path
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+    # 1. Initialise
+    kg = AECKnowledgeGraph(project_id)
+
+    # 2. Populate from pipeline outputs
+    populate_from_pipeline_registers(
+        kg,
+        corpus_registry_path = corpus_registry_path,
+        scope_baseline_path  = scope_baseline_path,
+        rfi_log_path         = rfi_log_path,
+        submittal_log_path   = submittal_log_path,
+    )
+
+    # 3. Print summary
+    print_kg_summary(kg)
+
+    # 4. Compute risk scores → write to JSON
+    risks = compute_rfi_risk_scores(kg)
+    Path(f"{output_dir}/kg_rfi_risk.json").write_text(
+        json.dumps(risks, indent=2, default=str)
+    )
+
+    # 5. Costability report → write to JSON
+    costability = costability_report(kg)
+    Path(f"{output_dir}/kg_costability.json").write_text(
+        json.dumps(costability, indent=2, default=str)
+    )
+
+    # 6. Blocked trades from superseded sources
+    blocked = blocked_trades_from_superseded_sources(kg)
+    Path(f"{output_dir}/kg_blocked_trades.json").write_text(
+        json.dumps(blocked, indent=2, default=str)
+    )
+
+    # 7. Graph metrics
+    metrics = compute_graph_metrics(kg)
+    Path(f"{output_dir}/kg_metrics.json").write_text(
+        json.dumps(metrics, indent=2, default=str)
+    )
+
+    # 8. Export snapshots
+    export_json_snapshot(kg, f"{output_dir}/kg_snapshot.json")
+    export_graphml(kg,       f"{output_dir}/kg_snapshot.graphml")
+    export_cytoscape_json(kg, f"{output_dir}/kg_cytoscape.json")
+    export_rdf_turtle(kg,    f"{output_dir}/kg_snapshot.ttl")
+
+    print(f"\nKG outputs written to: {output_dir}")
+    return kg
+
+
+# ── Invocation ────────────────────────────────────────────────────────────────
+if __name__ == "__main__":
+    kg = build_project_kg(
+        project_id           = "2401",
+        corpus_registry_path = "outputs/corpus_registry.json",
+        scope_baseline_path  = "outputs/scope_baseline.json",
+        rfi_log_path         = "outputs/rfi_log.json",
+        submittal_log_path   = "outputs/submittal_log.json",
+        output_dir           = "outputs/kg",
+    )
+```
+
+---
+
+## Validation & QA
+
+```python
+def validate_aec_kg(kg: AECKnowledgeGraph) -> dict:
+    """
+    Full validation of AEC-KG structural and domain integrity.
+    Returns a report with FATAL, WARNING, and INFO items.
+    """
+    fatals, warnings, infos = [], [], []
+    G = kg.G
+
+    # ── Required node fields ──────────────────────────────────────────────────
+    REQUIRED_FIELDS = {
+        "Document":   ["doc_id", "family", "title"],
+        "ScopeItem":  ["item_id", "trade", "description",
+                       "evidence_status", "cost_ability"],
+        "RFI":        ["rfi_number", "priority", "status",
+                       "subject", "response_due"],
+        "Submittal":  ["submittal_number", "spec_section",
+                       "submittal_type", "disposition"],
+    }
+    for nid, data in G.nodes(data=True):
+        ntype = data.get("node_type", "")
+        required = REQUIRED_FIELDS.get(ntype, [])
+        for field in required:
+            if not data.get(field):
+                warnings.append(f"Missing '{field}' on {nid}")
+
+    # ── Orphan nodes — no edges at all ────────────────────────────────────────
+    for nid in G.nodes:
+        if G.degree(nid) == 0:
+            ntype = G.nodes[nid].get("node_type", "?")
+            if ntype not in ("Trade", "Zone", "Organization"):  # expected singletons
+                warnings.append(f"Orphan node (no edges): {nid}")
+
+    # ── Scope items with no source document ───────────────────────────────────
+    for scope in kg.nodes_of_type("ScopeItem"):
+        scope_nid = f"SCOPE:{scope['item_id']}"
+        docs = [
+            v for _, v, d in G.out_edges(scope_nid, data=True)
+            if d.get("rel_type") == "EXTRACTED_FROM"
+        ]
+        if not docs:
+            fatals.append(f"ScopeItem has no EXTRACTED_FROM edge: {scope['item_id']}")
+
+    # ── Scope items with no trade ─────────────────────────────────────────────
+    for scope in kg.nodes_of_type("ScopeItem"):
+        scope_nid = f"SCOPE:{scope['item_id']}"
+        trades = [
+            v for _, v, d in G.out_edges(scope_nid, data=True)
+            if d.get("rel_type") == "BELONGS_TO"
+        ]
+        if not trades:
+            warnings.append(f"ScopeItem has no BELONGS_TO trade: {scope['item_id']}")
+
+    # ── FATAL RFIs with no blocked scope items ────────────────────────────────
+    for rfi in kg.nodes_of_type("RFI"):
+        if rfi.get("priority") == "FATAL":
+            rfi_nid = f"RFI:{rfi['rfi_number']}"
+            blocked = [
+                v for _, v, d in G.out_edges(rfi_nid, data=True)
+                if d.get("rel_type") == "BLOCKS"
+            ]
+            if not blocked:
+                warnings.append(
+                    f"FATAL RFI has no BLOCKS edges: {rfi['rfi_number']} — "
+                    f"cannot compute trade impact"
+                )
+
+    # ── Conflict nodes with no RFI ────────────────────────────────────────────
+    for conflict in kg.nodes_of_type("Conflict"):
+        conflict_nid = f"CONFLICT:{conflict['conflict_id']}"
+        rfis = list(G.predecessors(conflict_nid))
+        if not rfis:
+            infos.append(
+                f"Conflict has no linked RFI: {conflict['conflict_id']}"
+            )
+
+    # ── Edges with unknown rel_type ───────────────────────────────────────────
+    KNOWN_REL_TYPES = {
+        "EXTRACTED_FROM", "CONTRADICTS", "SUPERSEDES", "REFERENCES",
+        "GOVERNED_BY", "BELONGS_TO", "BLOCKS", "GENERATED_BY",
+        "REQUIRES", "COVERS", "ISSUED_BY", "ISSUED_TO", "EMPLOYED_BY",
+        "LOCATED_IN", "CORRESPONDS_TO", "ANSWERS", "DEPENDS_ON",
+    }
+    for u, v, data in G.edges(data=True):
+        rt = data.get("rel_type", "")
+        if rt not in KNOWN_REL_TYPES:
+            warnings.append(f"Unknown rel_type '{rt}' on edge {u} → {v}")
+
+    # ── Summary ───────────────────────────────────────────────────────────────
+    verdict = "FAIL" if fatals else ("WARN" if warnings else "PASS")
+    print(f"\nAEC-KG Validation — Project {kg.project_id}")
+    print(f"  Nodes: {G.number_of_nodes()}  Edges: {G.number_of_edges()}")
+    print(f"  Verdict: {verdict}")
+    for f in fatals:   print(f"  FATAL:   {f}")
+    for w in warnings: print(f"  WARNING: {w}")
+    for i in infos:    print(f"  INFO:    {i}")
+
+    return {"pass": not fatals, "fatals": fatals,
+            "warnings": warnings, "infos": infos}
+```
+
+### QA Checklist
+
+- [ ] Every `ScopeItem` has at least one `EXTRACTED_FROM` edge to a `Document`
+- [ ] Every `ScopeItem` has exactly one `BELONGS_TO` edge to a `Trade`
+- [ ] Every `RFI` node with `priority=FATAL` has at least one `BLOCKS` edge
+- [ ] Every `Conflict` node is connected to at least one `RFI` via `GENERATED_BY`
+- [ ] No orphan nodes (degree 0) except expected singletons (Trade, Zone)
+- [ ] All node IDs follow `{TYPE_PREFIX}:{KEY}` convention
+- [ ] `validate_aec_kg()` returns `FAIL=False` before any export or analysis
+- [ ] JSON snapshot is written after each pipeline run and committed to version control
+- [ ] GraphML export opens in Gephi without errors
+- [ ] RDF Turtle export validates with `rapper -i turtle` or `rdflib.parse()`
+- [ ] Multi-hop queries return non-empty results on a populated graph (smoke test)
+- [ ] `compute_rfi_risk_scores()` returns same count as open RFI count in log
+
+---
+
+## Common Issues & Fixes
+
+| Issue | Cause | Fix |
+|---|---|---|
+| `KeyError` on `add_edge` | Node not yet added before edge | Always add both endpoint nodes before adding the edge; use `populate_from_pipeline_registers()` which handles ordering |
+| Cypher `MATCH` returns 0 rows | Node label mismatch (`ScopeItem` vs `Scope_Item`) | Enforce exact label strings from taxonomy; use `create_schema_constraints()` to lock labels |
+| `betweenness_centrality` hangs | Graph too large (>5,000 nodes) | Use `k=500` approximation parameter |
+| GraphML export fails on list values | NetworkX GraphML serializer cannot handle Python lists | Convert list attributes to JSON strings before export: `json.dumps(value)` |
+| Duplicate edges between same pair | `MultiDiGraph` allows this | Expected and correct; use `key` parameter to distinguish parallel edges |
+| RFI blocks scope item not found in KG | Scope baseline and RFI log are out of sync | Run corpus extraction and scope extraction in same session before populating KG |
+| `SUPERSEDES` chain wrong direction | Newer doc should point TO older doc | `SUPERSEDES` edge direction: `newer_doc → older_doc`; confirm with `kg.edges_of_type("SUPERSEDES")` |
+| Neo4j `MERGE` creates duplicate nodes | Key property differs by whitespace or case | Normalize all IDs to stripped, lowercase before ingestion |
+| Cytoscape render is unreadable | Too many nodes (>500) in one render | Export a `extract_trade_subgraph()` or `extract_rfi_neighbourhood()` instead of full graph |
+| RDF export fails validation | URI contains illegal characters (spaces, colons in IDs) | Apply `uri()` sanitization function; replace `:`, spaces, and `/` with `_` |
+
+---
+
+## Dependencies
+
+```bash
+# Core graph library
+pip install networkx
+
+# Neo4j driver (for persistent graph)
+pip install neo4j
+
+# RDF/ontology export
+pip install rdflib
+
+# Visualization
+pip install plotly
+
+# Validation support
+pip install jsonschema
+
+# Optional: graph analysis extras
+pip install scipy        # required by some NetworkX algorithms
+pip install matplotlib   # static graph plots
+
+# External tools
+# Gephi (desktop) — https://gephi.org — import GraphML for interactive layout
+# Neo4j Desktop    — https://neo4j.com/download — local Neo4j instance
+# Cytoscape (desktop) — https://cytoscape.org — biological/graph network tool
+```

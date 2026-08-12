@@ -1,0 +1,18 @@
+{
+  "experiment":"EXP-002N",
+  "status":"COMPLETE_PROMISING_UNRESOLVED",
+  "design":"Frozen adaptive breadth gate COMBO2: spawn second swarm when baseline unique proposals <=4 OR normalized top-score margin <0.15",
+  "prospective_n":24,
+  "means":{
+    "ONE":{"edge_error":0.9996936235434385,"true_mass":0.3555577658173287,"map":0.7916666666666666,"entropy":2.7386532861320125,"seconds":0.8577319184939066},
+    "TWO":{"edge_error":0.9536602659892621,"true_mass":0.3586592087852036,"map":0.875,"entropy":2.726161057659609,"seconds":1.6622868378957112},
+    "COMBO2":{"edge_error":0.9286532255506897,"true_mass":0.36662793208190236,"map":0.9166666666666666,"entropy":2.7142253960497937,"spawn_rate":0.6144345238095238,"seconds":1.3440747956434886}
+  },
+  "compute_ratios":{"TWO_over_ONE":1.9380027745901358,"COMBO2_over_ONE":1.5670103521430712,"COMBO2_over_TWO":0.8085697155281292},
+  "paired":{
+    "COMBO2_minus_ONE":{"edge_error":{"delta":-0.07104039799274875,"ci95":[-0.2548025242428632,0.10474537156066327]},"map":{"delta":0.125,"ci95":[-0.08333333333333333,0.3333333333333333]}},
+    "COMBO2_minus_TWO":{"edge_error":{"delta":-0.02500704043857239,"ci95":[-0.12078454539495613,0.06855332865600453]},"map":{"delta":0.041666666666666664,"ci95":[-0.08333333333333333,0.16666666666666666]}}
+  },
+  "interpretation":"Adaptive breadth has the best mean recovery of the three policies while using about 19% less inference compute than always-width2, but the prospective paired recovery CIs still include zero.",
+  "next":"EXP-002N2 powered frozen-gate replication on 24 additional unseen worlds, aggregate to n=48."
+}

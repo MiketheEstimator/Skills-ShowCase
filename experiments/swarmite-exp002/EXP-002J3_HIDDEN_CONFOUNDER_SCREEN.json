@@ -1,0 +1,10 @@
+{
+  "experiment":"EXP-002J3",
+  "status":"COMPLETE_FALSIFIED_AT_SCREEN",
+  "design":"12 paired linear five-node observed DAG worlds with one latent Gaussian common parent of exactly two observed nodes; latent variable absent from the 29,281-DAG inference space. Corrected nested width1 vs width2, budget 8.",
+  "n_worlds":12,
+  "primary":{"width1_edge":4.067969359242698,"width2_edge":4.256754132367118,"delta_width2_minus_width1":0.1887847731244198,"bootstrap_ci95":[0.0,0.5271764552801609],"width2_pair_wins":0},
+  "secondary":{"map":{"w1":0.08333333333333333,"w2":0.08333333333333333},"true_mass":{"w1":0.013542355708349418,"w2":0.011939543438545813,"delta":-0.0016028122698036062,"ci95":[-0.004061860979739925,0.0]},"entropy":{"w1":6.436735137146183,"w2":6.4456677699833955,"delta":0.00893263283721287}},
+  "interpretation":"The supported correctly specified width-2 breadth controller is not robust to a simple unmodeled latent common cause. Width-2 failed to beat width-1 on every screened pair and worsened mean edge recovery. Do not power this mechanism without adding latent-confounder-aware inference or a different robust objective.",
+  "next":"EXP-002J4 imperfect-intervention transfer."
+}

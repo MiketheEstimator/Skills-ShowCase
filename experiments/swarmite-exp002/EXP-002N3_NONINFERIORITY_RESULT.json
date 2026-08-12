@@ -1,0 +1,15 @@
+{
+  "experiment":"EXP-002N3",
+  "status":"COMPLETE_FAILED_NONINFERIORITY_PASSED_COMPUTE",
+  "design":"Independent preregistered 48-world TWO vs frozen COMBO2 validation",
+  "criteria":{"edge_noninferiority_margin":0.05,"max_compute_ratio":0.85},
+  "means":{
+    "TWO":{"edge_error":1.029074964929068,"true_mass":0.31763827202335126,"map":0.9166666666666666,"entropy":2.985352852854973,"seconds":1.6922753850619},
+    "COMBO2":{"edge_error":1.0496911989855224,"true_mass":0.31789199722473416,"map":0.8958333333333334,"entropy":3.0021632615917997,"spawn_rate":0.6152529761904761,"seconds":1.3777394592761993}
+  },
+  "paired":{"edge_delta_COMBO2_minus_TWO":0.020616234056454366,"edge_ci95":[-0.04563432,0.08747767],"true_mass_delta":0.00025372520138291187,"map_delta":-0.020833333333333332},
+  "compute_ratio_COMBO2_over_TWO":0.8141343137398436,
+  "criteria_result":{"edge_noninferiority":false,"compute_savings":true},
+  "interpretation":"The frozen gate saves 18.6% inference time but cannot establish noninferiority within the preregistered +0.05 edge-error margin. It skips the second swarm too often for robust recovery.",
+  "next":"EXP-002N4 conservative adaptive-breadth retuning on N3 worlds, followed by fresh validation."
+}

@@ -1,0 +1,1690 @@
+---
+name: SKILL_FINANCIAL_XBRL_VALIDATION
+description: "Full production skill for parsing, validating, authoring, and filing XBRL and iXBRL financial disclosures — covering taxonomy loading (US-GAAP, IFRS, DEI, extension schemas), instance document parsing, calculation linkbase arithmetic validation, presentation and label linkbase traversal, inline XBRL (iXBRL) tagging in HTML, SEC EDGAR filing package assembly (10-K, 10-Q, 8-K), dimensional hypercube model validation, and Python toolchain automation with Arelle and lxml. Use when working with SEC filings, XBRL instance documents, iXBRL tagging, taxonomy extension schemas, EDGAR submission packages, or any financial reporting standard requiring structured machine-readable tagging. Triggers: XBRL, iXBRL, XBRL validation, SEC filing, EDGAR, 10-K filing, 10-Q filing, XBRL taxonomy, US-GAAP taxonomy, IFRS taxonomy, calculation linkbase, presentation linkbase, label linkbase, DTS, instance document, fact validation, financial tagging, inline XBRL, XBRL extension schema, EFM validation, SEC EDGAR XBRL API."
+sepd_recipe: "[ Structured Financial Disclosure + Arelle/lxml + XBRL 2.1 Spec & SEC EFM Rules ] -> [ Validated XBRL/iXBRL Filing Package ]"
+act_as: "Senior XBRL Financial Reporting and SEC Filing Specialist"
+mode: "Code Generation (Python 3)"
+stack_engine: "Arelle, lxml, pandas, requests, SEC EDGAR XBRL API"
+output_extension: ".xml / .xsd / .htm (iXBRL) / .json"
+---
+
+# SKILL_FINANCIAL_XBRL_VALIDATION — XBRL / iXBRL Financial Validation & Filing
+
+## Quick Reference
+
+| Task | Section |
+|---|---|
+| XBRL architecture, namespaces, fact anatomy | XBRL Primer |
+| Load and validate instance documents with Arelle | Instance Validation (Arelle) |
+| Arelle CLI batch validation | Arelle CLI |
+| lxml fact extraction without Arelle | lxml Instance Parsing |
+| Traverse presentation and calculation linkbases | Taxonomy Traversal |
+| Verify calculation arithmetic manually | Calculation Validation |
+| Dimensional (hypercube) model contexts | Dimensional Model |
+| Build extension XSD and label linkbase | Extension Taxonomy |
+| Author iXBRL inline HTML documents | Inline XBRL (iXBRL) |
+| iXBRL transformation format registry | iXBRL Formats |
+| Assemble SEC EDGAR filing package | EDGAR Package Assembly |
+| Pull XBRL facts from SEC EDGAR API | SEC EDGAR API |
+| Error codes and fixes | Error Reference |
+| Full end-to-end pipeline | Full Validation Pipeline |
+| QA checklists | Validation & QA |
+
+---
+
+## DSS Stack Declaration
+
+```
+ACT AS: Senior XBRL Financial Reporting and SEC Filing Specialist
+MODE: Code Generation (Python 3)
+PROTOCOL: Declarative Stack Signature (DSS)
+
+STACK:
+1. Validation engine:    Arelle (pip install arelle-release)
+                         SEC EDGAR runs Arelle internally — results are authoritative
+2. XML / XSD parsing:    lxml (namespace-aware XPath, schema validation, element build)
+3. Taxonomy resolution:  Arelle DTS loader (Discoverable Taxonomy Set, transitive import)
+4. iXBRL:                Arelle inline XBRL plugin + lxml HTML parser
+5. EDGAR XBRL API:       requests + data.sec.gov (companyfacts, frames, submissions)
+6. Data analysis:        pandas (fact tables, financial statement reconstruction, QC)
+7. Filing assembly:      zipfile + pathlib (package per EFM Section 6 specification)
+
+CONSTRAINTS:
+• Always resolve full DTS before validating — partial DTS produces false negatives
+• Namespace prefixes must match the imported schema targetNamespace exactly
+• contextRef and unitRef must be declared before any fact that references them
+• Calculation linkbase weights: +1.0 (addition) or -1.0 (subtraction) only
+• iXBRL ix: namespace: http://www.xbrl.org/2013/inlineXBRL — no substitutes
+• Every iXBRL tagged fact needs a matching context in ix:header/ix:resources
+• Extension elements: use company prefix only — never reuse us-gaap: element names
+• Period type (instant vs duration) must match the element definition in the taxonomy
+• Monetary facts: unitRef must be ISO 4217 code (iso4217:USD) — not 'USD' or 'dollars'
+• decimals attribute: -6 for millions, -3 for thousands, 0 for exact integer values
+• EDGAR API User-Agent header required: 'CompanyName contact@company.com' per SEC ToS
+• EDGAR API rate limit: 10 requests/second — add time.sleep(0.11) in every loop
+• Never save a workbook opened with data_only=True — permanently destroys formulas
+```
+
+---
+
+## XBRL Primer
+
+### Core Architecture
+
+```
+XBRL Ecosystem
+|
++-- Taxonomy (the vocabulary — shared, standards-body maintained)
+|   +-- Schema (.xsd)            Element definitions, data types, period types
+|   +-- Calculation Linkbase     Arithmetic: parent = sum(weight * child)
+|   +-- Presentation Linkbase    Statement hierarchy (indent structure, label roles)
+|   +-- Label Linkbase           Human-readable names per element per label role
+|   +-- Reference Linkbase       Links to ASC/IFRS authoritative literature
+|   +-- Definition Linkbase      Dimensional relationships: axes, domains, hypercubes
+|
++-- Instance Document (.xml for XBRL / .htm for iXBRL)
+    +-- xbrli:xbrl root element
+    +-- Contexts   (entity identifier + period + optional dimensional segment)
+    +-- Units      (iso4217:USD, xbrli:shares, xbrli:pure)
+    +-- Facts      (element qname + contextRef + unitRef + value + decimals)
+```
+
+### Taxonomy Layers: US-GAAP Filing Stack
+
+```
+Layer 1 (base):  XBRL 2.1 specification schemas
+Layer 2:         US-GAAP 2024 taxonomy  (FASB, ~4,500 elements)
+Layer 3:         DEI 2024 taxonomy      (SEC, entity/document metadata)
+Layer 4:         SRT 2024 taxonomy      (SEC reporting taxonomy, dimensions)
+Layer 5:         Company extension      (.xsd + 4 linkbases, custom elements only)
+Layer 6:         Instance document      (facts referencing all layers above)
+
+Every layer must resolve cleanly before instance validation proceeds.
+Unresolvable schema imports = incomplete DTS = false-clean validation result.
+```
+
+### Key Namespaces
+
+```python
+XBRL_NAMESPACES = {
+    # Core XBRL 2.1
+    "xbrli":     "http://www.xbrl.org/2003/instance",
+    "xbrldi":    "http://xbrl.org/2006/xbrldi",
+    "xlink":     "http://www.w3.org/1999/xlink",
+    "link":      "http://www.xbrl.org/2003/linkbase",
+    "xsi":       "http://www.w3.org/2001/XMLSchema-instance",
+
+    # Inline XBRL — SEC mandatory for primary financials since 2020
+    "ix":        "http://www.xbrl.org/2013/inlineXBRL",
+    "ixt":       "http://www.xbrl.org/inlineXBRL/transformation/2020-02-12",
+    "ixt-sec":   "http://www.sec.gov/inlineXBRL/transformation/2015-08-31",
+
+    # US-GAAP 2024
+    "us-gaap":   "http://fasb.org/us-gaap/2024",
+    "dei":       "http://xbrl.sec.gov/dei/2024",
+    "srt":       "http://fasb.org/srt/2024",
+
+    # IFRS 2024
+    "ifrs-full": "http://xbrl.ifrs.org/taxonomy/2024-01-01/ifrs-full",
+}
+
+# Standard taxonomy entry points accepted by SEC EDGAR
+TAXONOMY_ENTRY_POINTS = {
+    "us-gaap-2024": "https://xbrl.fasb.org/us-gaap/2024/entire/us-gaap-entryPoint-std-2024.xsd",
+    "dei-2024":     "https://xbrl.sec.gov/dei/2024/dei-2024.xsd",
+    "srt-2024":     "https://xbrl.fasb.org/srt/2024/entire/srt-2024.xsd",
+    "ifrs-2024":    "https://xbrl.ifrs.org/taxonomy/2024-01-01/ifrs-full",
+}
+```
+
+### Fact Anatomy — XML Examples
+
+```xml
+<!-- CONTEXT: duration period (income statement, cash flow) -->
+<xbrli:context id="FY2024">
+  <xbrli:entity>
+    <xbrli:identifier scheme="http://www.sec.gov/cik">0000320193</xbrli:identifier>
+  </xbrli:entity>
+  <xbrli:period>
+    <xbrli:startDate>2024-01-01</xbrli:startDate>
+    <xbrli:endDate>2024-12-31</xbrli:endDate>
+  </xbrli:period>
+</xbrli:context>
+
+<!-- CONTEXT: instant period (balance sheet date) -->
+<xbrli:context id="BS20241231">
+  <xbrli:entity>
+    <xbrli:identifier scheme="http://www.sec.gov/cik">0000320193</xbrli:identifier>
+  </xbrli:entity>
+  <xbrli:period>
+    <xbrli:instant>2024-12-31</xbrli:instant>
+  </xbrli:period>
+</xbrli:context>
+
+<!-- CONTEXT: dimensional segment (business unit breakdown) -->
+<xbrli:context id="FY2024_NorthAmerica">
+  <xbrli:entity>
+    <xbrli:identifier scheme="http://www.sec.gov/cik">0000320193</xbrli:identifier>
+    <xbrli:segment>
+      <xbrldi:explicitMember dimension="us-gaap:StatementBusinessSegmentsAxis">
+        acme:NorthAmericaSegmentMember
+      </xbrldi:explicitMember>
+    </xbrli:segment>
+  </xbrli:entity>
+  <xbrli:period>
+    <xbrli:startDate>2024-01-01</xbrli:startDate>
+    <xbrli:endDate>2024-12-31</xbrli:endDate>
+  </xbrli:period>
+</xbrli:context>
+
+<!-- UNIT: monetary -->
+<xbrli:unit id="USD">
+  <xbrli:measure>iso4217:USD</xbrli:measure>
+</xbrli:unit>
+
+<!-- UNIT: shares -->
+<xbrli:unit id="shares">
+  <xbrli:measure>xbrli:shares</xbrli:measure>
+</xbrli:unit>
+
+<!-- FACT: monetary, decimals=-6 means values reported in millions -->
+<us-gaap:Revenues contextRef="FY2024" unitRef="USD" decimals="-6">
+  391035000000
+</us-gaap:Revenues>
+
+<!-- FACT: shares outstanding, instant period -->
+<us-gaap:CommonStockSharesOutstanding contextRef="BS20241231" unitRef="shares" decimals="-3">
+  15550061000
+</us-gaap:CommonStockSharesOutstanding>
+
+<!-- FACT: string, no unitRef, no decimals -->
+<dei:EntityRegistrantName contextRef="FY2024">Apple Inc.</dei:EntityRegistrantName>
+```
+
+### Required DEI Elements (Every SEC Filing)
+
+```python
+# Every 10-K and 10-Q must include these DEI facts.
+# Missing any single one triggers EFM validation errors.
+REQUIRED_DEI_10K = [
+    "dei:EntityRegistrantName",
+    "dei:EntityCentralIndexKey",
+    "dei:DocumentType",                    # "10-K"
+    "dei:DocumentPeriodEndDate",           # "2024-12-31"
+    "dei:CurrentFiscalYearEndDate",        # "--12-31"
+    "dei:EntityFilerCategory",             # "Large Accelerated Filer"
+    "dei:EntityCommonStockSharesOutstanding",
+    "dei:EntityPublicFloat",
+    "dei:AmendmentFlag",                   # false
+    "dei:DocumentFiscalYearFocus",         # "2024"
+    "dei:DocumentFiscalPeriodFocus",       # "FY"
+    "dei:EntityShellCompany",
+    "dei:EntitySmallBusiness",
+    "dei:EntityEmergingGrowthCompany",
+    "dei:AuditorName",                     # Required for accelerated filers
+    "dei:AuditorLocation",
+    "dei:AuditorFirmId",
+]
+```
+
+---
+
+## Instance Validation (Arelle)
+
+```python
+from pathlib import Path
+from arelle import Cntlr, ModelManager, FileSource
+import json
+
+
+def load_xbrl_document(instance_path: str | Path,
+                        cache_dir: str | Path = '/tmp/arelle_cache'):
+    """
+    Load an XBRL or iXBRL instance document and resolve its full DTS.
+
+    DTS (Discoverable Taxonomy Set) = all schemas and linkbases imported
+    transitively from the instance document's schemaRef element.
+    Must be fully resolved before any validation is meaningful.
+
+    Returns (cntlr, model_xbrl).
+    """
+    path = Path(instance_path)
+    assert path.exists(), f'Instance not found: {path}'
+
+    cntlr = Cntlr.Cntlr(logFileName='logToPrint')
+    cntlr.startLogging(logFileName='logToPrint')
+    cntlr.webCache.cacheDir = str(cache_dir)
+
+    model_mgr  = ModelManager.initialize(cntlr)
+    model_xbrl = model_mgr.load(FileSource.openFileSource(str(path), cntlr))
+    return cntlr, model_xbrl
+
+
+def validate_instance(instance_path: str | Path,
+                       validate_calcs: bool = True) -> dict:
+    """
+    Full XBRL 2.1 + SEC EFM validation of an instance document.
+    validate_calcs=True runs calculation linkbase consistency checks.
+
+    Returns structured report: status, errors, warnings, fact/context counts,
+    calculation inconsistencies.
+    """
+    cntlr, model_xbrl = load_xbrl_document(instance_path)
+
+    errors, warnings = [], []
+    for rec in cntlr.logHandler.logRecordBuffer:
+        lvl   = rec.levelname.upper()
+        entry = {
+            'code':    getattr(rec, 'messageCode', ''),
+            'message': rec.getMessage(),
+            'refs':    getattr(rec, 'refs', []),
+        }
+        if lvl in ('ERROR', 'CRITICAL'):
+            errors.append(entry)
+        elif lvl == 'WARNING':
+            warnings.append(entry)
+
+    facts = [
+        {
+            'concept':  str(f.concept.qname) if f.concept else 'unknown',
+            'context':  f.contextID,
+            'value':    f.value,
+            'decimals': f.decimals,
+            'unit':     str(f.unitID) if f.unitID else None,
+        }
+        for f in model_xbrl.facts
+    ]
+
+    calc_issues = _run_calc_check(model_xbrl) if validate_calcs else []
+
+    report = {
+        'instance_path': str(instance_path),
+        'status':        'pass' if not errors and not calc_issues else 'fail',
+        'error_count':   len(errors),
+        'warning_count': len(warnings),
+        'fact_count':    len(facts),
+        'context_count': len(model_xbrl.contexts),
+        'errors':        errors,
+        'warnings':      warnings[:20],
+        'calc_issues':   calc_issues,
+    }
+
+    path_name = Path(instance_path).name
+    print(f'\nXBRL Validation: {path_name}')
+    print(f'  Status:   {report["status"].upper()}')
+    print(f'  Facts:    {report["fact_count"]:,}')
+    print(f'  Contexts: {report["context_count"]}')
+    print(f'  Errors:   {report["error_count"]}')
+    print(f'  Warnings: {report["warning_count"]}')
+    if calc_issues:
+        print(f'  Calc failures: {len(calc_issues)}')
+
+    model_xbrl.close()
+    return report
+
+
+def _run_calc_check(model_xbrl) -> list[dict]:
+    """
+    Run Arelle calculation linkbase consistency check.
+    XBRL spec tolerance: |reported - computed| <= max(0.5, |reported| * 0.0005)
+    """
+    from arelle.ValidateXbrlCalcs import ValidateXbrlCalcs
+    v = ValidateXbrlCalcs(model_xbrl)
+    v.validate()
+    return [
+        {
+            'parent':   str(i.concept.qname),
+            'context':  i.contextID,
+            'reported': i.factValue,
+            'computed': i.computedValue,
+            'delta':    i.delta,
+        }
+        for i in getattr(model_xbrl, 'calcInconsistencies', [])
+    ]
+```
+
+---
+
+## Arelle CLI
+
+```bash
+# Install
+pip install arelle-release
+
+# Basic XBRL 2.1 validation
+arelle -f company-20241231.xml --validate
+
+# Full SEC EFM validation (same ruleset as EDGAR EFTS system)
+arelle -f company-20241231.htm --validate --efmValidate \
+       --logFile validation.log --logFormat json
+
+# With local taxonomy cache (avoids repeated internet fetches)
+arelle -f company-20241231.htm --validate --efmValidate \
+       --cache /path/to/taxonomy_cache \
+       --logFile validation.log
+
+# Generate iXBRL viewer R-files (required for EDGAR viewer rendering)
+arelle -f company-20241231.htm --validate \
+       --plugins iXBRLViewerPlugin \
+       --viewer-url https://viewer.filing.engineering/ixbrlviewer.js \
+       --save-viewer viewer_output/
+
+# Batch validate a directory of filings
+for f in /filings/*.htm; do
+  arelle -f "$f" --validate --efmValidate \
+         --logFile "${f%.htm}_validation.log" --logFormat json
+done
+
+# Parse JSON validation log — print errors only
+python3 -c "
+import json, sys
+with open('validation.log') as fh:
+    for line in fh:
+        try:
+            rec = json.loads(line)
+            if rec.get("level") in ("ERROR", "CRITICAL"):
+                print(rec["code"], ":", rec["message"][:140])
+        except json.JSONDecodeError:
+            pass
+"
+```
+
+---
+
+## lxml Instance Parsing
+
+Fast fact extraction without full Arelle DTS resolution.
+Use Arelle for validation; use lxml for high-throughput data pipelines.
+
+```python
+from lxml import etree
+from pathlib import Path
+from dataclasses import dataclass, field
+from typing import Optional
+import pandas as pd
+
+NS_INSTANCE = 'http://www.xbrl.org/2003/instance'
+NS_XBRLDI   = 'http://xbrl.org/2006/xbrldi'
+
+
+@dataclass
+class XbrlContext:
+    context_id:   str
+    period_type:  str            # 'instant' | 'duration'
+    instant_date: Optional[str] = None
+    start_date:   Optional[str] = None
+    end_date:     Optional[str] = None
+    dimensions:   dict = field(default_factory=dict)
+
+
+@dataclass
+class XbrlFact:
+    local_name:  str
+    namespace:   str
+    context_ref: str
+    unit_ref:    Optional[str]
+    value:       str
+    decimals:    Optional[str]
+
+
+def parse_instance_lxml(instance_path: str | Path) -> dict:
+    """
+    Parse an XBRL instance document with lxml.
+    Returns {contexts: dict, units: dict, facts: list[XbrlFact]}.
+    """
+    root = etree.parse(str(instance_path)).getroot()
+
+    # Contexts
+    contexts: dict[str, XbrlContext] = {}
+    for ctx in root.findall(f'{{{NS_INSTANCE}}}context'):
+        ctx_id = ctx.get('id')
+        period = ctx.find(f'{{{NS_INSTANCE}}}period')
+        if period is None:
+            continue
+        instant = period.find(f'{{{NS_INSTANCE}}}instant')
+        start   = period.find(f'{{{NS_INSTANCE}}}startDate')
+        end     = period.find(f'{{{NS_INSTANCE}}}endDate')
+        obj = XbrlContext(context_id=ctx_id, period_type='')
+        if instant is not None:
+            obj.period_type  = 'instant'
+            obj.instant_date = instant.text
+        elif start is not None and end is not None:
+            obj.period_type = 'duration'
+            obj.start_date  = start.text
+            obj.end_date    = end.text
+        segment = ctx.find(f'.//{{{NS_INSTANCE}}}segment')
+        if segment is not None:
+            for m in segment:
+                dim = m.get('dimension', '')
+                obj.dimensions[dim] = (m.text or '').strip()
+        contexts[ctx_id] = obj
+
+    # Units
+    units: dict[str, str] = {}
+    for unit in root.findall(f'{{{NS_INSTANCE}}}unit'):
+        uid     = unit.get('id')
+        measure = unit.find(f'{{{NS_INSTANCE}}}measure')
+        if measure is not None:
+            units[uid] = measure.text or ''
+
+    # Facts
+    SKIP = {'context', 'unit', 'schemaRef', 'linkbaseRef'}
+    facts: list[XbrlFact] = []
+    for child in root:
+        tag = child.tag
+        if '}' not in tag:
+            continue
+        ns, local = tag[1:].split('}', 1)
+        if local in SKIP:
+            continue
+        ctx_ref = child.get('contextRef')
+        value   = (child.text or '').strip()
+        if ctx_ref and value:
+            facts.append(XbrlFact(
+                local_name  = local,
+                namespace   = ns,
+                context_ref = ctx_ref,
+                unit_ref    = child.get('unitRef'),
+                value       = value,
+                decimals    = child.get('decimals'),
+            ))
+
+    return {'contexts': contexts, 'units': units, 'facts': facts}
+
+
+def facts_to_dataframe(parsed: dict) -> pd.DataFrame:
+    """Flatten parsed XBRL facts into a tidy DataFrame for analysis."""
+    rows = []
+    for f in parsed['facts']:
+        ctx = parsed['contexts'].get(f.context_ref)
+        rows.append({
+            'concept':      f.local_name,
+            'namespace':    f.namespace.split('/')[-1],
+            'context_ref':  f.context_ref,
+            'period_type':  ctx.period_type if ctx else '',
+            'period_date':  (ctx.instant_date or ctx.end_date) if ctx else None,
+            'period_start': ctx.start_date if ctx else None,
+            'unit_ref':     f.unit_ref,
+            'value':        f.value,
+            'decimals':     f.decimals,
+            'dimensions':   str(ctx.dimensions) if ctx and ctx.dimensions else '',
+        })
+    df = pd.DataFrame(rows)
+
+    def safe_num(v):
+        try:
+            return float(v)
+        except (ValueError, TypeError):
+            return None
+
+    df['numeric_value'] = df['value'].apply(safe_num)
+    df['period_date']   = pd.to_datetime(df['period_date'], errors='coerce')
+    return df
+```
+
+---
+
+## Taxonomy Traversal
+
+```python
+def get_presentation_network(model_xbrl, role_uri: str = None) -> list[dict]:
+    """
+    Walk the presentation linkbase to recover statement display structure.
+
+    role_uri: restrict to one statement role URI. Common SEC roles:
+      .../role/StatementOfIncome
+      .../role/BalanceSheet
+      .../role/StatementOfCashFlows
+      .../role/StatementOfStockholdersEquity
+    Pass None to return arcs for all roles.
+
+    Returns list of {role, parent_qname, child_qname, order,
+                     preferred_label, depth} dicts, sorted by (role, order).
+    """
+    PARENT_CHILD = 'http://www.xbrl.org/2003/arcrole/parent-child'
+    rows = []
+
+    for (arcrole, ELR, _lq, _aq) in model_xbrl.baseSets.keys():
+        if arcrole != PARENT_CHILD:
+            continue
+        if role_uri and ELR != role_uri:
+            continue
+
+        network = model_xbrl.relationshipSet(arcrole, ELR)
+        child_to_parent = {
+            id(rel.toModelObject): rel.fromModelObject
+            for rel in network.modelRelationships
+            if rel.toModelObject
+        }
+
+        for rel in network.modelRelationships:
+            depth, node = 0, rel.toModelObject
+            while node and id(node) in child_to_parent:
+                node = child_to_parent[id(node)]
+                depth += 1
+
+            rows.append({
+                'role':            ELR,
+                'parent_qname':    str(rel.fromModelObject.qname) if rel.fromModelObject else None,
+                'child_qname':     str(rel.toModelObject.qname)   if rel.toModelObject   else None,
+                'order':           float(rel.order or 0),
+                'preferred_label': rel.preferredLabel,
+                'depth':           depth,
+            })
+
+    return sorted(rows, key=lambda x: (x['role'], x['order']))
+
+
+def get_calculation_arcs(model_xbrl, role_uri: str) -> list[dict]:
+    """
+    Return all calculation arcs for a statement role.
+    weight: +1.0 = child adds to parent; -1.0 = child subtracts from parent.
+
+    Example: OperatingIncomeLoss (+1) and IncomeTaxExpenseBenefit (-1)
+    both feed into NetIncomeLoss parent.
+    """
+    SUMMATION = 'http://www.xbrl.org/2003/arcrole/summation-item'
+    network   = model_xbrl.relationshipSet(SUMMATION, role_uri)
+    arcs = []
+    for rel in network.modelRelationships:
+        arcs.append({
+            'parent': str(rel.fromModelObject.qname),
+            'child':  str(rel.toModelObject.qname),
+            'weight': float(rel.weight),
+            'order':  float(rel.order or 0),
+            'role':   role_uri,
+        })
+    return sorted(arcs, key=lambda x: x['order'])
+
+
+def get_concept_label(
+    model_xbrl,
+    concept_qname: str,
+    label_role: str = 'http://www.xbrl.org/2003/role/label',
+    lang: str = 'en-US',
+) -> str:
+    """
+    Look up the human-readable label for a concept qname.
+
+    Standard label roles:
+      http://www.xbrl.org/2003/role/label              Standard label
+      http://www.xbrl.org/2003/role/totalLabel         'Total X'
+      http://www.xbrl.org/2003/role/negatedLabel       '(X)' for expenses
+      http://www.xbrl.org/2009/role/negatedTotalLabel  'Total (X)'
+      http://www.xbrl.org/2003/role/periodStartLabel   'Beginning balance'
+      http://www.xbrl.org/2003/role/periodEndLabel     'Ending balance'
+      http://www.xbrl.org/2003/role/verboseLabel       Long description
+    """
+    for concept in model_xbrl.qnameConcepts.values():
+        if str(concept.qname) == concept_qname:
+            return concept.label(
+                preferredLabel=label_role,
+                lang=lang,
+                fallbackToQname=True,
+            )
+    return concept_qname
+
+
+def reconstruct_statement(
+    model_xbrl,
+    role_uri: str,
+    facts_df: 'pd.DataFrame',
+    period_date: str,
+) -> 'pd.DataFrame':
+    """
+    Reconstruct a financial statement from presentation linkbase + fact DataFrame.
+    Useful for visual QC and filing cross-checks.
+    """
+    import pandas as pd
+    pres = get_presentation_network(model_xbrl, role_uri)
+    target = pd.to_datetime(period_date).date()
+
+    fact_idx = {}
+    for _, row in facts_df.iterrows():
+        if pd.notna(row['period_date']) and row['period_date'].date() == target:
+            fact_idx[row['concept']] = row['numeric_value']
+
+    rows, seen = [], set()
+    for arc in pres:
+        qn = arc['child_qname']
+        if not qn or qn in seen:
+            continue
+        seen.add(qn)
+        local  = qn.split('}')[-1] if '}' in qn else qn
+        value  = fact_idx.get(local)
+        label  = get_concept_label(model_xbrl, qn)
+        indent = '  ' * arc['depth']
+        rows.append({
+            'depth':  arc['depth'],
+            'label':  indent + label,
+            'concept': local,
+            'value':  value,
+            'display': f'{value:>20,.0f}' if value is not None else '',
+        })
+    return pd.DataFrame(rows)
+```
+
+---
+
+## Calculation Validation
+
+```python
+def validate_calculations_manual(
+    facts_df: 'pd.DataFrame',
+    calc_arcs: list[dict],
+    tolerance_multiplier: float = 5e-4,
+) -> list[dict]:
+    """
+    Verify calculation linkbase arithmetic without Arelle.
+    Implements the XBRL 2.1 spec tolerance formula exactly.
+
+    Tolerance per spec: allowed_delta = max(0.5, |reported| * 5e-4)
+
+    Use case: custom audit trail reports, pre-Arelle sanity checks,
+    pipelines that receive instance documents without their DTS.
+    """
+    from itertools import groupby
+
+    # Build (local_name, context_ref) -> float index
+    fact_idx: dict[tuple, float] = {}
+    for _, row in facts_df.iterrows():
+        if row['numeric_value'] is not None:
+            fact_idx[(row['concept'], row['context_ref'])] = row['numeric_value']
+
+    arcs_sorted = sorted(calc_arcs, key=lambda x: (x['parent'], x['role']))
+    issues = []
+
+    for (parent_q, role), child_iter in groupby(
+        arcs_sorted, key=lambda x: (x['parent'], x['role'])
+    ):
+        children     = list(child_iter)
+        parent_local = parent_q.split('}')[-1] if '}' in parent_q else parent_q
+        parent_ctxs  = [ctx for (c, ctx) in fact_idx if c == parent_local]
+
+        for ctx in parent_ctxs:
+            reported = fact_idx.get((parent_local, ctx))
+            if reported is None:
+                continue
+
+            computed, missing = 0.0, []
+            for arc in children:
+                child_local = arc['child'].split('}')[-1] if '}' in arc['child'] else arc['child']
+                child_val   = fact_idx.get((child_local, ctx))
+                if child_val is None:
+                    missing.append(child_local)
+                    continue
+                computed += arc['weight'] * child_val
+
+            if missing:
+                continue  # Skip: cannot validate with incomplete children
+
+            allowed = max(0.5, abs(reported) * tolerance_multiplier)
+            delta   = abs(reported - computed)
+
+            if delta > allowed:
+                issues.append({
+                    'parent':        parent_local,
+                    'context_ref':   ctx,
+                    'reported':      reported,
+                    'computed':      computed,
+                    'delta':         round(delta, 2),
+                    'allowed_delta': round(allowed, 2),
+                    'role':          role,
+                })
+
+    return sorted(issues, key=lambda x: -x['delta'])
+
+
+def print_calc_report(issues: list[dict]) -> None:
+    if not issues:
+        print('  Calculation: PASS')
+        return
+    print(f'  Calculation: FAIL ({len(issues)} inconsistency(ies))')
+    for inc in issues[:10]:
+        print(f"  ERR: {inc['parent']} [{inc['context_ref']}]")
+        print(f"      Reported: {inc['reported']:>20,.0f}")
+        print(f"      Computed: {inc['computed']:>20,.0f}")
+        print(f"      Delta:    {inc['delta']:>20,.2f}  (allowed: {inc['allowed_delta']:.2f})")
+```
+
+---
+
+## Dimensional Model
+
+```python
+from lxml import etree
+
+
+def validate_dimensional_facts(model_xbrl) -> list[dict]:
+    """
+    Validate dimensional (hypercube) facts against the definition linkbase.
+
+    Checks:
+    1. All explicit members are defined in the taxonomy as domain members
+    2. Closed hypercubes: no undeclared dimension members allowed
+    3. Default members: facts missing a dimension use the declared default
+    4. Typed dimensions: member values conform to declared XSD type
+    """
+    from arelle.ValidateXbrlDimensions import ValidateXbrlDimensions
+    v = ValidateXbrlDimensions(model_xbrl)
+    v.validate()
+    return [
+        {
+            'concept':     str(e.concept.qname) if hasattr(e, 'concept') else '',
+            'dimension':   str(e.dimension)      if hasattr(e, 'dimension') else '',
+            'member':      str(e.member)          if hasattr(e, 'member') else '',
+            'context_ref': getattr(e, 'contextID', ''),
+            'code':        getattr(e, 'code', ''),
+        }
+        for e in getattr(model_xbrl, 'dimensionErrors', [])
+    ]
+
+
+def build_dimensional_context_xml(
+    entity_cik: str,
+    period_type: str,      # 'instant' | 'duration'
+    period_end:  str,      # '2024-12-31'
+    dimensions:  dict,     # {'axis_qname': 'member_qname', ...}
+    period_start: str = None,
+    context_id:   str = None,
+) -> str:
+    """
+    Build a well-formed XBRL context element with explicit dimension members.
+
+    dimensions example:
+        {
+            'us-gaap:StatementBusinessSegmentsAxis': 'acme:NorthAmericaSegmentMember',
+            'us-gaap:ProductOrServiceAxis':          'us-gaap:ProductMember',
+        }
+
+    Rules:
+    - axis qname must be declared as a hypercube dimension in the definition linkbase
+    - member qname must be a valid domain member in that axis
+    - context_id must be unique within the instance document
+    """
+    if context_id is None:
+        suffix = '_'.join(v.split(':')[-1][:8] for v in dimensions.values())
+        context_id = f"ctx_{period_end.replace('-','')}_{suffix}"
+
+    if period_type == 'instant':
+        period_xml = (
+            '<xbrli:period>'
+            f'<xbrli:instant>{period_end}</xbrli:instant>'
+            '</xbrli:period>'
+        )
+    else:
+        period_xml = (
+            '<xbrli:period>'
+            f'<xbrli:startDate>{period_start}</xbrli:startDate>'
+            f'<xbrli:endDate>{period_end}</xbrli:endDate>'
+            '</xbrli:period>'
+        )
+
+    members = '\n      '.join(
+        f'<xbrldi:explicitMember dimension="{ax}">{mem}</xbrldi:explicitMember>'
+        for ax, mem in dimensions.items()
+    )
+
+    return (
+        f'<xbrli:context id="{context_id}">\n'
+        f'  <xbrli:entity>\n'
+        f'    <xbrli:identifier scheme="http://www.sec.gov/cik">'
+        f'{entity_cik}</xbrli:identifier>\n'
+        f'    <xbrli:segment>\n'
+        f'      {members}\n'
+        f'    </xbrli:segment>\n'
+        f'  </xbrli:entity>\n'
+        f'  {period_xml}\n'
+        f'</xbrli:context>'
+    )
+```
+
+---
+
+## Extension Taxonomy
+
+```python
+from lxml import etree
+from pathlib import Path
+
+
+def build_extension_schema(
+    company_prefix:    str,   # e.g. 'acme'
+    company_namespace: str,   # e.g. 'http://www.acme.com/20241231'
+    period_end_date:   str,   # '2024-12-31'
+    base_taxonomy_href: str,  # URL to us-gaap-2024.xsd entry point
+    custom_elements:   list[dict],
+    output_dir:        str | Path,
+) -> Path:
+    """
+    Build a company extension taxonomy XSD.
+
+    custom_elements item keys:
+        name              PascalCase (e.g. 'AdjustedEBITDA')
+        type              XSD type (default: 'xbrli:monetaryItemType')
+        period_type       'duration' | 'instant'
+        balance           'credit' | 'debit'  (required for monetary types)
+        abstract          bool — True for header/subtotal line items
+        substitution_group (default: 'xbrli:item')
+
+    Extension rules:
+    - Namespace must be unique and period-dated (http://company.com/YYYYMMDD)
+    - Never duplicate existing us-gaap elements
+    - Monetary elements must declare balance (debit or credit)
+    - All four linkbases must be listed in the annotation/appinfo block
+    """
+    out      = Path(output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    date_str = period_end_date.replace('-', '')
+    xsd_file = out / f'{company_prefix}-{date_str}.xsd'
+
+    XS    = 'http://www.w3.org/2001/XMLSchema'
+    XBRLI = 'http://www.xbrl.org/2003/instance'
+    LINK  = 'http://www.xbrl.org/2003/linkbase'
+    XLINK = 'http://www.w3.org/1999/xlink'
+
+    nsmap = {None: company_namespace, 'xs': XS,
+             'xbrli': XBRLI, 'link': LINK, 'xlink': XLINK}
+    schema = etree.Element(f'{{{XS}}}schema', nsmap=nsmap)
+    schema.set('targetNamespace',    company_namespace)
+    schema.set('elementFormDefault', 'qualified')
+
+    for ns_uri, href in [
+        (XBRLI, 'http://www.xbrl.org/2003/xbrl-instance-2003-12-31.xsd'),
+        ('http://fasb.org/us-gaap/2024', base_taxonomy_href),
+    ]:
+        imp = etree.SubElement(schema, f'{{{XS}}}import')
+        imp.set('namespace',     ns_uri)
+        imp.set('schemaLocation', href)
+
+    annotation = etree.SubElement(schema, f'{{{XS}}}annotation')
+    appinfo    = etree.SubElement(annotation, f'{{{XS}}}appinfo')
+    for suffix, role_name in [
+        ('cal', 'CalculationLinkbaseRef'), ('def', 'DefinitionLinkbaseRef'),
+        ('lab', 'LabelLinkbaseRef'),       ('pre', 'PresentationLinkbaseRef'),
+    ]:
+        lb = etree.SubElement(appinfo, f'{{{LINK}}}linkbaseRef')
+        lb.set(f'{{{XLINK}}}type',    'simple')
+        lb.set(f'{{{XLINK}}}href',    f'{company_prefix}-{date_str}_{suffix}.xml')
+        lb.set(f'{{{XLINK}}}role',    f'http://www.xbrl.org/2003/role/{role_name}')
+        lb.set(f'{{{XLINK}}}arcrole', 'http://www.w3.org/1999/xlink/properties/linkbase')
+
+    for elem in custom_elements:
+        el = etree.SubElement(schema, f'{{{XS}}}element')
+        el.set('name',              elem['name'])
+        el.set('type',              elem.get('type', 'xbrli:monetaryItemType'))
+        el.set('substitutionGroup', elem.get('substitution_group', 'xbrli:item'))
+        el.set('id',                f"{company_prefix}_{elem['name']}")
+        el.set(f'{{{XBRLI}}}periodType', elem.get('period_type', 'duration'))
+        if elem.get('balance'):
+            el.set(f'{{{XBRLI}}}balance', elem['balance'])
+        if elem.get('abstract', False):
+            el.set('abstract', 'true')
+            el.set('nillable', 'true')
+
+    etree.ElementTree(schema).write(
+        str(xsd_file), pretty_print=True, xml_declaration=True, encoding='UTF-8'
+    )
+    print(f'  Extension schema: {xsd_file.name}')
+    return xsd_file
+
+
+def build_label_linkbase(
+    company_prefix:    str,
+    company_namespace: str,
+    period_end_date:   str,
+    labels:            list[dict],
+    output_dir:        str | Path,
+) -> Path:
+    """
+    Build a label linkbase for custom extension elements.
+
+    labels item keys:
+        element_name    Matches 'name' in the XSD
+        label           Standard label text
+        total_label     'Total X' label (optional)
+        lang            BCP 47 tag (default: 'en-US')
+    """
+    out      = Path(output_dir)
+    date_str = period_end_date.replace('-', '')
+    lb_file  = out / f'{company_prefix}-{date_str}_lab.xml'
+
+    LINK  = 'http://www.xbrl.org/2003/linkbase'
+    XLINK = 'http://www.w3.org/1999/xlink'
+    XSI   = 'http://www.w3.org/2001/XMLSchema-instance'
+    XML   = 'http://www.w3.org/XML/1998/namespace'
+
+    nsmap = {'link': LINK, 'xlink': XLINK, 'xsi': XSI}
+    root  = etree.Element(f'{{{LINK}}}linkbase', nsmap=nsmap)
+    root.set(f'{{{XSI}}}schemaLocation',
+        'http://www.xbrl.org/2003/linkbase '
+        'http://www.xbrl.org/2003/xbrl-linkbase-2003-12-31.xsd')
+
+    ll = etree.SubElement(root, f'{{{LINK}}}labelLink')
+    ll.set(f'{{{XLINK}}}type', 'extended')
+    ll.set(f'{{{XLINK}}}role', 'http://www.xbrl.org/2003/role/link')
+
+    ROLES = [
+        ('label',      'http://www.xbrl.org/2003/role/label'),
+        ('total_label','http://www.xbrl.org/2003/role/totalLabel'),
+    ]
+
+    for lbl in labels:
+        elem_id = f"{company_prefix}_{lbl['element_name']}"
+        lang    = lbl.get('lang', 'en-US')
+
+        loc = etree.SubElement(ll, f'{{{LINK}}}loc')
+        loc.set(f'{{{XLINK}}}type',  'locator')
+        loc.set(f'{{{XLINK}}}href',  f'{company_prefix}-{date_str}.xsd#{elem_id}')
+        loc.set(f'{{{XLINK}}}label', f'loc_{elem_id}')
+
+        for role_key, role_uri in ROLES:
+            text = lbl.get(role_key)
+            if not text:
+                continue
+            res_id = f'lbl_{elem_id}_{role_key}'
+
+            res = etree.SubElement(ll, f'{{{LINK}}}label')
+            res.set(f'{{{XLINK}}}type',  'resource')
+            res.set(f'{{{XLINK}}}label', res_id)
+            res.set(f'{{{XLINK}}}role',  role_uri)
+            res.set(f'{{{XML}}}lang',    lang)
+            res.text = text
+
+            arc = etree.SubElement(ll, f'{{{LINK}}}labelArc')
+            arc.set(f'{{{XLINK}}}type',    'arc')
+            arc.set(f'{{{XLINK}}}arcrole', 'http://www.xbrl.org/2003/arcrole/concept-label')
+            arc.set(f'{{{XLINK}}}from',    f'loc_{elem_id}')
+            arc.set(f'{{{XLINK}}}to',      res_id)
+
+    etree.ElementTree(root).write(
+        str(lb_file), pretty_print=True, xml_declaration=True, encoding='UTF-8'
+    )
+    print(f'  Label linkbase: {lb_file.name}')
+    return lb_file
+```
+
+---
+
+## Inline XBRL (iXBRL)
+
+All SEC primary financial statement filings since 2020 must use iXBRL.
+iXBRL embeds XBRL tags directly inside human-readable HTML5.
+
+```python
+IXBRL_NS = 'http://www.xbrl.org/2013/inlineXBRL'
+IXT_NS   = 'http://www.xbrl.org/inlineXBRL/transformation/2020-02-12'
+IXT_SEC  = 'http://www.sec.gov/inlineXBRL/transformation/2015-08-31'
+
+IXBRL_ROOT_ATTRS = {
+    'xmlns':        IXBRL_NS,
+    'xmlns:ix':     IXBRL_NS,
+    'xmlns:ixt':    IXT_NS,
+    'xmlns:ixt-sec': IXT_SEC,
+    'xmlns:xsi':    'http://www.w3.org/2001/XMLSchema-instance',
+    'xmlns:us-gaap': 'http://fasb.org/us-gaap/2024',
+    'xmlns:dei':    'http://xbrl.sec.gov/dei/2024',
+    'xmlns:xbrli':  'http://www.xbrl.org/2003/instance',
+    'xmlns:xbrldi': 'http://xbrl.org/2006/xbrldi',
+    'xmlns:iso4217': 'http://www.xbrl.org/2003/iso4217',
+}
+
+
+def build_ixbrl_header(
+    schema_ref:    str,
+    contexts_xml:  list[str],
+    units_xml:     list[str],
+    hidden_facts:  list[dict],
+) -> str:
+    """
+    Build the ix:header block (placed inside a hidden div at document top).
+
+    hidden_facts: [{'name': 'dei:EntityRegistrantName',
+                    'context_ref': 'FY2024', 'value': 'Acme Corp'}]
+
+    All contexts and units referenced anywhere in the document MUST be
+    declared inside ix:header/ix:resources. Missing any one = validation error.
+    """
+    ctx_block = '\n        '.join(contexts_xml)
+    unit_block = '\n        '.join(units_xml)
+    hidden = '\n'.join(
+        f'        <ix:nonNumeric name="{hf["name"]}" contextRef="{hf["context_ref"]}">'
+        f'{hf["value"]}</ix:nonNumeric>'
+        for hf in hidden_facts
+    )
+    return (
+        '  <div style="display:none">\n'
+        '    <ix:header>\n'
+        '      <ix:hidden>\n'
+        + hidden +
+        '\n      </ix:hidden>\n'
+        '      <ix:references>\n'
+        '        <link:schemaRef\n'
+        '          xmlns:link="http://www.xbrl.org/2003/linkbase"\n'
+        '          xmlns:xlink="http://www.w3.org/1999/xlink"\n'
+        '          xlink:type="simple"\n'
+        f'          xlink:href="{schema_ref}"/>\n'
+        '      </ix:references>\n'
+        '      <ix:resources>\n'
+        f'        {ctx_block}\n'
+        f'        {unit_block}\n'
+        '      </ix:resources>\n'
+        '    </ix:header>\n'
+        '  </div>'
+    )
+
+
+def ix_nonfraction(
+    name:         str,
+    context_ref:  str,
+    unit_ref:     str,
+    decimals:     str,
+    display_text: str,
+    sign:         str = '',
+    fmt:          str = 'ixt:num-dot-decimal',
+) -> str:
+    """
+    Generate an ix:nonFraction tag for a monetary or numeric fact.
+
+    display_text: the formatted number shown to humans (e.g. '391,035')
+    sign: use '-' when showing an expense as a positive display value
+          but the underlying XBRL value must remain negative.
+    fmt: transformation format from the ixt registry (see iXBRL Formats section).
+
+    The tag body is the display value; the transformation format tells
+    the XBRL processor how to convert display_text back to the raw value.
+    """
+    sign_attr = f' sign="{sign}"' if sign else ''
+    return (
+        f'<ix:nonFraction'
+        f' name="{name}"'
+        f' contextRef="{context_ref}"'
+        f' unitRef="{unit_ref}"'
+        f' decimals="{decimals}"'
+        f' format="{fmt}"'
+        f'{sign_attr}>'
+        f'{display_text}'
+        f'</ix:nonFraction>'
+    )
+
+
+def ix_nonnumeric(
+    name:        str,
+    context_ref: str,
+    value:       str,
+) -> str:
+    """ix:nonNumeric tag for string facts (names, codes, descriptions)."""
+    return (
+        f'<ix:nonNumeric name="{name}" contextRef="{context_ref}">'
+        f'{value}'
+        f'</ix:nonNumeric>'
+    )
+
+
+def validate_ixbrl(ixbrl_path: str | Path) -> dict:
+    """
+    Validate iXBRL HTML document with Arelle.
+    Checks iXBRL-specific rules beyond standard XBRL 2.1:
+    - All tagged facts reference declared contexts
+    - All unitRef values declared in ix:header
+    - Transformation format values in approved ixt registry
+    - No orphaned contexts (declared but unreferenced by any fact)
+    """
+    cntlr, model_xbrl = load_xbrl_document(ixbrl_path)
+    errors, warnings = [], []
+    for rec in cntlr.logHandler.logRecordBuffer:
+        code  = getattr(rec, 'messageCode', '')
+        entry = {'code': code, 'message': rec.getMessage()}
+        if rec.levelname.upper() in ('ERROR', 'CRITICAL'):
+            errors.append(entry)
+        elif rec.levelname.upper() == 'WARNING':
+            if 'ix' in code.lower() or 'inline' in code.lower():
+                warnings.append(entry)
+    used    = {f.contextID for f in model_xbrl.facts}
+    orphans = sorted(set(model_xbrl.contexts.keys()) - used)
+    if orphans:
+        warnings.append({'code': 'ixbrl:orphanContext',
+                         'message': f'Unused contexts: {orphans}'})
+    model_xbrl.close()
+    return {'status': 'pass' if not errors else 'fail',
+            'errors': errors, 'warnings': warnings,
+            'orphan_contexts': orphans}
+```
+
+---
+
+## iXBRL Formats
+
+```python
+# Approved format= values for ix:nonFraction and ix:nonNumeric
+# Use ixt: prefix for the 2020-02-12 registry (recommended)
+# Use ixt-sec: prefix for SEC-specific transformations only
+
+IXT_FORMATS = {
+    # ── Numeric ────────────────────────────────────────────────────────────
+    'ixt:num-dot-decimal':             '1,234,567.89  (US/UK comma-thousand, dot-decimal)',
+    'ixt:num-comma-decimal':           '1.234.567,89  (EU dot-thousand, comma-decimal)',
+    'ixt:num-dot-decimal-thousands':   '1,234         (thousands separator, no decimal)',
+    'ixt:num-dot':                     '1234567.89    (no thousand separator)',
+    'ixt:fixed-zero':                  'always zero regardless of display',
+    'ixt:fixed-false':                 'always boolean false',
+    'ixt:fixed-true':                  'always boolean true',
+
+    # ── Dates (display -> ISO 8601 YYYY-MM-DD) ─────────────────────────────
+    'ixt:date-std':                    'YYYY-MM-DD (passthrough, already ISO)',
+    'ixt:date-long-us':                'January 1, 2024  ->  2024-01-01',
+    'ixt:date-short-us':               'Jan 1, 2024      ->  2024-01-01',
+    'ixt:date-long-uk':                '1 January 2024   ->  2024-01-01',
+    'ixt:date-num-us':                 '01/01/2024       ->  2024-01-01',
+    'ixt:date-num-uk':                 '01/01/2024       ->  2024-01-01 (DD/MM/YYYY)',
+    'ixt:date-year-month':             'January 2024     ->  2024-01-31',
+    'ixt:date-year-quarter':           '2024 Q1          ->  2024-03-31',
+
+    # ── SEC-specific (ixt-sec: namespace) ──────────────────────────────────
+    'ixt-sec:durwordsen':              'one year         ->  P1Y',
+    'ixt-sec:numwordsen':              'one million      ->  1000000',
+    'ixt-sec:exchnameen':              'New York Stock Exchange  ->  NYSE',
+    'ixt-sec:stateprovnameen':         'California       ->  CA',
+}
+
+# Common usage patterns
+MONETARY_FMT  = 'ixt:num-dot-decimal'     # All US monetary facts
+PERCENT_FMT   = 'ixt:num-dot-decimal'     # Percentages (value is decimal: 0.15 = 15%)
+DATE_FMT_US   = 'ixt:date-long-us'        # 'December 31, 2024'
+DATE_FMT_ISO  = 'ixt:date-std'            # '2024-12-31'
+BOOLEAN_FMT   = 'ixt:fixed-false'         # Boolean facts
+```
+
+---
+
+## EDGAR Package Assembly
+
+```python
+import zipfile, shutil, json
+from pathlib import Path
+from datetime import date
+
+
+def assemble_edgar_package(
+    company_name:     str,
+    cik:              str,
+    form_type:        str,      # '10-K' | '10-Q' | '8-K'
+    period_end:       str,      # '2024-12-31'
+    ixbrl_htm:        Path,     # Primary iXBRL-tagged HTML
+    extension_schema: Path,     # Company .xsd
+    linkbases:        list[Path],  # _cal _def _lab _pre .xml
+    r_files:          list[Path],  # R1.htm ... Rn.htm viewer pages
+    output_dir:       Path,
+    filing_date:      str = None,
+) -> Path:
+    """
+    Assemble and ZIP a complete SEC EDGAR filing package.
+
+    Required contents per EFM Section 6:
+    +------------------------------------------+
+    | [cik]-[date].htm      Primary iXBRL doc  |
+    | [prefix]-[date].xsd   Extension schema   |
+    | [prefix]-[date]_cal.xml                  |
+    | [prefix]-[date]_def.xml                  |
+    | [prefix]-[date]_lab.xml                  |
+    | [prefix]-[date]_pre.xml                  |
+    | R1.htm ... Rn.htm     XBRL viewer pages  |
+    | FilingSummary.xml     Viewer manifest     |
+    | header.txt            EDGAR header        |
+    +------------------------------------------+
+    """
+    filing_date = filing_date or date.today().isoformat()
+    date_str    = period_end.replace('-', '')
+    pkg_dir     = output_dir / f'{cik}_{date_str}_edgar'
+    pkg_dir.mkdir(parents=True, exist_ok=True)
+
+    for f in [ixbrl_htm, extension_schema] + linkbases + r_files:
+        shutil.copy2(str(f), pkg_dir / f.name)
+
+    _write_filing_summary(pkg_dir, form_type, r_files)
+    _write_edgar_header(pkg_dir, cik, company_name, form_type,
+                        filing_date, period_end)
+
+    zip_path = output_dir / f'{cik}_{date_str}.zip'
+    with zipfile.ZipFile(str(zip_path), 'w', zipfile.ZIP_DEFLATED) as zf:
+        for f in pkg_dir.iterdir():
+            zf.write(str(f), arcname=f.name)
+
+    size_kb = zip_path.stat().st_size / 1024
+    n_files = len(list(pkg_dir.iterdir()))
+    print(f'  EDGAR ZIP: {zip_path.name} ({size_kb:.1f} KB, {n_files} files)')
+    return zip_path
+
+
+def _write_filing_summary(pkg_dir: Path, form_type: str,
+                            r_files: list[Path]) -> None:
+    reports = ''
+    for i, rf in enumerate(r_files, start=1):
+        is_default = 'true' if i == 1 else 'false'
+        reports += (
+            f'  <Report instance="{rf.name}">\n'
+            f'    <IsDefault>{is_default}</IsDefault>\n'
+            f'    <HasEmbeddedReports>false</HasEmbeddedReports>\n'
+            f'    <HtmlFileName>{rf.name}</HtmlFileName>\n'
+            f'    <LongName>R{i}</LongName>\n'
+            f'    <ShortName>R{i}</ShortName>\n'
+            f'    <MenuCategory>Statements</MenuCategory>\n'
+            f'    <Position>{i}</Position>\n'
+            f'  </Report>\n'
+        )
+    xml = (
+        '<?xml version="1.0" encoding="utf-8"?>\n'
+        '<FilingSummary>\n'
+        '  <Version>3.7.4</Version>\n'
+        '  <ReportFormat>htm</ReportFormat>\n'
+        '  <HasInlineXBRL>true</HasInlineXBRL>\n'
+        f'  <MyReports>\n{reports}  </MyReports>\n'
+        f'  <InputFiles><File doctype="{form_type}"/></InputFiles>\n'
+        '</FilingSummary>\n'
+    )
+    (pkg_dir / 'FilingSummary.xml').write_text(xml, encoding='utf-8')
+
+
+def _write_edgar_header(
+    pkg_dir: Path, cik: str, company_name: str,
+    form_type: str, filing_date: str, period_end: str,
+) -> None:
+    fiscal_end = period_end[-5:].replace('-', '')
+    hdr = (
+        '<SEC-HEADER>\n'
+        f'FILING-DATE: {filing_date}\n'
+        f'DATE-OF-FILING: {filing_date}\n\n'
+        'COMPANY-DATA:\n'
+        f' COMPANY-CONFORMED-NAME: {company_name}\n'
+        f' CENTRAL-INDEX-KEY: {cik}\n'
+        f' FISCAL-YEAR-END: {fiscal_end}\n\n'
+        'FILING-VALUES:\n'
+        f' FORM-TYPE: {form_type}\n'
+        '</SEC-HEADER>\n'
+    )
+    (pkg_dir / 'header.txt').write_text(hdr, encoding='utf-8')
+```
+
+---
+
+## SEC EDGAR API
+
+```python
+import requests, time, json
+import pandas as pd
+from pathlib import Path
+
+
+EDGAR_BASE    = 'https://data.sec.gov'
+EDGAR_HEADERS = {
+    # Required by SEC robots.txt — replace with your actual contact info
+    'User-Agent':      'YourCompanyName yourname@yourcompany.com',
+    'Accept-Encoding': 'gzip, deflate',
+}
+
+
+def get_company_facts(cik: str, cache_dir: Path = None) -> dict:
+    """
+    Fetch the full XBRL companyfacts JSON for a company.
+    Contains every concept ever tagged, every period, every filing.
+
+    CIK must be zero-padded to 10 digits: '0000320193' for Apple.
+    Cache locally — re-fetching the same CIK repeatedly wastes quota.
+    """
+    cik_padded = cik.zfill(10)
+    if cache_dir:
+        cp = Path(cache_dir) / f'facts_{cik_padded}.json'
+        if cp.exists():
+            return json.loads(cp.read_text())
+
+    url  = f'{EDGAR_BASE}/api/xbrl/companyfacts/CIK{cik_padded}.json'
+    resp = requests.get(url, headers=EDGAR_HEADERS, timeout=30)
+    resp.raise_for_status()
+    data = resp.json()
+
+    if cache_dir:
+        Path(cache_dir).mkdir(parents=True, exist_ok=True)
+        (Path(cache_dir) / f'facts_{cik_padded}.json').write_text(
+            resp.text, encoding='utf-8'
+        )
+    return data
+
+
+def extract_concept_series(
+    company_facts: dict,
+    concept:       str,
+    taxonomy:      str = 'us-gaap',
+    unit:          str = 'USD',
+    forms:         list[str] = None,
+) -> pd.DataFrame:
+    """
+    Extract historical time series for one XBRL concept.
+    concept: 'Revenues', 'NetIncomeLoss', 'Assets', 'EarningsPerShareBasic', ...
+    unit:    'USD' | 'USD/shares' | 'shares' | 'pure'
+    forms:   filter to form types, e.g. ['10-K', '10-K/A']. None = all.
+
+    Deduplicates by period end: keeps the most recent filing per period.
+    """
+    try:
+        raw = company_facts['facts'][taxonomy][concept]['units'][unit]
+    except KeyError:
+        return pd.DataFrame(columns=['end','val','accn','fy','fp','form','filed'])
+
+    df = pd.DataFrame(raw)
+    df['end']   = pd.to_datetime(df['end'],   errors='coerce')
+    df['filed'] = pd.to_datetime(df['filed'], errors='coerce')
+
+    if forms:
+        df = df[df['form'].isin(forms)]
+
+    df = (df.sort_values('filed')
+            .drop_duplicates(subset=['end'], keep='last')
+            .sort_values('end')
+            .reset_index(drop=True))
+    return df[['end','val','accn','fy','fp','form','filed']]
+
+
+def build_financial_timeseries(
+    cik:       str,
+    concepts:  list[str],
+    taxonomy:  str = 'us-gaap',
+    forms:     list[str] = None,
+    cache_dir: Path = None,
+) -> pd.DataFrame:
+    """
+    Wide-format financial time series: rows = period dates, columns = concepts.
+    """
+    facts  = get_company_facts(cik, cache_dir)
+    forms  = forms or ['10-K', '10-K/A']
+    series = {}
+    for concept in concepts:
+        df = extract_concept_series(facts, concept, taxonomy, forms=forms)
+        if not df.empty:
+            series[concept] = df.set_index('end')['val']
+    if not series:
+        return pd.DataFrame()
+    out = pd.DataFrame(series)
+    out.index.name = 'period_end'
+    return out
+
+
+def compare_prior_year(
+    cik:               str,
+    concepts:          list[str],
+    current_fy:        int,
+    prior_fy:          int,
+    flag_threshold_pct: float = 25.0,
+) -> pd.DataFrame:
+    """
+    Compare key XBRL metrics between current and prior fiscal year.
+    Flags concepts with YoY change > flag_threshold_pct.
+    Use as pre-submission QC: large moves may indicate element mapping errors.
+    """
+    facts = get_company_facts(cik)
+    rows  = []
+
+    for concept in concepts:
+        df = extract_concept_series(facts, concept, forms=['10-K', '10-K/A'])
+        if df.empty:
+            continue
+        cy = df[df['fy'] == current_fy]['val'].values
+        py = df[df['fy'] == prior_fy]['val'].values
+        cv = float(cy[0]) if len(cy) else None
+        pv = float(py[0]) if len(py) else None
+
+        pct = ((cv - pv) / abs(pv) * 100
+               if cv is not None and pv and pv != 0 else None)
+
+        def fmt(v):
+            if v is None: return 'N/A'
+            if abs(v) >= 1e9: return f'${v/1e9:.2f}B'
+            if abs(v) >= 1e6: return f'${v/1e6:.1f}M'
+            return f'{v:,.0f}'
+
+        rows.append({
+            'concept':         concept,
+            f'FY{current_fy}': fmt(cv),
+            f'FY{prior_fy}':   fmt(pv),
+            'YoY_pct':         f'{pct:+.1f}%' if pct is not None else 'N/A',
+            'flag':            'REVIEW' if pct and abs(pct) > flag_threshold_pct else '',
+        })
+
+    return pd.DataFrame(rows)
+```
+
+---
+
+## Full Validation Pipeline
+
+```python
+from pathlib import Path
+import json
+
+
+def run_xbrl_pipeline(
+    instance_path:              str | Path,
+    output_dir:                 str | Path,
+    is_ixbrl:                   bool = False,
+    check_edgar_prior_year:     bool = False,
+    cik:                        str  = None,
+    current_fy:                 int  = None,
+    prior_fy:                   int  = None,
+) -> dict:
+    """
+    End-to-end XBRL validation pipeline:
+      Stage 1 — Instance document load + XBRL 2.1 validation (Arelle)
+      Stage 2 — Calculation linkbase arithmetic check
+      Stage 3 — lxml fact extraction -> DataFrame + CSV
+      Stage 4 — iXBRL-specific checks (if is_ixbrl)
+      Stage 5 — EDGAR prior-year consistency check (if requested)
+
+    Returns structured JSON report with per-stage pass/fail status.
+    """
+    instance_path = Path(instance_path)
+    out = Path(output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+
+    report = {
+        'instance': str(instance_path),
+        'is_ixbrl': is_ixbrl,
+        'stages':   {},
+        'overall':  'pass',
+    }
+
+    # Stage 1 — Arelle validation
+    print('[1/5] Instance Validation')
+    val = validate_instance(instance_path)
+    report['stages']['instance'] = {
+        'status':       val['status'],
+        'error_count':  val['error_count'],
+        'fact_count':   val['fact_count'],
+        'errors':       val['errors'][:10],
+    }
+    if val['status'] == 'fail':
+        report['overall'] = 'fail'
+
+    # Stage 2 — Calculation check
+    print('[2/5] Calculation Linkbase')
+    calc = val.get('calc_issues', [])
+    report['stages']['calculations'] = {
+        'status':         'pass' if not calc else 'fail',
+        'inconsistencies': len(calc),
+        'details':         calc[:5],
+    }
+    if calc:
+        report['overall'] = 'fail'
+        print_calc_report(calc)
+
+    # Stage 3 — Fact extraction
+    print('[3/5] Fact Extraction')
+    if not is_ixbrl:
+        parsed   = parse_instance_lxml(instance_path)
+        facts_df = facts_to_dataframe(parsed)
+        csv_path = out / f'{instance_path.stem}_facts.csv'
+        facts_df.to_csv(str(csv_path), index=False)
+        report['stages']['fact_extraction'] = {
+            'status':        'pass',
+            'facts':         len(facts_df),
+            'contexts':      len(parsed['contexts']),
+            'concepts':      facts_df['concept'].nunique(),
+            'csv':           str(csv_path),
+        }
+        print(f'  Facts CSV: {csv_path.name}')
+
+    # Stage 4 — iXBRL checks
+    print('[4/5] iXBRL Validation')
+    if is_ixbrl:
+        ix = validate_ixbrl(instance_path)
+        report['stages']['ixbrl'] = ix
+        if ix['status'] == 'fail':
+            report['overall'] = 'fail'
+    else:
+        report['stages']['ixbrl'] = {'status': 'skipped'}
+
+    # Stage 5 — EDGAR prior-year comparison
+    print('[5/5] EDGAR Consistency')
+    if check_edgar_prior_year and cik and current_fy and prior_fy:
+        key_concepts = [
+            'Revenues', 'NetIncomeLoss', 'Assets',
+            'LiabilitiesAndStockholdersEquity', 'OperatingIncomeLoss',
+        ]
+        try:
+            cmp = compare_prior_year(cik, key_concepts, current_fy, prior_fy)
+            flagged = cmp[cmp['flag'] != '']
+            report['stages']['edgar_consistency'] = {
+                'status':           'warning' if len(flagged) else 'pass',
+                'concepts_checked': len(key_concepts),
+                'flagged':          len(flagged),
+                'flags':            flagged.to_dict('records'),
+            }
+        except Exception as exc:
+            report['stages']['edgar_consistency'] = {
+                'status': 'error', 'message': str(exc)
+            }
+    else:
+        report['stages']['edgar_consistency'] = {'status': 'skipped'}
+
+    # Write report
+    rpt_path = out / f'{instance_path.stem}_report.json'
+    rpt_path.write_text(json.dumps(report, indent=2, default=str), encoding='utf-8')
+    print(f'\n{'='*55}')
+    print(f'OVERALL: {report["overall"].upper()}')
+    print(f'Report:  {rpt_path}')
+    return report
+```
+
+---
+
+## Error Reference
+
+### XBRL 2.1 Core Errors
+
+| Code | Meaning | Fix |
+|---|---|---|
+| `xbrl.5.2.4.2` | Fact contextRef references undeclared context | Declare context element before any fact referencing it |
+| `xbrl.5.2.5.2` | Fact unitRef references undeclared unit | Declare unit element before the fact |
+| `xbrl.5.2.6.2` | Numeric fact missing decimals or precision | Add `decimals="-6"` to all monetary and numeric facts |
+| `xbrl.5.2.2.2.3` | Period type mismatch (instant vs duration) | Match context type to element's xbrli:periodType in schema |
+| `xbrl.4.6.6` | Calculation inconsistency: sum of weighted children != parent | Verify weights (+1/-1) and that all children are reported |
+| `xbrl.5.2.1.1` | Duplicate facts (same element + context + unit reported twice) | Remove duplicate; if intentional use a different context |
+| `xbrl.4.3` | QName prefix undeclared in namespace map | Add missing xmlns:prefix declaration to instance root |
+| `xbrl.5.1.1` | Schema import missing or URL unresolvable | Verify schemaLocation URL; check DTS cache |
+
+### SEC EFM Errors (EDGAR-Specific)
+
+| Code | Meaning | Fix |
+|---|---|---|
+| `EFM.6.5.20` | dei:EntityRegistrantName missing or blank | Always include complete DEI entity block |
+| `EFM.6.5.21` | dei:DocumentPeriodEndDate missing | Required for all 10-K/10-Q filings |
+| `EFM.6.5.35` | Monetary fact uses non-ISO 4217 unit | Use iso4217:USD, not utr:USD or plain 'USD' |
+| `EFM.6.7.31` | Extension element duplicates a us-gaap element | Use the existing us-gaap element; extension only for truly custom items |
+| `EFM.6.7.7`  | Presentation linkbase missing required statement | All four primary statements required in presentation linkbase |
+| `EFM.6.9.5`  | iXBRL ix:nonFraction missing format attribute | Add `format="ixt:num-dot-decimal"` to all monetary inline tags |
+| `EFM.6.3.4`  | Accession number format incorrect | Format: XXXXXXXXXX-YY-ZZZZZZ (10-digit CIK + 2-digit year + 6-digit seq) |
+
+### Common iXBRL Issues
+
+| Issue | Cause | Fix |
+|---|---|---|
+| `ixbrl:missingContext` | contextRef in ix: tag not in ix:header | Add missing context to ix:resources block |
+| `ixbrl:invalidFormat` | format= value not in ixt registry | Use only approved ixt: or ixt-sec: format strings |
+| EDGAR viewer shows blank statement | R-files missing or FilingSummary.xml wrong | Regenerate R-files via Arelle --plugins iXBRLViewerPlugin |
+| Tagged value != XBRL value | Display text and raw value mismatch after transformation | Verify ixt: format correctly transforms display_text -> raw value |
+| Orphaned contexts | Contexts declared in ix:header with no tagged facts | Remove unused contexts or add missing facts |
+
+---
+
+## Validation & QA
+
+### Instance Document
+
+- [ ] All `contextRef` values declared as `<xbrli:context>` before any fact
+- [ ] All `unitRef` values declared as `<xbrli:unit>` before any fact
+- [ ] Every numeric fact has `decimals` attribute (not `precision` — deprecated)
+- [ ] decimals consistent per statement: -6 (millions), -3 (thousands), 0 (exact)
+- [ ] Period type matches element definition: instant facts use instant contexts
+- [ ] All namespace prefixes declared in root element `xmlns:` map
+- [ ] No duplicate facts: same element + context + unit reported once only
+- [ ] All required DEI elements present (EntityRegistrantName, CIK, DocumentPeriodEndDate, DocumentType)
+- [ ] Arelle validation exits with zero errors and zero EFM errors
+- [ ] Calculation check: zero inconsistencies for all four primary statements
+
+### Extension Taxonomy
+
+- [ ] Extension namespace unique and period-dated (e.g., `http://company.com/20241231`)
+- [ ] No extension elements that duplicate existing us-gaap/dei elements
+- [ ] All monetary extension elements have `balance` attribute (debit or credit)
+- [ ] All extension elements have labels in label linkbase (standard + totalLabel)
+- [ ] Extension schema lists all four linkbase hrefs in annotation/appinfo
+- [ ] Custom elements appear in calculation, presentation, and definition linkbases
+- [ ] Extension schema imports us-gaap-2024 and dei-2024 base taxonomies
+
+### iXBRL
+
+- [ ] All `ix:nonFraction` tags have `format` attribute from approved ixt registry
+- [ ] All `contextRef` values in ix: tags declared in `ix:header/ix:resources`
+- [ ] No orphaned contexts (contexts declared but referenced by zero facts)
+- [ ] `ix:header` contains `ix:references/link:schemaRef` pointing to company XSD
+- [ ] Negative values use `sign="-"` — not a minus sign in display_text
+- [ ] Hidden block contains all string DEI facts (EntityRegistrantName, etc.)
+- [ ] EDGAR viewer renders all four primary statements without blank rows
+
+### EDGAR Filing Package
+
+- [ ] `FilingSummary.xml` present and lists every R-file
+- [ ] All four linkbases present: `_cal.xml`, `_def.xml`, `_lab.xml`, `_pre.xml`
+- [ ] Primary document tagged with correct form type in DEI section
+- [ ] ZIP package total size within EDGAR limits (< 200 MB)
+- [ ] Pre-submission check via EDGAR EFTS: https://efts.sec.gov/LATEST/search-index
+- [ ] EDGAR Inline XBRL Viewer renders correctly before submission
+
+---
+
+## Dependencies
+
+```bash
+# XBRL validation engine
+pip install arelle-release
+
+# XML processing
+pip install lxml
+
+# Data analysis
+pip install pandas
+
+# SEC EDGAR API
+pip install requests
+
+# LibreOffice not required for XBRL — only needed for XLSX formula recalculation
+
+# Arelle CLI usage
+# arelle -f filing.htm --validate --efmValidate --logFile out.log --logFormat json
+
+# Pre-cache us-gaap-2024 taxonomy (run once, speeds up all subsequent validations)
+# arelle -f https://xbrl.fasb.org/us-gaap/2024/entire/us-gaap-entryPoint-std-2024.xsd \
+#        --cache /path/to/cache --discoverOnly
+
+# EDGAR online validation (no install needed)
+# https://efts.sec.gov/LATEST/search-index
+# https://efts.sec.gov/LATEST/search-index?q=XBRL&forms=10-K
+```

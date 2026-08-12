@@ -1,0 +1,148 @@
+name: Swarmite S53 Calibrated Residual-State Model Averaging
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s53.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Repair S52 completion and start S53
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text())
+          s52=next(x for x in q['queue'] if x.get('id')=='EXP-002S52')
+          trp=Path('experiments/swarmite-exp002/EXP-002S52_TRAINING_RESULT.json'); tr=json.loads(trp.read_text())
+          grid=tr.get('grid') or []
+          sm=(grid[0].get('summary') if grid else {}) or {}
+          auc=sm.get('specialist_win_auc'); pb=sm.get('specialist_win_brier'); cb=sm.get('constant_prevalence_brier')
+          finding=f"S52 was falsified at training: the 42-feature latent residual-state model showed useful specialist-win discrimination (training AUC {auc}, Brier {pb} versus constant {cb}) but every preregistered hard-selection rule used the specialist zero times, so no rule qualified. Hard selection, not the latent representation itself, is the immediate failure mode."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          ev=Path('experiments/swarmite-exp002/EXP-002S52_EVALUATION.md')
+          ev.write_text('# EXP-002S52 Evaluation\n\n**Disposition:** FALSIFIED_AT_TRAINING\n\n'+finding+'\n\n## Execution note\nThe original workflow correctly stopped scientific progression at the training gate, but its subsequent validation step failed while attempting to `git add` a deliberately absent validation artifact. That workflow-control failure is repaired here without exposing validation or confirmation worlds.\n\n## Next\nTest continuous residual-state-driven terminal model averaging. Do not retune S52 hard cutoffs.\n')
+          s52['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S52_EVALUATION.md'
+          s53=next((x for x in q['queue'] if x.get('id')=='EXP-002S53'),None)
+          if s53 is None:
+              s53={'id':'EXP-002S53','title':'Calibrated residual-state terminal model averaging','priority':47.75,'status':'PENDING','depends_on':['EXP-002S52'],'rationale':'S52 latent features discriminated specialist wins on training but hard thresholds selected no specialist worlds. Replace brittle hard selection with bounded continuous terminal-only averaging driven by the frozen S52 observable latent predictions.'}
+              q['queue'].append(s53)
+          s53.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S53_CALIBRATED_RESIDUAL_MODEL_AVERAGING_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s53_calibrated_average.py','runner_commit':'71d9aea5af22cc1e0d48f224b993c8487a1fba8d','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics','mechanics':'2 linear + 2 heteroskedastic','training':'64 + 64','validation':'32 + 32','confirmation':'64 + 64'}})
+          q['version']='10.0'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json experiments/swarmite-exp002/EXP-002S52_EVALUATION.md
+          git diff --cached --quiet || git commit -m 'Evaluate S52 and start EXP-002S53'
+          git push
+      - name: Mechanics
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s53_calibrated_average as s53
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S53')
+          model=s53.load_s52_model(); rows=s53.generate(80501,2,model); ok=s53.mechanics(rows,2)
+          Path('EXP-002S53_MECHANICS_RESULT.json').write_text(json.dumps({'passed':ok,'rows':rows},indent=2)); it['mechanics_artifact']='experiments/swarmite-exp002/EXP-002S53_MECHANICS_RESULT.json'
+          if ok: it['checkpoint']={'state':'mechanics_passed','next_stage':'training'}
+          else: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_mechanics','next_action':'repair S53 mechanics without exposing training'}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S53_MECHANICS_RESULT.json ../swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S53 mechanics gate'
+          git push
+      - name: Training
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s53_calibrated_average as s53
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S53')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='mechanics_passed': raise SystemExit(0)
+          model=s53.load_s52_model(); rows=s53.generate(80601,64,model); ok=s53.mechanics(rows,64); setting,grid=s53.select_setting(rows) if ok else (None,[])
+          out={'mechanics_ok':ok,'selected_setting':setting,'grid':grid}; Path('EXP-002S53_TRAINING_RESULT.json').write_text(json.dumps(out,indent=2)); it['training_artifact']='experiments/swarmite-exp002/EXP-002S53_TRAINING_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_training_mechanics','next_action':'repair mechanics without validation exposure'}
+          elif setting is None: it['status']='COMPLETE_FALSIFIED_AT_TRAINING'; it['checkpoint']={'state':'complete','disposition':'FALSIFIED_AT_TRAINING'}
+          else: it['checkpoint']={'state':'training_passed','next_stage':'validation','selected_setting':list(setting)}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S53_TRAINING_RESULT.json ../swarmite-queue/QUEUE.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S53 training gate'
+          git push
+      - name: Validation
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s53_calibrated_average as s53
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S53')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='training_passed': raise SystemExit(0)
+          setting=tuple(it['checkpoint']['selected_setting']); model=s53.load_s52_model(); rows=s53.generate(81001,32,model); ok=s53.mechanics(rows,32); ev=s53.evaluate(rows,setting,25355) if ok else None
+          Path('EXP-002S53_VALIDATION_RESULT.json').write_text(json.dumps({'mechanics_ok':ok,'evaluation':ev},indent=2)); it['validation_artifact']='experiments/swarmite-exp002/EXP-002S53_VALIDATION_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_validation_mechanics','next_action':'repair without confirmation exposure'}
+          elif not s53.qualifies(ev,validation=True): it['status']='COMPLETE_FALSIFIED_ON_VALIDATION'; it['checkpoint']={'state':'complete','disposition':'FALSIFIED_ON_VALIDATION','validation':ev}
+          else: it['checkpoint']={'state':'validation_passed','next_stage':'confirmation','selected_setting':list(setting),'validation':ev}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S53_VALIDATION_RESULT.json ../swarmite-queue/QUEUE.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S53 validation gate'
+          git push
+      - name: Confirmation
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s53_calibrated_average as s53
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S53')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='validation_passed': raise SystemExit(0)
+          setting=tuple(it['checkpoint']['selected_setting']); model=s53.load_s52_model(); rows=s53.generate(81501,64,model); ok=s53.mechanics(rows,64); ev=s53.evaluate(rows,setting,25356) if ok else None
+          Path('EXP-002S53_CONFIRMATION_RESULT.json').write_text(json.dumps({'mechanics_ok':ok,'evaluation':ev},indent=2)); it['result_artifact']='experiments/swarmite-exp002/EXP-002S53_CONFIRMATION_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_confirmation_mechanics','next_action':'repair confirmation mechanics'}
+          elif s53.qualifies(ev,validation=True,confirmation=True): it['status']='COMPLETE_SUPPORTED'; it['checkpoint']={'state':'complete','disposition':'SUPPORTED'}; it['result_summary']=ev
+          else: it['status']='COMPLETE_FALSIFIED_ON_CONFIRMATION'; it['checkpoint']={'state':'complete','disposition':'FALSIFIED_ON_CONFIRMATION','confirmation':ev}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S53_CONFIRMATION_RESULT.json ../swarmite-queue/QUEUE.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S53 confirmation'
+          git push
+      - name: Evaluate and enqueue S54
+        if: always()
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S53'); disp=it.get('checkpoint',{}).get('disposition')
+          if not disp:
+              qp.write_text(json.dumps(q,indent=2)); raise SystemExit(0)
+          tr=json.loads(Path('EXP-002S53_TRAINING_RESULT.json').read_text()) if Path('EXP-002S53_TRAINING_RESULT.json').exists() else {}
+          va=json.loads(Path('EXP-002S53_VALIDATION_RESULT.json').read_text()) if Path('EXP-002S53_VALIDATION_RESULT.json').exists() else {}
+          co=json.loads(Path('EXP-002S53_CONFIRMATION_RESULT.json').read_text()) if Path('EXP-002S53_CONFIRMATION_RESULT.json').exists() else {}
+          ev=(co.get('evaluation') or va.get('evaluation') or {})
+          if disp=='SUPPORTED':
+              title='S53 breadth transfer without retuning'; rationale='S53 supported continuous latent residual-state terminal averaging. Freeze its setting and test transfer across weak-effect, compound nonlinear/heavy-tail, topology, joint, and heteroskedastic regimes without retuning.'
+          elif disp=='FALSIFIED_AT_TRAINING':
+              title='Nodewise residual-process posterior composition'; rationale='S53 falsified continuous graph-level soft averaging despite useful S52 latent discrimination. Change representation granularity: infer residual-process adequacy nodewise and compose terminal structure locally rather than retuning graph-level caps or temperatures.'
+          else:
+              title='Posterior uncertainty over residual-process classes'; rationale='S53 graph-level soft averaging passed training but failed prospective transfer. Replace a single deterministic specialist mass with explicit terminal posterior uncertainty over residual-process classes; preserve planning, S30 anchor, and negative results.'
+          if not any(x.get('id')=='EXP-002S54' for x in q['queue']): q['queue'].append({'id':'EXP-002S54','title':title,'priority':47.5,'status':'PENDING','depends_on':['EXP-002S53'],'rationale':rationale})
+          finding=f'S53 disposition {disp}. Continuous terminal-only averaging driven by the frozen S52 latent residual-state model was tested prospectively against the frozen S46/S30 matched control with planning unchanged.'
+          if ev: finding += f" Paired edge difference {ev.get('paired_mean_edge_difference')}, bootstrap {ev.get('bootstrap95_paired_edge_difference')}, mean specialist weight {ev.get('mean_specialist_weight')}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          Path('EXP-002S53_EVALUATION.md').write_text('# EXP-002S53 Evaluation\n\n**Disposition:** '+disp+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n')
+          it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S53_EVALUATION.md'; q['version']='10.1'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S53_EVALUATION.md ../swarmite-queue/QUEUE.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m 'Evaluate EXP-002S53 and enqueue successor'
+          git push

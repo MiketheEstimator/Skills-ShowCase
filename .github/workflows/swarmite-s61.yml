@@ -1,0 +1,150 @@
+name: Swarmite S61 Bounded Predictive-State Structural Correction
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s61.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Start S61
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S61')
+          if it.get('status')=='PENDING':
+              it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S61_BOUNDED_PREDICTIVE_STATE_STRUCTURAL_CORRECTION_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s61_bounded_predictive_state_structural_correction.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics','mechanics':'2 linear + 2 heteroskedastic','training':'64 + 64','validation':'32 + 32','confirmation':'64 + 64'}})
+              q['version']='11.6'
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Start EXP-002S61 predictive-state structural correction'
+          git push
+      - name: Mechanics
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s61_bounded_predictive_state_structural_correction as s61
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S61')
+          if it.get('status')!='RUNNING': raise SystemExit(0)
+          rows=s61.generate(94101,2); ok=s61.mechanics(rows,2)
+          Path('EXP-002S61_MECHANICS_RESULT.json').write_text(json.dumps({'passed':ok,'rows':rows},indent=2)); it['mechanics_artifact']='experiments/swarmite-exp002/EXP-002S61_MECHANICS_RESULT.json'
+          if ok: it['checkpoint']={'state':'mechanics_passed','next_stage':'training'}
+          else: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_mechanics','next_action':'repair S61 mechanics without exposing training panel'}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S61_MECHANICS_RESULT.json ../swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S61 mechanics gate'
+          git push
+      - name: Training
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s61_bounded_predictive_state_structural_correction as s61
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S61')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='mechanics_passed': raise SystemExit(0)
+          rows=s61.generate(94201,64); ok=s61.mechanics(rows,64)
+          if not ok:
+              result={'mechanics_ok':False}; Path('EXP-002S61_TRAINING_RESULT.json').write_text(json.dumps(result,indent=2)); it['status']='BLOCKED_EXECUTION_TRAINING_MECHANICS'; it['checkpoint']={'state':'blocked_training_mechanics','next_action':'repair without opening validation'}
+          else:
+              model=s61.train_model(rows); ev=s61.evaluate(rows,model,26162); passed=s61.qualifies(ev); result={'mechanics_ok':True,'model':model,'evaluation':ev,'qualified':passed}; Path('EXP-002S61_TRAINING_RESULT.json').write_text(json.dumps(result,indent=2)); Path('EXP-002S61_MODEL.json').write_text(json.dumps(model,indent=2))
+              if passed: it['checkpoint']={'state':'training_passed','next_stage':'validation','training':ev}; it['model_artifact']='experiments/swarmite-exp002/EXP-002S61_MODEL.json'
+              else:
+                  disp=s61.failure_class(ev)+'_AT_TRAINING'; it['status']='COMPLETE_'+disp; it['checkpoint']={'state':'complete','disposition':disp,'training':ev}; it['result_summary']=ev
+          it['training_artifact']='experiments/swarmite-exp002/EXP-002S61_TRAINING_RESULT.json'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S61_TRAINING_RESULT.json ../swarmite-queue/QUEUE.json
+          test ! -f EXP-002S61_MODEL.json || git add EXP-002S61_MODEL.json
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S61 training gate'
+          git push
+      - name: Validation
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s61_bounded_predictive_state_structural_correction as s61
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S61')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='training_passed': raise SystemExit(0)
+          model=json.loads(Path('EXP-002S61_MODEL.json').read_text()); rows=s61.generate(94601,32); ok=s61.mechanics(rows,32); ev=s61.evaluate(rows,model,26163) if ok else None; passed=bool(ok and s61.qualifies(ev,validation=True))
+          Path('EXP-002S61_VALIDATION_RESULT.json').write_text(json.dumps({'mechanics_ok':ok,'evaluation':ev,'qualified':passed},indent=2)); it['validation_artifact']='experiments/swarmite-exp002/EXP-002S61_VALIDATION_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_VALIDATION_MECHANICS'; it['checkpoint']={'state':'blocked_validation_mechanics','next_action':'repair without opening confirmation'}
+          elif passed: it['checkpoint']={'state':'validation_passed','next_stage':'confirmation','validation':ev}
+          else:
+              disp=s61.failure_class(ev)+'_ON_VALIDATION'; it['status']='COMPLETE_'+disp; it['checkpoint']={'state':'complete','disposition':disp,'validation':ev}; it['result_summary']=ev
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          test ! -f EXP-002S61_VALIDATION_RESULT.json || git add EXP-002S61_VALIDATION_RESULT.json
+          git add ../swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S61 validation gate'
+          git push
+      - name: Confirmation
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s61_bounded_predictive_state_structural_correction as s61
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S61')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='validation_passed': raise SystemExit(0)
+          model=json.loads(Path('EXP-002S61_MODEL.json').read_text()); rows=s61.generate(94901,64); ok=s61.mechanics(rows,64); ev=s61.evaluate(rows,model,26164) if ok else None; passed=bool(ok and s61.qualifies(ev,validation=True,confirmation=True))
+          Path('EXP-002S61_CONFIRMATION_RESULT.json').write_text(json.dumps({'mechanics_ok':ok,'evaluation':ev,'qualified':passed},indent=2)); it['confirmation_artifact']='experiments/swarmite-exp002/EXP-002S61_CONFIRMATION_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_CONFIRMATION_MECHANICS'; it['checkpoint']={'state':'blocked_confirmation_mechanics','next_action':'repair confirmation mechanics'}
+          elif passed: it['status']='COMPLETE_SUPPORTED'; it['checkpoint']={'state':'complete','disposition':'SUPPORTED','confirmation':ev}; it['result_summary']=ev
+          else:
+              disp=s61.failure_class(ev)+'_ON_CONFIRMATION'; it['status']='COMPLETE_'+disp; it['checkpoint']={'state':'complete','disposition':disp,'confirmation':ev}; it['result_summary']=ev
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          test ! -f EXP-002S61_CONFIRMATION_RESULT.json || git add EXP-002S61_CONFIRMATION_RESULT.json
+          git add ../swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S61 confirmation gate'
+          git push
+      - name: Evaluate and enqueue S62
+        if: always()
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S61'); cp=it.get('checkpoint',{}); disp=cp.get('disposition')
+          if not disp: qp.write_text(json.dumps(q,indent=2)); raise SystemExit(0)
+          ev=it.get('result_summary') or cp.get('confirmation') or cp.get('validation') or cp.get('training') or {}; sid='EXP-002S62'
+          if disp=='SUPPORTED':
+              title='Predictive-state structural repair breadth transfer'
+              rationale='S61 passed prospective training, validation, and held-out confirmation. Test breadth transfer without retuning the frozen model or correction geometry.'
+          elif 'TARGETING' in disp:
+              title='Posterior-disagreement counterfactual parent proposal diagnostic'
+              rationale='S61 falsified the predictive-state targeting/proposal mechanism. Replace mean held-out-loss competitor nomination with intervention-conditioned posterior family disagreement; do not tune S61 activation or tilt strength.'
+          else:
+              title='Constrained local parent-family posterior projection'
+              rationale='S61 retained adequate predictive-state localization and competitor usefulness but falsified bounded exponential tilt geometry. Preserve the frozen evidence and test a constrained local posterior projection/replacement mechanism; do not tune tilt amplitude.'
+          if not any(x.get('id')==sid for x in q['queue']): q['queue'].append({'id':sid,'title':title,'priority':42.4,'status':'PENDING','depends_on':['EXP-002S61'],'rationale':rationale})
+          finding=(f"S61 disposition {disp}. paired edge difference {ev.get('paired_mean_edge_difference')}; "
+                   f"error-localization AUC {ev.get('error_localization_auc')}; competitor useful fraction on anchor-error nodes {ev.get('competitor_useful_fraction_on_error_nodes')}; "
+                   f"promoted large harms candidate/control {ev.get('candidate_promoted_large_harms')}/{ev.get('control_promoted_large_harms')}.")
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          Path('EXP-002S61_EVALUATION.md').write_text('# EXP-002S61 Evaluation\n\n**Disposition:** '+str(disp)+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S61_EVALUATION.md'; q['version']='11.7'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S61_EVALUATION.md ../swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Evaluate EXP-002S61 and enqueue successor'
+          git push

@@ -1,0 +1,18 @@
+{
+  "correction": "Supersedes provisional EXP-002J_J1_NONLINEAR_TRANSFER_RESULT.json and EXP-002J2_NONLINEAR_AWARE_RESULT.json for width comparisons. The provisional reconstruction used different proposal RNG streams for width-1 and width-2. Corrected design nests breadth: width-2 contains the identical width-1 base swarm plus one independent extra swarm.",
+  "J1_linear_only_n48": {
+    "status":"COMPLETE_TRANSFER_NOT_SUPPORTED",
+    "edge":{"w1":3.7854414017387636,"w2":3.853353457606581,"delta":0.06791205586781793,"ci95":[-0.05311162426936166,0.20510299152626216]},
+    "map":{"w1":0.2708333333333333,"w2":0.22916666666666666,"delta":-0.041666666666666664,"ci95":[-0.125,0.041666666666666664]},
+    "true_mass":{"w1":0.01964059626509194,"w2":0.019070651411299874,"delta":-0.000569944853792066,"ci95":[-0.0031490384434596924,0.0015526563896535704]}
+  },
+  "J2_nonlinear_aware_n96": {
+    "status":"COMPLETE_ABSOLUTE_RECOVERY_SUPPORTED_BREADTH_UNRESOLVED",
+    "edge":{"w1":3.094655204418869,"w2":3.0468451497723463,"delta":-0.0478100546465226,"ci95":[-0.15924005100145414,0.06549005873872177]},
+    "map":{"w1":0.25,"w2":0.2916666666666667,"delta":0.041666666666666664,"ci95":[0.0,0.09375]},
+    "true_mass":{"w1":0.06740916012888878,"w2":0.06647827310091987,"delta":-0.0009308870279689058,"ci95":[-0.009053618689975345,0.005756403560726194]},
+    "entropy":{"w1":4.9609235704364245,"w2":5.021708320230682,"delta":0.060784749794257985,"ci95":[-0.01870391027861001,0.14637206125829783]}
+  },
+  "established_finding": "Nonlinear-aware local likelihoods materially improve absolute recovery under nonlinear ground truth relative to linear-only inference. After correcting breadth RNG nesting, uniform width-2 is directionally beneficial under nonlinear-aware inference but remains unresolved on paired edge error at n=96; therefore the linear-benchmark breadth advantage is not yet established under model shift.",
+  "next": "EXP-002J2B model-disagreement-aware proposal ranking using an ensemble of linear and nonlinear local posteriors."
+}

@@ -1,0 +1,18 @@
+{
+  "seed": 59001,
+  "dag_mask": 270337,
+  "rho_one_edge": 0.05454545454545454,
+  "rho_voi_edge": -0.5636363636363636,
+  "delta_rho_edge": -0.6181818181818182,
+  "edge_regret_one": 0.0,
+  "edge_regret_voi": 0.2967683137092709,
+  "rho_one_brier": -0.10303030303030303,
+  "rho_voi_brier": -0.29696969696969694,
+  "rho_one_true_mass": 0.07878787878787878,
+  "rho_voi_true_mass": -0.5151515151515151,
+  "pred_continuation_planner_sims": 9933,
+  "one_step_audit_sims": 300,
+  "compute_ratio_vs_one_step": 33.376666666666665,
+  "wall_seconds": 10.629857063293457,
+  "artifact_note": "Atomic world summary persisted; full local action-level result generated under frozen EXP-002R12 protocol. This world alone already exceeds the preregistered 25x pathological-compute threshold and favors one-step EIG on terminal edge regret."
+}

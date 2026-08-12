@@ -1,0 +1,88 @@
+{
+  "mechanics_ok": true,
+  "model": {
+    "feature_names": [
+      "mean_js",
+      "max_js",
+      "anchor_mass_drop",
+      "competitor_mean_mass",
+      "competitor_vote_share",
+      "switch_rate",
+      "margin_erosion",
+      "mean_entropy"
+    ],
+    "mean": [
+      0.040887064074385096,
+      0.1046132276181774,
+      0.08886968922848928,
+      0.17500408295218184,
+      0.12013020833333346,
+      0.17088541666666673,
+      0.07713630630176513,
+      0.5763272017559318
+    ],
+    "std": [
+      0.04794754058671429,
+      0.12823383709434266,
+      0.07964923073088287,
+      0.07826875691003161,
+      0.20465010890192128,
+      0.25321971286171835,
+      0.08465926029390271,
+      0.11187169141477617
+    ],
+    "beta": [
+      -0.4482098255751637,
+      0.6053438139532886,
+      -0.11853420775547041,
+      -0.11075634572879096,
+      0.35574410964715125,
+      -0.201759826838205,
+      0.1323280821148289,
+      -0.34819187608733293,
+      0.23522965034515864
+    ],
+    "train_error_prevalence": 0.4001560062402496,
+    "ridge_lambda": 5.0,
+    "max_tilt": 0.75
+  },
+  "evaluation": {
+    "coverage": 0.890625,
+    "mean_local_tilt": 0.01834830097414305,
+    "nonzero_correction_fraction": 0.4609375,
+    "control_hybrid_mean_edge_delta": -0.4352061136310683,
+    "candidate_hybrid_mean_edge_delta": -0.43236301369894137,
+    "paired_mean_edge_difference": 0.002843099932126928,
+    "bootstrap95_paired_edge_difference": [
+      -0.0008548124941473286,
+      0.006624889445765627
+    ],
+    "control_hybrid_mean_brier_delta": -0.003292628194266857,
+    "candidate_hybrid_mean_brier_delta": -0.0032159561731537924,
+    "control_promoted_large_harms": 1,
+    "candidate_promoted_large_harms": 1,
+    "error_localization_auc": 0.7125447591145834,
+    "error_localization_brier": 0.20825195268616037,
+    "constant_prevalence_brier": 0.24000002433794693,
+    "n_anchor_error_nodes": 256,
+    "competitor_useful_fraction_on_error_nodes": 0.60546875,
+    "by_regime": {
+      "linear": {
+        "n": 64,
+        "coverage": 0.859375,
+        "control_hybrid_mean_edge_delta": 0.009200113912708592,
+        "candidate_hybrid_mean_edge_delta": 0.011998647471421408,
+        "paired_mean_edge_difference": 0.0027985335587128153
+      },
+      "heteroskedastic": {
+        "n": 64,
+        "coverage": 0.921875,
+        "control_hybrid_mean_edge_delta": -0.8796123411748451,
+        "candidate_hybrid_mean_edge_delta": -0.8767246748693042,
+        "paired_mean_edge_difference": 0.002887666305541041
+      }
+    },
+    "mechanics_ok": true
+  },
+  "qualified": false
+}

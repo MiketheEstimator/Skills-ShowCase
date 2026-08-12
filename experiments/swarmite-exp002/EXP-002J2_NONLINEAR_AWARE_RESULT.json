@@ -1,0 +1,11 @@
+{
+  "experiment": "EXP-002J2",
+  "status": "COMPLETE_ABSOLUTE_RECOVERY_SUPPORTED_BREADTH_NOT_RESTORED",
+  "design": "Same nonlinear additive five-node transfer family as J1, but local DAG likelihoods include both raw-parent and tanh(parent) features with BIC complexity penalty. Paired width-1 vs uniform width-2, n=48.",
+  "n_worlds": 48,
+  "primary": {"metric":"paired edge error","width1":3.1816453222769923,"width2":3.219720445652294,"delta_width2_minus_width1":0.0380751233753017,"bootstrap_ci95":[-0.2912164646303183,0.3768186162273607]},
+  "secondary": {"map":{"w1":0.2708333333333333,"w2":0.20833333333333334,"delta":-0.0625,"ci95":[-0.16666666666666666,0.041666666666666664]},"true_mass":{"w1":0.060885201860091935,"w2":0.05666837896660438},"posterior_entropy":{"w1":5.097532966814093,"w2":5.148083756409087}},
+  "cross_experiment_absolute_recovery": {"J1_linear_only_w1_edge":3.9387406393923263,"J2_nonlinear_aware_w1_edge":3.1816453222769923,"improvement":-0.757095317115334,"J1_linear_only_w2_edge":4.087459853850846,"J2_nonlinear_aware_w2_edge":3.219720445652294,"improvement":-0.8677394081985519},
+  "interpretation": "Nonlinear-aware inference materially repairs absolute recovery under nonlinear ground truth, confirming that J1's large degradation was substantially driven by likelihood misspecification. However, the linear-benchmark width-2 proposal-breadth advantage still does not transfer: the paired edge-error interval remains wide and centered near zero, and MAP does not favor width-2. The next mechanism should therefore target proposal ranking under model uncertainty rather than add search depth or more unconditional breadth.",
+  "next": "EXP-002J2B robust model-ensemble proposal judge using disagreement-aware scoring."
+}

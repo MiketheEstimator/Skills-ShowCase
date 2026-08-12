@@ -1,0 +1,56 @@
+name: Swarmite S70 Response Calibration
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s70.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install numpy
+      - name: Start S70
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S70')
+          if it.get('status')=='PENDING':
+            it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S70_RESPONSE_CALIBRATION_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s70_response_calibration.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics_crossfit_heldout','mechanics':'2+2','training':'64+64','heldout':'64+64'}}); q['version']='13.4'; p.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker; git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Start EXP-002S70 response calibration'; git push
+      - name: Execute S70
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python swarmite_exp002_s70_response_calibration.py > EXP-002S70_RESULT.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); p=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S70'); z=json.loads(Path('EXP-002S70_RESULT.json').read_text()); d=z.get('disposition','BLOCKED_EXECUTION_UNKNOWN'); it['result_artifact']='experiments/swarmite-exp002/EXP-002S70_RESULT.json'; it['result_summary']={'heldout':z.get('heldout',{}),'coverage_error':z.get('coverage_error',{}),'crossfit_training':z.get('crossfit_training',{})}; it['checkpoint']={'state':'blocked' if d.startswith('BLOCKED') else 'complete','disposition':d,'next_stage':'repair_execution' if d.startswith('BLOCKED') else 'evaluate_enqueue'}; it['status']=('BLOCKED_'+d.removeprefix('BLOCKED_')) if d.startswith('BLOCKED') else 'COMPLETE_'+d; p.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S70_RESULT.json ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S70 result'; git push
+      - name: Evaluate and enqueue S71
+        if: always()
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); p=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S70'); d=it.get('checkpoint',{}).get('disposition'); ev=it.get('result_summary',{})
+          if not d or d.startswith('BLOCKED'): raise SystemExit(0)
+          if d=='RESPONSE_CALIBRATION_SUPPORTED': title='Calibrated branch utility planner test'; rationale='S70 repaired held-out intervention-response calibration without regime labels. Retest branch-aware acquisition utility using only the frozen calibrated predictive branches against matched EIG.'
+          else: title='Observable response-state conditional calibration diagnostic'; rationale='S70 falsified global predictive-dispersion conditioning. Test richer truth-free response-state features for calibration heterogeneity before any further planner modification; do not retune S70 bins or shrinkage.'
+          if not any(x.get('id')=='EXP-002S71' for x in q['queue']): q['queue'].append({'id':'EXP-002S71','title':title,'priority':39.9,'status':'PENDING','depends_on':['EXP-002S70'],'rationale':rationale})
+          finding=f"S70 disposition {d}. Held-out calibration: {ev.get('heldout')}; coverage-error summary: {ev.get('coverage_error')}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          Path('EXP-002S70_EVALUATION.md').write_text('# EXP-002S70 Evaluation\n\n**Disposition:** '+d+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S70_EVALUATION.md'; q['version']='13.5'; p.write_text(json.dumps(q,indent=2))
+          PY
+          git add ../swarmite-queue/QUEUE.json EXP-002S70_EVALUATION.md; git diff --cached --quiet || git commit -m 'Evaluate EXP-002S70 and enqueue successor'; git push

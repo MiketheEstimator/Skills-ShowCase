@@ -1,0 +1,92 @@
+name: Swarmite S59 Residual-State Evidence Decomposition
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s59.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Start S59
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S59')
+          it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S59_RESIDUAL_STATE_EVIDENCE_DECOMPOSITION_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s59_residual_state_evidence_decomposition.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics','mechanics':'2 linear + 2 heteroskedastic','diagnostic':'64 + 64'}})
+          q['version']='11.2'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Start EXP-002S59 diagnostic'
+          git push
+      - name: Mechanics
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s59_residual_state_evidence_decomposition as s59
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S59')
+          rows=s59.generate(92001,2); ok=s59.mechanics(rows,2)
+          Path('EXP-002S59_MECHANICS_RESULT.json').write_text(json.dumps({'passed':ok,'rows':rows},indent=2)); it['mechanics_artifact']='experiments/swarmite-exp002/EXP-002S59_MECHANICS_RESULT.json'
+          if ok: it['checkpoint']={'state':'mechanics_passed','next_stage':'diagnostic'}
+          else: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_mechanics','next_action':'repair S59 mechanics without exposing diagnostic panel'}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S59_MECHANICS_RESULT.json ../swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S59 mechanics gate'
+          git push
+      - name: Diagnostic panel
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s59_residual_state_evidence_decomposition as s59
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S59')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='mechanics_passed': raise SystemExit(0)
+          rows=s59.generate(92101,64); ok=s59.mechanics(rows,64); ev=s59.evaluate(rows) if ok else None; disp=s59.disposition(ev) if ok else 'BLOCKED_MECHANICS'
+          Path('EXP-002S59_DIAGNOSTIC_RESULT.json').write_text(json.dumps({'mechanics_ok':ok,'evaluation':ev,'disposition':disp,'node_rows':rows},indent=2)); it['result_artifact']='experiments/swarmite-exp002/EXP-002S59_DIAGNOSTIC_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_diagnostic_mechanics','next_action':'repair diagnostic mechanics'}
+          else: it['status']='COMPLETE_DIAGNOSTIC_SUPPORTED' if disp!='EVIDENCE_NOT_ALIGNED' else 'COMPLETE_DIAGNOSTIC_FALSIFIED'; it['checkpoint']={'state':'complete','disposition':disp,'diagnostic':ev}; it['result_summary']=ev
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S59_DIAGNOSTIC_RESULT.json ../swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S59 diagnostic result'
+          git push
+      - name: Evaluate and enqueue S60
+        if: always()
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S59'); disp=it.get('checkpoint',{}).get('disposition')
+          if not disp: qp.write_text(json.dumps(q,indent=2)); raise SystemExit(0)
+          ev=it.get('checkpoint',{}).get('diagnostic') or {}
+          if disp=='EVIDENCE_ALIGNED_DIRECTION_WRONG':
+              title='Residual-error detector with sign-decoupled correction'; rationale='S59 found residual-state evidence locates anchor ranking errors but S58 applies it in the wrong direction. Preserve the detector representation, decouple sign/magnitude from the residual likelihood, and prospectively test bounded targeted correction against S46/S30.'
+          elif disp=='EVIDENCE_ALIGNED_PARTIAL_CORRECTION':
+              title='Bounded targeted family-rank correction'; rationale='S59 found useful error localization and partially correct directional evidence, but direct S58 replacement repairs too few ranking errors. Fit a bounded targeted correction only on high-risk nodes with separate training, validation, and confirmation.'
+          elif disp=='EVIDENCE_ALIGNED_CORRECTION_SUPPORTED':
+              title='Prospective residual-error targeted family correction'; rationale='S59 found error localization and substantial parent-rank repair. Convert the diagnostic into a bounded prospective policy with fresh train/validation/confirmation splits and frozen S46/S30 controls.'
+          else:
+              title='Counterfactual predictive residual-state representation diagnostic'; rationale='S59 falsified the S56-S58 residual-state evidence family as a locator of structural ranking errors. Change representation upstream to intervention-conditioned predictive residual behavior rather than retuning residual likelihood scores.'
+          sid='EXP-002S60'
+          if not any(x.get('id')==sid for x in q['queue']): q['queue'].append({'id':sid,'title':title,'priority':43.0,'status':'PENDING','depends_on':['EXP-002S59'],'rationale':rationale})
+          finding=f"S59 disposition {disp}. Best observable residual-state AUC for anchor parent-ranking errors {ev.get('best_auc')}; mean S58 correction delta on anchor-error nodes {ev.get('mean_correction_delta_error_nodes')}; positive-correction fraction {ev.get('fraction_positive_correction_error_nodes')}; repaired-error fraction {ev.get('fraction_repaired_error_nodes')}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          Path('EXP-002S59_EVALUATION.md').write_text('# EXP-002S59 Evaluation\n\n**Disposition:** '+str(disp)+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S59_EVALUATION.md'; q['version']='11.3'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S59_EVALUATION.md ../swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Evaluate EXP-002S59 and enqueue successor'
+          git push

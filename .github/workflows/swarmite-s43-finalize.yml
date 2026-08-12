@@ -1,0 +1,26 @@
+name: Swarmite S43 Finalize
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s43-finalize.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Execute and persist EXP-002S43
+        working-directory: experiments/swarmite-exp002
+        run: python finalize_exp002_s43.py
+      - name: Commit scientific state
+        run: |
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-exp002/EXP-002S43_RESULT.json experiments/swarmite-exp002/EXP-002S43_EVALUATION.md experiments/swarmite-queue/QUEUE.json
+          git commit -m 'Complete EXP-002S43 class-aware decision experiment'
+          git push

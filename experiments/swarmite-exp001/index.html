@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Swarmite Experiment 001 — Adaptive Causal Discovery</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#111;background:#f7f7f5}*{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:auto;padding:28px}h1{font-size:32px;margin:0 0 8px}h2{font-size:18px;margin:0 0 12px}.sub{color:#555;margin-bottom:24px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card{background:white;border:1px solid #ddd;border-radius:14px;padding:16px}.metric{font-size:28px;font-weight:700}.label{font-size:12px;color:#666;text-transform:uppercase;letter-spacing:.06em}.controls{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}button,select,input{font:inherit;border:1px solid #bbb;border-radius:10px;padding:10px 12px;background:white}button{cursor:pointer;font-weight:650}button.primary{background:#111;color:white;border-color:#111}.panel{background:white;border:1px solid #ddd;border-radius:14px;padding:18px;margin-top:14px}.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}.bar{height:10px;background:#ececec;border-radius:20px;overflow:hidden}.bar>span{display:block;height:100%;background:#111}.tiny{font-size:12px;color:#666}.log{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;white-space:pre-wrap;max-height:330px;overflow:auto;background:#fafafa;border-radius:10px;padding:12px}.tag{display:inline-block;padding:3px 8px;border-radius:999px;background:#eee;font-size:12px;margin-right:6px}.good{font-weight:700}.footer{margin:24px 0;color:#666;font-size:12px}@media(max-width:800px){.grid{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main>
+<h1>SWARMITE EXPERIMENT 001</h1>
+<div class="sub">Adaptive Causal Discovery — looped experiment design that learns which experimental strategy produces the most information per unit cost.</div>
+
+<div class="controls">
+<label>Worlds <input id="worlds" type="number" min="10" max="2000" value="250" style="width:90px"></label>
+<label>Budget <input id="budget" type="number" min="3" max="100" value="20" style="width:80px"></label>
+<label>Variables <input id="vars" type="number" min="4" max="30" value="10" style="width:80px"></label>
+<label>Policy <select id="policy"><option value="adaptive">Adaptive Scientific Swarm</option><option value="info">Information Gain</option><option value="falsify">Falsification</option><option value="cheap">Cheapest Test</option><option value="random">Random Control</option></select></label>
+<button class="primary" id="run">Run Experiment</button>
+<button id="reset">Reset Learned Policy</button>
+<button id="download">Download JSON</button>
+</div>
+
+<div class="grid">
+<div class="card"><div class="label">Graph recovery</div><div class="metric" id="accuracy">—</div><div class="tiny">mean edge accuracy</div></div>
+<div class="card"><div class="label">Info / cost</div><div class="metric" id="efficiency">—</div><div class="tiny">uncertainty reduction per intervention cost</div></div>
+<div class="card"><div class="label">Experiments used</div><div class="metric" id="used">—</div><div class="tiny">mean until stop/budget</div></div>
+<div class="card"><div class="label">Policy improvement</div><div class="metric" id="improve">—</div><div class="tiny">adaptive reward change</div></div>
+</div>
+
+<div class="row">
+<div class="panel"><h2>Experiment-design policy</h2><div id="policyBars"></div></div>
+<div class="panel"><h2>Scientific loop</h2>
+<span class="tag">Hypothesize</span><span class="tag">Predict</span><span class="tag">Design</span><span class="tag">Intervene</span><span class="tag">Verify</span><span class="tag">Update</span>
+<p class="tiny">Each world hides a causal DAG. The experimenter sees noisy observational evidence, proposes interventions, updates edge beliefs, and learns which design role to prefer from realized information gain.</p>
+</div>
+</div>
+
+<div class="panel"><h2>Latest run</h2><div class="log" id="log">Ready.</div></div>
+<div class="footer">Pilot implementation. Ground truth is available only to the simulator/evaluator. Adaptive policy weights persist in localStorage so repeated runs become a looped meta-experiment.</div>
+</main>
+<script>
+const ROLES=['info','falsify','cheap','novel'];
+let weights=JSON.parse(localStorage.getItem('swarmite-exp001-weights')||'{"info":1,"falsify":1,"cheap":1,"novel":1}');
+let lastResults=null;
+function randn(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function entropy(p){p=Math.min(.999999,Math.max(.000001,p));return -(p*Math.log2(p)+(1-p)*Math.log2(1-p))}
+function sigmoid(x){return 1/(1+Math.exp(-x))}
+function makeWorld(n){let edges=[];for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)if(Math.random()<Math.min(.28,2.2/n))edges.push([i,j,(Math.random()<.5?-1:1)*(0.6+Math.random()*1.4)]);return {n,edges}}
+function truthMap(w){let m={};for(const [a,b,c] of w.edges)m[a+'>'+b]=c;return m}
+function initialBeliefs(w){let b={};for(let i=0;i<w.n;i++)for(let j=i+1;j<w.n;j++)b[i+'>'+j]=0.5;return b}
+function candidates(w){let c=[];for(let i=0;i<w.n;i++)c.push({node:i,cost:1+0.08*i});return c}
+function expectedGain(cand,beliefs,w,role,visits){let score=0;for(const k in beliefs){let [a,b]=k.split('>').map(Number);if(a===cand.node){let p=beliefs[k],h=entropy(p);if(role==='info')score+=h;if(role==='falsify')score+=h*(0.75+Math.abs(.5-p));if(role==='cheap')score+=h/cand.cost;if(role==='novel')score+=h/Math.sqrt(1+(visits[cand.node]||0));}}return score/(role==='cheap'?1:cand.cost)}
+function chooseRole(policy){if(policy!=='adaptive')return policy==='random'?'random':policy;let total=ROLES.reduce((s,r)=>s+Math.exp(weights[r]),0),x=Math.random()*total;for(const r of ROLES){x-=Math.exp(weights[r]);if(x<=0)return r}return 'info'}
+function chooseCandidate(w,beliefs,role,visits){let cs=candidates(w);if(role==='random')return cs[Math.floor(Math.random()*cs.length)];let scored=cs.map(c=>[expectedGain(c,beliefs,w,role,visits)+0.02*Math.random(),c]).sort((a,b)=>b[0]-a[0]);return scored[0][1]}
+function intervene(world,node,beliefs){const truth=truthMap(world);let info=0,updates=0;for(const k in beliefs){let [a,b]=k.split('>').map(Number);if(a!==node)continue;let t=truth[k]!==undefined;let signal=(t?1:-1)*1.5+randn()*0.65;let old=beliefs[k],oldH=entropy(old),logit=Math.log(old/(1-old))+signal,newp=sigmoid(logit);beliefs[k]=newp;info+=Math.max(0,oldH-entropy(newp));updates++}return {info,updates}}
+function graphAccuracy(world,beliefs){const truth=truthMap(world);let correct=0,total=0;for(const k in beliefs){let pred=beliefs[k]>=.5,actual=truth[k]!==undefined;if(pred===actual)correct++;total++}return correct/total}
+function runWorld(n,budget,policy){let w=makeWorld(n),b=initialBeliefs(w),visits={},spent=0,info=0,steps=0,roleReward={};while(steps<budget){let role=chooseRole(policy),c=chooseCandidate(w,b,role,visits);visits[c.node]=(visits[c.node]||0)+1;let before=Object.values(b).reduce((s,p)=>s+entropy(p),0);let out=intervene(w,c.node,b);let after=Object.values(b).reduce((s,p)=>s+entropy(p),0);let gain=Math.max(0,before-after);spent+=c.cost;info+=gain;steps++;let reward=gain/c.cost;roleReward[role]=(roleReward[role]||0)+reward;if(policy==='adaptive'&&ROLES.includes(role)){weights[role]=0.985*weights[role]+0.18*(reward-0.12)}let unresolved=Object.values(b).filter(p=>p>.2&&p<.8).length;if(unresolved<Math.max(2,n/2))break}return {accuracy:graphAccuracy(w,b),eff:info/Math.max(.001,spent),steps,spent,roleReward}}
+function renderBars(){let vals=ROLES.map(r=>Math.exp(weights[r])),max=Math.max(...vals);document.getElementById('policyBars').innerHTML=ROLES.map((r,i)=>`<div style="margin:10px 0"><div class="tiny">${r.toUpperCase()} — ${weights[r].toFixed(3)}</div><div class="bar"><span style="width:${100*vals[i]/max}%"></span></div></div>`).join('')}
+function run(){const N=+worlds.value,B=+budget.value,V=+vars.value,P=policy.value;let rs=[],startW={...weights};for(let i=0;i<N;i++)rs.push(runWorld(V,B,P));localStorage.setItem('swarmite-exp001-weights',JSON.stringify(weights));let mean=k=>rs.reduce((s,r)=>s+r[k],0)/rs.length;let delta=ROLES.reduce((s,r)=>s+(weights[r]-startW[r]),0)/ROLES.length;lastResults={timestamp:new Date().toISOString(),config:{worlds:N,budget:B,variables:V,policy:P},metrics:{accuracy:mean('accuracy'),efficiency:mean('eff'),experiments:mean('steps'),policy_delta:delta},weights:{...weights}};accuracy.textContent=(100*lastResults.metrics.accuracy).toFixed(1)+'%';efficiency.textContent=lastResults.metrics.efficiency.toFixed(3);used.textContent=lastResults.metrics.experiments.toFixed(1);improve.textContent=(delta>=0?'+':'')+delta.toFixed(3);log.textContent=JSON.stringify(lastResults,null,2);renderBars()}
+run.onclick=run;reset.onclick=()=>{weights={info:1,falsify:1,cheap:1,novel:1};localStorage.removeItem('swarmite-exp001-weights');renderBars();log.textContent='Learned policy reset.'};download.onclick=()=>{if(!lastResults)return;let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(lastResults,null,2)],{type:'application/json'}));a.download='swarmite-exp001-results.json';a.click()};renderBars();
+</script></body></html>

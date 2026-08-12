@@ -1,0 +1,25 @@
+{
+  "experiment": "SWARMITE Experiment 002B — Reward Alignment Pilot",
+  "hypothesis_space_dags": 29281,
+  "resource_budget": 12,
+  "train_worlds": 5,
+  "test_worlds": 6,
+  "immediate_reward": {
+    "edge_error": 0.7803164229926391,
+    "true_mass": 0.45202726499621465,
+    "map_correct": 1.0,
+    "entropy": 2.48722128905975,
+    "spent": 11.916666666666666,
+    "policy_entries": 18
+  },
+  "terminal_credit": {
+    "edge_error": 0.9068012342611894,
+    "true_mass": 0.39771549142161716,
+    "map_correct": 1.0,
+    "entropy": 2.7417000923326733,
+    "spent": 11.666666666666666,
+    "policy_entries": 19
+  },
+  "finding": "Naive equal terminal credit assignment underperformed immediate information-gain-per-cost reward in this small exact-DAG pilot. Reward timing alone does not solve the objective mismatch; causal credit assignment across experiment sequences is the next target.",
+  "status": "pilot; too small for inferential claims"
+}

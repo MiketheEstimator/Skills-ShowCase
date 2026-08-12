@@ -1,0 +1,67 @@
+name: Swarmite S36 Global Stack Failure Diagnostic
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s36.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy scipy
+      - name: Checkpoint S36 RUNNING
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S36')
+          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S36_GLOBAL_STACK_FAILURE_DIAGNOSTIC_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s36_stack_diag.py','runner_commit':'acbdc70d34eb50278333d9ba8c1fed6911654f0d','checkpoint':{'state':'protocol_frozen','next_stage':'exact_lp_diagnostic','training_seeds':[72201,72248],'validation_seeds':[72261,72296]}})
+          q['version']='7.4'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json
+          git commit -m 'Checkpoint EXP-002S36 RUNNING'
+          git push
+      - name: Execute exact S36 diagnostic
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s36_stack_diag as s36
+          out=s36.run(); Path('EXP-002S36_RESULT.json').write_text(json.dumps(out,indent=2))
+          PY
+      - name: Evaluate and enqueue successor
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          ep=Path('experiments/swarmite-exp002'); qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S36'); sm=json.loads((ep/'EXP-002S36_RESULT.json').read_text()); disp=sm['disposition']; item['result_artifact']='experiments/swarmite-exp002/EXP-002S36_RESULT.json'; item['result_summary']=sm; item['status']='COMPLETE_DIAGNOSTIC_SUPPORTED'; item['checkpoint']={'state':'complete','disposition':disp}
+          if disp=='REGIME_HETEROGENEITY_FIXED_STACK_INSUFFICIENT':
+            succ={'id':'EXP-002S37','title':'Regime-conditional structural stacking with observable regime evidence','priority':51.75,'status':'PENDING','depends_on':['EXP-002S36'],'rationale':'S36 shows every regime has a useful represented class but no global convex stack can dominate S30; test coarse regime-conditional stacks learned on training worlds using observable regime evidence, not truth labels at deployment.'}
+          elif disp=='APPROXIMATE_SEARCH_FAILURE':
+            succ={'id':'EXP-002S37','title':'Exact LP structural stack prospective validation','priority':51.75,'status':'PENDING','depends_on':['EXP-002S36'],'rationale':'S36 shows S35 failed because approximate weight search missed a feasible exact minimax stack; prospectively validate the exact frozen LP weights on fresh worlds.'}
+          elif disp=='TRAIN_DISTRIBUTION_INSTABILITY':
+            succ={'id':'EXP-002S37','title':'Distributionally robust structural stacking','priority':51.75,'status':'PENDING','depends_on':['EXP-002S36'],'rationale':'S36 finds feasible stacks in both splits but poor cross-split transfer; test distributionally robust stacking across bootstrap/regime perturbations rather than another point-estimate stack.'}
+          elif disp=='MODEL_SET_INSUFFICIENCY':
+            succ={'id':'EXP-002S37','title':'Missing terminal class localization','priority':51.75,'status':'PENDING','depends_on':['EXP-002S36'],'rationale':'S36 shows even oracle use of represented classes is insufficient in some regimes; localize the missing mechanism/noise family before adding a new class.'}
+          else:
+            succ={'id':'EXP-002S37','title':'Structural combination failure decomposition','priority':51.75,'status':'PENDING','depends_on':['EXP-002S36'],'rationale':'S36 leaves mixed global-stack failure signals; isolate regime and cross-split contributions before another treatment.'}
+          if not any(x.get('id')=='EXP-002S37' for x in q['queue']): q['queue'].append(succ)
+          finding=f"S36 {disp}: exact training minimax worst-cell delta {sm['training_exact']['worst_cell_delta']:.4f}, validation minimax {sm['validation_exact']['worst_cell_delta']:.4f}, training oracle coverage {sm['training_oracle_coverage']:.3f}, validation oracle coverage {sm['validation_oracle_coverage']:.3f}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          q['version']='7.5'; qp.write_text(json.dumps(q,indent=2))
+          lines=['# EXP-002S36 Evaluation','',f'**Disposition:** {disp}','',f"Exact training minimax worst-cell delta: **{sm['training_exact']['worst_cell_delta']:.6f}**",f"Exact validation minimax worst-cell delta: **{sm['validation_exact']['worst_cell_delta']:.6f}**",f"Training-optimal weights on validation worst-cell delta: **{sm['training_weights_on_validation']['worst_cell_delta']:.6f}**",f"Validation-optimal weights on training worst-cell delta: **{sm['validation_weights_on_training']['worst_cell_delta']:.6f}**",f"Training oracle represented-class coverage: **{sm['training_oracle_coverage']:.3f}**",f"Validation oracle represented-class coverage: **{sm['validation_oracle_coverage']:.3f}**",f"Every cell has a negative represented class in both splits: **{sm['every_cell_has_negative_class_both_splits']}**",'', '## Next',succ['rationale']]
+          (ep/'EXP-002S36_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S36_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-exp002/EXP-002S36_* experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Complete EXP-002S36 global stack failure diagnostic'
+          git push

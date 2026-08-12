@@ -1,0 +1,81 @@
+name: Swarmite S33 Interaction Model Expansion
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s33.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Checkpoint S33 RUNNING
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S33')
+          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S33_INTERACTION_MODEL_CLASS_EXPANSION_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s33_expand.py','runner_commit':'1135b6c6d8ee87159a102b56d04680496c5550ff','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics_gate','mechanics_seeds':[72101,72102,72103,72104],'screen_seeds':[72111,72146],'classes':['LG','TG','TT','SG','ST','AG','AT'],'T':5.0}})
+          q['version']='6.8'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json
+          git commit -m 'Checkpoint EXP-002S33 RUNNING'
+          git push
+      - name: Execute S33 mechanics and prospective screen
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s33_expand as s33
+          mech=[s33.paired(s) for s in range(72101,72105)]; msm=s33.summarize(mech)
+          Path('EXP-002S33_MECHANICS_RESULT.json').write_text(json.dumps({'rows':mech,'summary':msm},indent=2))
+          if not msm['mechanics_ok']:
+            Path('EXP-002S33_SCREEN_RESULT.json').write_text(json.dumps({'rows':[],'summary':{'not_run':'mechanics_failed'}},indent=2))
+          else:
+            rows=[s33.paired(s) for s in range(72111,72147)]; sm=s33.summarize(rows)
+            Path('EXP-002S33_SCREEN_RESULT.json').write_text(json.dumps({'rows':rows,'summary':sm},indent=2))
+          PY
+      - name: Evaluate, persist lineage, and enqueue successor
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('.'); ep=root/'experiments/swarmite-exp002'; qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S33')
+          mech=json.loads((ep/'EXP-002S33_MECHANICS_RESULT.json').read_text())['summary']; screen=json.loads((ep/'EXP-002S33_SCREEN_RESULT.json').read_text()); sm=screen['summary']
+          item['mechanics_artifact']='experiments/swarmite-exp002/EXP-002S33_MECHANICS_RESULT.json'; item['screen_artifact']='experiments/swarmite-exp002/EXP-002S33_SCREEN_RESULT.json'
+          if not mech.get('mechanics_ok',False):
+            status='BLOCKED_EXECUTION_REPRODUCIBILITY'; disposition='MECHANICS_BLOCKED'
+            successor={'id':'EXP-002S34','title':'S33 execution reproducibility recovery','priority':52.5,'status':'PENDING','depends_on':['EXP-002S33'],'rationale':'S33 mechanics failed; recover the exact expanded-class execution without changing the scientific hypothesis.'}
+          elif sm.get('promote',False):
+            status='COMPLETE_SUPPORTED_SCREEN'; disposition='EXPANDED_MODEL_SET_SUPPORTED_SCREEN'
+            successor={'id':'EXP-002S34','title':'Expanded mechanism-noise model-set confirmation','priority':52.5,'status':'PENDING','depends_on':['EXP-002S33'],'rationale':'S33 beat the frozen S30 mixture prospectively; confirm the frozen seven-class science posterior on a larger held-out heterogeneous set before architectural promotion.'}
+          else:
+            status='COMPLETE_FALSIFIED_AT_SCREEN'; disposition='EXPANDED_MODEL_SET_FALSIFIED'
+            successor={'id':'EXP-002S34','title':'Expanded-class weight attribution diagnostic','priority':52.5,'status':'PENDING','depends_on':['EXP-002S33'],'rationale':'S33 expanded the represented mechanism×noise classes but failed promotion; diagnose whether predictive weighting, class dilution, or residual model-set insufficiency caused failure before changing temperature or adding classes.'}
+          item['status']=status; item['checkpoint']={'state':'complete','disposition':disposition}; item['result_summary']=sm
+          if not any(x.get('id')=='EXP-002S34' for x in q['queue']): q['queue'].append(successor)
+          finding=(f"S33 {disposition}: seven-class mechanism×noise terminal expansion versus frozen S30 on 36 fresh worlds; " + (f"edge delta vs S30 {sm.get('mean_edge_delta_vs_s30'):.4f}, CI {sm.get('bootstrap95_edge_delta_vs_s30')}, Brier {sm.get('mean_brier_delta_vs_s30'):.4f}, harms {sm.get('large_harms_vs_s30')}." if 'mean_edge_delta_vs_s30' in sm else 'mechanics did not pass.'))
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          q['version']='6.9'; qp.write_text(json.dumps(q,indent=2))
+          lines=['# EXP-002S33 Evaluation','',f'**Disposition:** {disposition}','']
+          if 'mean_edge_delta_vs_s30' in sm:
+            lines += [f"Expanded minus frozen S30 edge delta: **{sm['mean_edge_delta_vs_s30']:.6f}**; bootstrap 95% CI {sm['bootstrap95_edge_delta_vs_s30']}",f"Brier delta vs S30: **{sm['mean_brier_delta_vs_s30']:.6f}**",f"Large harms vs S30: **{sm['large_harms_vs_s30']}/{sm['n']}**",f"Expanded edge delta vs baseline: **{sm['mean_edge_delta_vs_baseline']:.6f}**",f"Wins vs S30: **{sm['wins_vs_s30']}/{sm['n']}**",'', '## Mean model weights']
+            for k,v in sm['mean_weights'].items(): lines.append(f'- **{k}**: {v:.4f}')
+            lines += ['', '## By factorial cell']
+            for c,v in sm['by_cell'].items(): lines.append(f"- **{c}**: Δedge vs S30 {v['mean_edge_delta_vs_s30']:.6f}; Δedge vs baseline {v['mean_edge_delta_vs_baseline']:.6f}; ΔBrier vs S30 {v['mean_brier_delta_vs_s30']:.6f}")
+          lines += ['', '## Next',successor['rationale']]
+          (ep/'EXP-002S33_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S33_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-exp002/EXP-002S33_* experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Complete EXP-002S33 interaction model expansion screen'
+          git push

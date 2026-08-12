@@ -1,0 +1,20 @@
+{
+  "experiment": "EXP-002R2",
+  "stage": "prospective_12_world_breadth_screen",
+  "engine_blob_sha": "339e622169411861592d9c0e5abd4beadc6f2ac7",
+  "manifest": "experiments/swarmite-exp002/EXP-002R2_BENCHMARK_V2_MANIFEST.json",
+  "n": 12,
+  "mean_edge_w1": 2.169458316870466,
+  "mean_edge_w2": 1.9732679503267205,
+  "mean_delta_width2_minus_width1": -0.1961903665437449,
+  "paired_bootstrap_95_ci": [-0.6877414475405422, 0.3173479756875947],
+  "map_w1": 0.4166666666666667,
+  "map_w2": 0.5833333333333334,
+  "mean_brier_w1": 0.03148791383883968,
+  "mean_brier_w2": 0.031047290357003224,
+  "mean_planner_sims_w1": 148.5,
+  "mean_planner_sims_w2": 322.0,
+  "interpretation": "Width-2 is directionally favorable on mean edge error and MAP recovery, but the primary interval crosses zero. Breadth superiority is unresolved. EXP-002R2 succeeds on its reproducibility objective independently of breadth direction.",
+  "screen_seed_range": [4000, 4011],
+  "historical_aggregate_tuning_used": false
+}

@@ -1,0 +1,16 @@
+{
+  "experiment":"EXP-002N4",
+  "status":"COMPLETE_FAILED_PREREGISTERED_CRITERIA",
+  "design":"Fresh 48-world validation of frozen C20 adaptive breadth gate",
+  "frozen_rule":"spawn second swarm iff baseline unique proposals <=4 OR normalized top-score margin <0.20",
+  "criteria":{"edge_noninferiority_margin":0.05,"max_compute_ratio":0.85},
+  "means":{
+    "TWO":{"edge_error":1.0859524243367469,"true_mass":0.2990227534116486,"map":0.875,"entropy":3.0529489842219233,"seconds":1.6959859083096187},
+    "C20":{"edge_error":1.08823877649767,"true_mass":0.2932886982568622,"map":0.8125,"entropy":3.0243747377761765,"spawn_rate":0.6741071428571429,"seconds":1.4485762417316437}
+  },
+  "paired":{"edge_delta_C20_minus_TWO":0.002286352160923095,"edge_ci95":[-0.06517411,0.07108822],"true_mass_delta":-0.005734055154786349,"map_delta":-0.0625},
+  "compute_ratio_C20_over_TWO":0.8541204467762548,
+  "criteria_result":{"edge_noninferiority":false,"compute_savings":false},
+  "interpretation":"C20 is nearly recovery-equivalent and nearly achieves the compute target, but fails both preregistered thresholds. Repeated hand-tuning of scalar breadth gates is not justified. Retain uniform width-2 as the supported benchmark and move to model-class transfer/generalization testing.",
+  "next":"EXP-002J model misspecification transfer, beginning with nonlinear additive SCMs while inference remains linear-Gaussian."
+}

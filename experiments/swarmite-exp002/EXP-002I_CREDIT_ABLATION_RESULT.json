@@ -1,0 +1,25 @@
+{
+  "experiment":"EXP-002I",
+  "status":"COMPLETE_PROMISING_UNRESOLVED",
+  "design":"Train fixed-strength standardized role bonuses from 24 matched width-2 training trajectories on correctly specified five-node linear-Gaussian worlds, then freeze and test on held-out paired worlds. Credit schemes: immediate entropy reduction, naive terminal trajectory credit, leave-one-out marginal terminal credit, trajectory-to-go structural credit, and privileged one-step structural credit.",
+  "training_role_mean_credit": {
+    "immediate_ig":{"FALSIFY":0.17185124456218775,"CHEAPEST":0.11652521906376447,"INFOGAIN":0.2227193888225988,"WEAKTIE":0.21046271256355017,"RIVAL":0.028221029399226882},
+    "naive_terminal":{"FALSIFY":0.2793341984839945,"CHEAPEST":0.18716082208615062,"INFOGAIN":0.2206647377417595,"WEAKTIE":0.1862376978344473,"RIVAL":0.20643259306789488},
+    "loo":{"FALSIFY":0.1186309975415854,"CHEAPEST":0.15565874455386058,"INFOGAIN":0.161961276918724,"WEAKTIE":0.06491900010772135,"RIVAL":0.07125052145112876},
+    "traj_to_go":{"FALSIFY":0.6388579696465582,"CHEAPEST":0.6906497439073412,"INFOGAIN":0.9567995867113749,"WEAKTIE":0.7363764135618008,"RIVAL":0.1353195780422316},
+    "one_step_struct":{"FALSIFY":0.19110964003477685,"CHEAPEST":0.17051445830954057,"INFOGAIN":0.26997145030664277,"WEAKTIE":0.09021466069541811,"RIVAL":0.09091989536916745}
+  },
+  "heldout_n24": {
+    "baseline_edge":3.506120092997367,
+    "immediate_ig":{"edge":3.4508228035108375,"delta":-0.05529728948652879,"ci95":[-0.38621009232578696,0.2792201635007208]},
+    "naive_terminal":{"edge":3.1651418614706053,"delta":-0.3409782315267611,"ci95":[-0.7267273852577477,0.004714618676908881]},
+    "loo":{"edge":3.3943390180326496,"delta":-0.11178107496471708,"ci95":[-0.33810889275991723,0.12126706966689807]},
+    "traj_to_go":{"edge":3.5149883053093975,"delta":0.008868212312031054,"ci95":[-0.23498926536975037,0.26870768736385]},
+    "one_step_struct":{"edge":3.4970146420022714,"delta":-0.009105450995095188,"ci95":[-0.3060109107780318,0.29232001755957826]}
+  },
+  "powered_naive_terminal_n96": {
+    "baseline_edge":3.5223907696327164,"naive_terminal_edge":3.4177166874924616,"delta":-0.10467408214025488,"ci95":[-0.2794095350491788,0.06424687350811474],"baseline_map":0.22916666666666666,"naive_map":0.3125,"baseline_entropy":6.472977837998029,"naive_entropy":6.439549236999132
+  },
+  "interpretation":"Naive terminal trajectory credit is the only credit scheme that remained directionally promising after powering, but its paired edge-error interval still crosses zero at n=96. Counterfactual leave-one-out and trajectory-to-go credit did not outperform the simple terminal scheme. Do not replace the supported unweighted width-2 controller yet; preserve naive-terminal role weighting as a candidate for larger or richer policy classes.",
+  "next":"EXP-002J3 hidden-confounder transfer."
+}

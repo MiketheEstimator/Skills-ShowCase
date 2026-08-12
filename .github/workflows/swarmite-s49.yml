@@ -1,0 +1,128 @@
+name: Swarmite S49 Heteroskedastic Likelihood Specialist
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s49.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Start S49
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(p.read_text())
+          it=next((x for x in q['queue'] if x.get('id')=='EXP-002S49'),None)
+          if it is None:
+              it={'id':'EXP-002S49','title':'Explicit heteroskedastic terminal likelihood specialist','priority':48.75,'depends_on':['EXP-002S48']}; q['queue'].append(it)
+          it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S49_HETEROSKEDASTIC_LIKELIHOOD_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s49_hetero_likelihood.py','runner_commit':'c31af7c3511638a91b14e22384ad5b9976ecfad6','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics','mechanics':'2 linear + 2 heteroskedastic','training':'48 + 48','validation':'24 + 24','confirmation':'48 + 48'}})
+          q['version']='9.5'; p.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Start EXP-002S49 heteroskedastic likelihood specialist'
+          git push
+      - name: Mechanics
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s49_hetero_likelihood as s49
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S49')
+          rows=s49.generate(75801,2); ok=s49.mechanics(rows,2); Path('EXP-002S49_MECHANICS_RESULT.json').write_text(json.dumps({'passed':ok,'rows':rows},indent=2)); it['mechanics_artifact']='experiments/swarmite-exp002/EXP-002S49_MECHANICS_RESULT.json'
+          if ok: it['checkpoint']={'state':'mechanics_passed','next_stage':'training'}
+          else: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_mechanics','next_action':'diagnose specialist posterior mechanics without training exposure'}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S49_MECHANICS_RESULT.json ../swarmite-queue/QUEUE.json
+          git commit -m 'Persist EXP-002S49 mechanics gate'
+          git push
+      - name: Training
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s49_hetero_likelihood as s49
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S49')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='mechanics_passed': raise SystemExit(0)
+          model,rule=s49.load_anchor(); rows=s49.generate(75901,48); beta,grid=s49.train(rows,model,rule); ok=s49.mechanics(rows,48)
+          Path('EXP-002S49_TRAINING_RESULT.json').write_text(json.dumps({'n':len(rows),'mechanics_ok':ok,'selected_beta':beta,'grid':grid,'rows':rows},indent=2)); it['training_artifact']='experiments/swarmite-exp002/EXP-002S49_TRAINING_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_training_mechanics','next_action':'diagnose without validation exposure'}
+          elif beta is None: it['status']='COMPLETE_FALSIFIED_AT_TRAINING'; it['checkpoint']={'state':'complete','disposition':'FALSIFIED_AT_TRAINING'}
+          else: it['selected_beta']=beta; it['checkpoint']={'state':'training_passed','next_stage':'validation','selected_beta':beta}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S49_TRAINING_RESULT.json ../swarmite-queue/QUEUE.json
+          git commit -m 'Persist EXP-002S49 training'
+          git push
+      - name: Validation
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s49_hetero_likelihood as s49
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S49')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='training_passed': raise SystemExit(0)
+          model,rule=s49.load_anchor(); beta=it['selected_beta']; rows=s49.generate(76301,24); ev=s49.evaluate(rows,model,rule,beta,24951); ok=s49.mechanics(rows,24) and s49.qualifies(ev)
+          Path('EXP-002S49_VALIDATION_RESULT.json').write_text(json.dumps({'passes':ok,'summary':{k:v for k,v in ev.items() if k!='rows'},'rows':ev['rows']},indent=2)); it['validation_artifact']='experiments/swarmite-exp002/EXP-002S49_VALIDATION_RESULT.json'
+          if ok: it['checkpoint']={'state':'validation_passed','next_stage':'heldout_confirmation','selected_beta':beta}
+          else: it['status']='COMPLETE_FALSIFIED_ON_VALIDATION'; it['checkpoint']={'state':'complete','disposition':'FALSIFIED_ON_VALIDATION'}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S49_VALIDATION_RESULT.json ../swarmite-queue/QUEUE.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S49 validation'
+          git push
+      - name: Confirmation
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s49_hetero_likelihood as s49
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S49')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='validation_passed': raise SystemExit(0)
+          model,rule=s49.load_anchor(); beta=it['selected_beta']; rows=s49.generate(76601,48); ev=s49.evaluate(rows,model,rule,beta,24952); ok=s49.mechanics(rows,48) and s49.qualifies(ev,True)
+          Path('EXP-002S49_CONFIRMATION_RESULT.json').write_text(json.dumps({'passes':ok,'summary':{k:v for k,v in ev.items() if k!='rows'},'rows':ev['rows']},indent=2)); it['result_artifact']='experiments/swarmite-exp002/EXP-002S49_CONFIRMATION_RESULT.json'; it['result_summary']={k:v for k,v in ev.items() if k!='rows'}; it['status']='COMPLETE_SUPPORTED' if ok else 'COMPLETE_FALSIFIED_ON_CONFIRMATION'; it['checkpoint']={'state':'complete','disposition':'HETEROSKEDASTIC_LIKELIHOOD_SPECIALIST_SUPPORTED' if ok else 'FALSIFIED_ON_CONFIRMATION'}; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S49_CONFIRMATION_RESULT.json ../swarmite-queue/QUEUE.json 2>/dev/null || true
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S49 confirmation'
+          git push
+      - name: Evaluate and enqueue S50
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S49'); status=it['status']; disp=it.get('checkpoint',{}).get('disposition',status)
+          if status=='COMPLETE_SUPPORTED':
+              title='Full breadth retest with heteroskedastic likelihood specialist'; rationale='S49 supported a changed terminal likelihood mechanism; freeze the specialist and retest the full six-regime breadth panel before reference promotion.'
+          elif status.startswith('COMPLETE_FALSIFIED'):
+              title='Explicit world-model mixture terminal inference'; rationale='S49 falsified fitted-magnitude heteroskedastic family evidence. Redirect to explicit model-class uncertainty that mixes distinct terminal world models rather than another variance threshold or likelihood tweak.'
+          else:
+              title='S49 mechanics recovery'; rationale='S49 encountered an execution invariant failure; repair exact mechanics before further scientific exposure.'
+          if not any(x.get('id')=='EXP-002S50' for x in q['queue']): q['queue'].append({'id':'EXP-002S50','title':title,'priority':48.5,'status':'PENDING','depends_on':['EXP-002S49'],'rationale':rationale})
+          finding=f"S49 {disp}: terminal-only fitted-magnitude heteroskedastic likelihood specialist tested around frozen baseline planning, S30 anchor, and S46 adjudication."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          q['version']='9.5'; it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S49_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
+          lines=['# EXP-002S49 Evaluation','',f'**Disposition:** {disp}','', 'S49 changed terminal likelihood mechanics only. Planning remained baseline-only and the frozen S46 promotion rule remained the adjudication control.']
+          for fn,label in [('EXP-002S49_VALIDATION_RESULT.json','Validation'),('EXP-002S49_CONFIRMATION_RESULT.json','Confirmation')]:
+              p=Path(fn)
+              if p.exists():
+                  z=json.loads(p.read_text()); s=z['summary']; m=s['specialist']; f=s['frozen_s46_s30']; lines += ['',f'## {label}',f"Specialist beta {s['beta']}; coverage {m['coverage']:.3f}; edge delta {m['hybrid_mean_edge_delta']:.6f}; CI {m['bootstrap95_hybrid_edge_delta']}; Brier {m['hybrid_mean_brier_delta']:.6f}; harm rate {m['promoted_large_harm_rate']:.3f}; retention {s['improvement_retained_vs_s46']:.3f}.",f"Heteroskedastic cell edge {m['by_regime']['heteroskedastic']['hybrid_mean_edge_delta']:.6f}; harm {m['by_regime']['heteroskedastic']['large_harm_rate']:.3f}. Frozen S46/S30 heteroskedastic edge {f['by_regime']['heteroskedastic']['hybrid_mean_edge_delta']:.6f}."]
+          lines += ['','## Next',rationale]; Path('EXP-002S49_EVALUATION.md').write_text('\n'.join(lines))
+          PY
+          git add EXP-002S49_EVALUATION.md ../swarmite-queue/QUEUE.json
+          git commit -m 'Evaluate EXP-002S49 and enqueue successor'
+          git push

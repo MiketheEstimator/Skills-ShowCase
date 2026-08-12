@@ -1,0 +1,11 @@
+{
+  "experiment":"EXP-002J2B",
+  "status":"COMPLETE_FALSIFIED_AT_PROSPECTIVE_SCREEN",
+  "design":"12 unseen nonlinear additive worlds; corrected nested width-2 breadth; terminal evaluation with nonlinear-aware posterior. Robust judge ranks proposals using uncertainty under averaged linear/nonlinear edge marginals plus a 0.75 model-disagreement bonus.",
+  "n_worlds":12,
+  "controls":{"width1_edge":2.8834533076742628,"width2_edge":2.8227816421469107,"width1_map":0.16666666666666666,"width2_map":0.16666666666666666},
+  "robust":{"edge":3.098218921624658,"map":0.25,"decision_change_rate":0.4479166666666667},
+  "paired":{"robust_minus_width2_edge":0.2754372794777471,"ci95":[-0.26717445686639885,0.922888246872198],"robust_minus_width1_edge":0.21476561395039487,"ci95":[-0.33102820097786634,0.8907110759349985]},
+  "interpretation":"Explicitly rewarding linear-vs-nonlinear posterior disagreement changes many actions but does not improve terminal edge recovery; the primary metric moves in the wrong direction on the preregistered prospective screen. Do not power this mechanism without a materially different proposal-value objective.",
+  "next":"Return to highest-priority runnable queue item EXP-002I before continuing hidden-confounder transfer."
+}

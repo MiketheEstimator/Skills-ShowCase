@@ -600,3 +600,148 @@ tlmgr install package-name
 # Python log parsing — stdlib only (no install needed)
 import re
 ```
+> [!NOTE]   
+>**you cannot get rendered display math inside a fenced code block**. A fenced code block is for showing literal source text, while display math is a separate Markdown/MathJax render pass. GitHub’s docs treat code blocks and mathematical expressions as different formatting features, and GitHub math rendering uses MathJax rather than code-block syntax. ([GitHub Docs][1])
+>
+So the unambiguous rule to tell any LLM is:
+
+**Use a fenced code block only to show the raw Markdown/LaTeX source.
+Use a standalone LaTeX math block outside the code fence to render the formal display equation.** ([GitHub Docs][1])
+
+Use this wording:
+
+```text
+Render all formal equations as LaTeX display math blocks, not inline math.
+When showing the source, place the raw Markdown/LaTeX in a separate fenced code block labeled markdown.
+Never put rendered math inside a code fence.
+For explanatory structure, use this order:
+1. Title
+2. Rendered display equation
+3. Fenced markdown source
+4. Symbol key
+5. Structural reading
+```
+
+Here is the **universal, low-ambiguity prompt formula**:
+
+```text
+For all mathematical expressions, use DISPLAY MATH, not inline math.
+
+REQUIRED FORMAT:
+- First, render the equation as a standalone LaTeX display block.
+- Second, provide the exact raw Markdown source in a separate fenced `markdown` code block.
+- Third, add an annotated symbol key below it.
+- Fourth, add a short structural reading of the equation.
+
+DO NOT:
+- Do not leave important equations inline unless I explicitly ask.
+- Do not put rendered math inside a code fence.
+- Do not substitute plain-text math when LaTeX display math can be used.
+```
+
+Example of the pattern you want:
+
+Rendered:
+
+$$ 
+i\hbar \frac{\partial \Psi}{\partial t} = -\frac{\hbar^2}{2m}\frac{\partial^2 \Psi}{\partial x^2} + V(x)\Psi 
+$$
+
+Source:
+```markdown
+\[ i\hbar \frac{\partial \Psi}{\partial t} = -\frac{\hbar^2}{2m}\frac{\partial^2 \Psi}{\partial x^2} + V(x)\Psi \]
+
+
+Source:
+
+```markdown
+\[
+i\hbar \frac{\partial \Psi}{\partial t}
+=
+-\frac{\hbar^2}{2m}\frac{\partial^2 \Psi}{\partial x^2}
++
+V(x)\Psi
+\]
+```
+
+Symbol key:
+
+* ( i ) = imaginary unit
+* ( \hbar ) = reduced Planck constant
+* ( \Psi ) = wavefunction
+* ( V(x) ) = potential energy
+
+Structural reading:
+
+* Left side = time evolution
+* Right side, first term = kinetic/spatial curvature term
+* Right side, second term = potential term
+
+For maximum cross-platform reliability, prefer `\[ ... \]` for display math rather than `$$ ... $$`; Overleaf specifically recommends `\[ ... \]` instead of `$$ ... $$` in LaTeX contexts. ([Overleaf][2])
+> [!NOTE]  
+> **Troubleshooting: GitHub Preview vs. Native LaTeX**
+> If your equations are failing to render in the GitHub preview, check your delimiters. GitHub Flavored Markdown (GFM) requires `$$...$$` to trigger a multi-line display math block. If you use standard LaTeX `\[ ... \]` outside of a code block, GitHub's markdown parser will strip the backslashes and break the render.
+> 
+> **The Workaround:** When building skill sheets in `.md`, use `$$` for the visual preview section so it renders correctly on GitHub, but strictly instruct the LLM to output the gold-standard `\[ ... \]` inside its fenced code blocks for the final `.tex` artifact.
+
+
+GitHub Flavored Markdown (GFM) includes a specific set of five "Alert" callouts (also known as admonitions) that natively render with distinct colors and icons in the repository preview. 
+
+([https://github.blog/changelog/2023-12-14-new-markdown-extension-alerts-provide-distinctive-styling-for-significant-content/])
+
+> [!NOTE]  
+> Useful information that users should know, even when skimming.
+
+> [!TIP]
+> Helpful advice for doing things better or more easily.
+
+> [!IMPORTANT]  
+> Key information users need to know to achieve their goal.
+
+> [!WARNING]  
+> Urgent info that needs immediate user attention to avoid problems.
+
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
+
+## So the shortest **definitive instruction** to reuse is:
+
+```text
+Use LaTeX display math for formal equations.
+Render the equation as a standalone math block using \[ ... \].
+Then show the raw source separately in a fenced markdown block.
+```
+
+And if you want the elegant format every time, use this stronger house style:
+
+```text
+HOUSE STYLE FOR FORMAL EQUATIONS:
+- All important equations must be presented in rendered LaTeX display math.
+- Immediately below each equation, include a fenced `markdown` source block containing the exact raw syntax.
+- Then include:
+  - Symbol key
+  - Structural reading
+  - Optional annotated diagram description
+- Prefer \[ ... \] over $$ ... $$.
+```
+
+The key distinction is:
+
+* **display math block** = rendered formal equation
+* **fenced code block** = literal source only
+
+They are adjacent companions, not the same object. ([GitHub Docs][1])
+
+A clean name for what you want is:
+
+**Rendered Display Math + Raw Markdown Source**
+
+Or more elegantly:
+
+**Formal Equation Block Pattern**
+
+I can also give you a one-paragraph master instruction you can paste into any LLM as your standing math-format preference.
+
+[1]: https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/writing-mathematical-expressions?utm_source=chatgpt.com "Writing mathematical expressions"
+[2]: https://www.overleaf.com/learn/latex/Errors/Display_math_should_end_with_%24%24?utm_source=chatgpt.com "Display math should end with"
+[3]: https://github.blog/changelog/2023-12-14-new-markdown-extension-alerts-provide-distinctive-styling-for-significant-content/

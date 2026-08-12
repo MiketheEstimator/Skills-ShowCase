@@ -1,0 +1,88 @@
+{
+  "mechanics_ok": true,
+  "model": {
+    "feature_names": [
+      "selected_cv_mean_loss",
+      "selected_cv_std_loss",
+      "selected_cv_worst_loss",
+      "cv_rank_volatility",
+      "cv_competitor_advantage",
+      "state_loss_range",
+      "log_competitor_advantage",
+      "anchor_competitor_score_gap"
+    ],
+    "mean": [
+      1.4483690381355112,
+      1.0548466509990813,
+      2.954942255226365,
+      0.896015625000001,
+      0.6755588038776622,
+      2.5116949865551907,
+      0.4385163781093023,
+      4.386554061982419
+    ],
+    "std": [
+      1.0805469840515738,
+      1.3726841201387294,
+      3.3032637003078404,
+      0.17659543502742667,
+      0.9181480645452925,
+      3.3127114385386887,
+      0.3528584915809787,
+      5.043078297570299
+    ],
+    "beta": [
+      -0.3807543122314088,
+      -0.4971973840254427,
+      0.15850603106774858,
+      -0.06601002418453808,
+      0.10842591676944394,
+      0.07139581391560486,
+      0.06439482541262298,
+      0.728152312327557,
+      -0.3296801729290009
+    ],
+    "train_error_prevalence": 0.4110764430577223,
+    "ridge_lambda": 5.0,
+    "max_tilt": 0.75
+  },
+  "evaluation": {
+    "coverage": 0.8828125,
+    "mean_local_tilt": 0.04635922555549632,
+    "nonzero_correction_fraction": 0.4515625,
+    "control_hybrid_mean_edge_delta": -0.39159736296808884,
+    "candidate_hybrid_mean_edge_delta": -0.37877734492586135,
+    "paired_mean_edge_difference": 0.012820018042227464,
+    "bootstrap95_paired_edge_difference": [
+      0.005783331167435181,
+      0.019889469734122506
+    ],
+    "control_hybrid_mean_brier_delta": -0.0015825967482789513,
+    "candidate_hybrid_mean_brier_delta": -0.0015177008954024046,
+    "control_promoted_large_harms": 0,
+    "candidate_promoted_large_harms": 0,
+    "error_localization_auc": 0.6561103771015925,
+    "error_localization_brier": 0.22293522205261312,
+    "constant_prevalence_brier": 0.24206789039892335,
+    "n_anchor_error_nodes": 263,
+    "competitor_useful_fraction_on_error_nodes": 0.29277566539923955,
+    "by_regime": {
+      "linear": {
+        "n": 64,
+        "coverage": 0.84375,
+        "control_hybrid_mean_edge_delta": -0.009078492132117606,
+        "candidate_hybrid_mean_edge_delta": -0.0008185736483190056,
+        "paired_mean_edge_difference": 0.0082599184837986
+      },
+      "heteroskedastic": {
+        "n": 64,
+        "coverage": 0.921875,
+        "control_hybrid_mean_edge_delta": -0.7741162338040601,
+        "candidate_hybrid_mean_edge_delta": -0.7567361162034036,
+        "paired_mean_edge_difference": 0.01738011760065633
+      }
+    },
+    "mechanics_ok": true
+  },
+  "qualified": false
+}

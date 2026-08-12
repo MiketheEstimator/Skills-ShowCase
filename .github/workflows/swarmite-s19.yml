@@ -1,0 +1,87 @@
+name: Swarmite S19 Residual Gate
+on:
+  push:
+    paths:
+      - '.github/workflows/swarmite-s19.yml'
+permissions:
+  contents: write
+jobs:
+  s19:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Run frozen S19 sequence and checkpoint queue
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import csv,json,sys
+          from pathlib import Path
+          import numpy as np
+          import swarmite_exp002_s19_ppc_gate as s19
+
+          root=Path('../..')
+          qpath=root/'experiments/swarmite-queue/QUEUE.json'
+          training=list(range(69601,69625)); validation=list(range(69701,69725)); confirmation=list(range(69801,69849))
+
+          tr=[s19.paired(s) for s in training]
+          grid,gate=s19.train(tr)
+          (Path('EXP-002S19_TRAINING_RESULT.json')).write_text(json.dumps({'rows':tr,'selected_gate':gate},indent=2))
+          with open('EXP-002S19_TRAINING_GRID.csv','w',newline='') as f:
+              w=csv.DictWriter(f,fieldnames=list(grid[0].keys())); w.writeheader(); w.writerows(grid)
+
+          q=json.loads(qpath.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S19')
+          item['runner']='experiments/swarmite-exp002/swarmite_exp002_s19_ppc_gate.py'
+          item['training_artifact']='experiments/swarmite-exp002/EXP-002S19_TRAINING_RESULT.json'
+          item['training_grid']='experiments/swarmite-exp002/EXP-002S19_TRAINING_GRID.csv'
+          if gate is None:
+              item['status']='COMPLETE_FALSIFIED_AT_TRAINING'
+              item['checkpoint']={'state':'complete','disposition':'No preregistered residual-aware gate qualified on training.'}
+              disposition='FALSIFIED_AT_TRAINING'; va=[]; co=[]; vs=None; cs=None; ci=None
+          else:
+              item['selected_gate']=gate
+              item['checkpoint']={'state':'training_complete_gate_frozen','selected_gate':gate,'next_stage':'validation'}
+              qpath.write_text(json.dumps(q,indent=2));
+              va=[s19.paired(s) for s in validation]; vs=s19.summarize(va,gate)
+              Path('EXP-002S19_VALIDATION_RESULT.json').write_text(json.dumps({'gate':gate,'rows':va,'summary':vs},indent=2))
+              item['validation_artifact']='experiments/swarmite-exp002/EXP-002S19_VALIDATION_RESULT.json'
+              vpass=bool(vs['coverage']>=.50 and vs['mean_edge_delta_promoted'] is not None and vs['mean_edge_delta_promoted']<=-.10 and vs['mean_brier_delta_promoted'] is not None and vs['mean_brier_delta_promoted']<=.005 and vs['large_harms_promoted']<=2 and vs['trace_identical_all'])
+              if not vpass:
+                  item['status']='COMPLETE_FALSIFIED_ON_VALIDATION'; disposition='FALSIFIED_ON_VALIDATION'; co=[]; cs=None; ci=None
+                  item['result_summary']=vs
+              else:
+                  item['checkpoint']={'state':'validation_passed','selected_gate':gate,'validation_summary':vs,'next_stage':'heldout_confirmation'}
+                  qpath.write_text(json.dumps(q,indent=2));
+                  co=[s19.paired(s) for s in confirmation]; cs=s19.summarize(co,gate); ci=s19.bootstrap_edge(co,gate)
+                  Path('EXP-002S19_CONFIRMATION_RESULT.json').write_text(json.dumps({'gate':gate,'rows':co,'summary':cs,'bootstrap95_edge_delta':ci},indent=2))
+                  item['result_artifact']='experiments/swarmite-exp002/EXP-002S19_CONFIRMATION_RESULT.json'
+                  cpass=bool(cs['coverage']>=.50 and cs['mean_edge_delta_promoted'] is not None and cs['mean_edge_delta_promoted']<=-.10 and ci is not None and ci[1]<0 and cs['mean_brier_delta_promoted'] is not None and cs['mean_brier_delta_promoted']<=.005 and cs['large_harms_promoted']<=4 and cs['trace_identical_all'])
+                  item['status']='COMPLETE_SUPPORTED' if cpass else 'COMPLETE_FALSIFIED_ON_CONFIRMATION'
+                  disposition='SUPPORTED' if cpass else 'FALSIFIED_ON_CONFIRMATION'; item['result_summary']={**cs,'bootstrap95_edge_delta':ci}
+
+          # S19 protocol explicitly redirects hand-engineered gate search to model-class uncertainty if it fails;
+          # even if supported, explicit model-class uncertainty remains the next materially different improvement target.
+          if not any(x.get('id')=='EXP-002S20' for x in q['queue']):
+              q['queue'].append({'id':'EXP-002S20','title':'Explicit model-class uncertainty / mixture terminal inference','priority':56.0,'status':'PENDING','depends_on':['EXP-002S19'],'rationale':('Residual-aware abstention failed; replace hand-engineered thresholding with explicit uncertainty over linear/nonlinear/noise model classes.' if disposition!='SUPPORTED' else 'Residual-aware abstention succeeded; test whether explicit model-class mixture inference can recover calibration with higher coverage than abstention.')})
+          finding=f"S19 {disposition}: residual-aware PPC gate disposition recorded; next direction is explicit model-class uncertainty rather than further hand-engineered abstention thresholds."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          q['version']='5.4'; qpath.write_text(json.dumps(q,indent=2))
+
+          lines=['# EXP-002S19 Evaluation','',f'**Disposition:** {disposition}',f'**Selected gate:** `{gate}`','']
+          if vs: lines += ['## Validation',f"- Coverage: {vs['coverage']:.3f}",f"- Mean edge delta: {vs['mean_edge_delta_promoted']:.6f}",f"- Mean Brier delta: {vs['mean_brier_delta_promoted']:.6f}",f"- Large harms: {vs['large_harms_promoted']}",'']
+          if cs: lines += ['## Held-out confirmation',f"- Coverage: {cs['coverage']:.3f}",f"- Mean edge delta: {cs['mean_edge_delta_promoted']:.6f}",f"- Bootstrap 95% edge-delta CI: {ci}",f"- Mean Brier delta: {cs['mean_brier_delta_promoted']:.6f}",f"- Large harms: {cs['large_harms_promoted']}",'']
+          lines += ['## Next direction','Explicit model-class uncertainty / mixture-of-world-model terminal inference. Do not continue threshold proliferation.']
+          Path('EXP-002S19_EVALUATION.md').write_text('\n'.join(lines))
+          item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S19_EVALUATION.md'; qpath.write_text(json.dumps(q,indent=2))
+          PY
+      - name: Commit S19 results and durable queue checkpoint
+        run: |
+          git config user.name 'swarmite-worker'
+          git config user.email 'swarmite-worker@users.noreply.github.com'
+          git add experiments/swarmite-exp002/EXP-002S19_* experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Complete EXP-002S19 residual-aware shift gate'
+          git push

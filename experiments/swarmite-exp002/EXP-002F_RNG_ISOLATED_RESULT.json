@@ -1,0 +1,22 @@
+{
+  "experiment": "EXP-002F",
+  "status": "COMPLETE_FALSIFIED_FOR_UNCONDITIONAL_DEPTH",
+  "design": "RNG-isolated one-step vs two-step lookahead ablation",
+  "n_worlds": 24,
+  "budget": 10.0,
+  "primary": {
+    "metric": "paired edge error",
+    "one_step_mean": 1.0757940530071306,
+    "two_step_mean": 1.0790904837552755,
+    "two_minus_one": 0.00329643074814454,
+    "bootstrap_ci95": [-0.12404068964723458, 0.12740611740655267]
+  },
+  "secondary": {
+    "true_mass": {"one": 0.30600183631451106, "two": 0.3002216184572108, "delta": -0.005780217857300291, "ci95": [-0.05702712820732991, 0.04630414332599977]},
+    "map_accuracy": {"one": 0.75, "two": 0.875, "delta": 0.125, "ci95": [-0.041666666666666664, 0.2916666666666667]},
+    "posterior_entropy": {"one": 3.0608200207114558, "two": 3.096068539152977, "delta": 0.0352485184415215, "ci95": [-0.11731368567650731, 0.18682639925259695]},
+    "mean_compute_seconds": {"one": 0.9361210068066915, "two": 8.381948898235956, "two_over_one_ratio": 8.953916040009156}
+  },
+  "interpretation": "After isolating proposal, planning, and observation RNG streams, unconditional two-step depth does not improve the preregistered primary metric and costs roughly nine times more compute. The nominal MAP advantage is unresolved. Earlier apparent benefits were at least partly entangled with stochastic trajectory differences.",
+  "queue_redirect": "Do not escalate directly to unconditional three-step/MCTS. Test whether cheap observable epistemic-state features can gate two-step search only in states where downstream option value is likely to justify the compute."
+}

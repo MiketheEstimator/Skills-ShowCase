@@ -1,0 +1,41 @@
+name: Swarmite S71 Response-State Calibration
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s71.yml']
+permissions: {contents: write}
+jobs:
+ run:
+  runs-on: ubuntu-latest
+  timeout-minutes: 240
+  steps:
+   - uses: actions/checkout@v4
+   - uses: actions/setup-python@v5
+     with: {python-version: '3.11'}
+   - run: pip install numpy
+   - name: Start S71
+     run: |
+      git pull --rebase
+      python - <<'PY'
+      import json
+      from pathlib import Path
+      p=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S71')
+      if it['status']=='PENDING': it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S71_RESPONSE_STATE_CALIBRATION_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s71_response_state_calibration.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics_crossfit_heldout'}}); q['version']='13.6'; p.write_text(json.dumps(q,indent=2))
+      PY
+      git config user.name swarmite-worker; git config user.email swarmite-worker@users.noreply.github.com; git add experiments/swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Start EXP-002S71 response-state calibration'; git push
+   - name: Execute and evaluate S71
+     working-directory: experiments/swarmite-exp002
+     run: |
+      git pull --rebase
+      python swarmite_exp002_s71_response_state_calibration.py > EXP-002S71_RESULT.json
+      python - <<'PY'
+      import json
+      from pathlib import Path
+      root=Path('../..'); p=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S71'); z=json.loads(Path('EXP-002S71_RESULT.json').read_text()); d=z.get('disposition','BLOCKED_EXECUTION_UNKNOWN'); it['result_artifact']='experiments/swarmite-exp002/EXP-002S71_RESULT.json'; it['result_summary']={'heldout':z.get('heldout',{}),'coverage_error':z.get('coverage_error',{}),'crossfit_training':z.get('crossfit_training',{})}; it['checkpoint']={'state':'blocked' if d.startswith('BLOCKED') else 'complete','disposition':d}; it['status']=('BLOCKED_'+d.removeprefix('BLOCKED_')) if d.startswith('BLOCKED') else 'COMPLETE_'+d
+      if not d.startswith('BLOCKED'):
+       if d=='RESPONSE_STATE_CALIBRATION_SUPPORTED': title='Frozen calibrated branch-aware planner retest'; rationale='S71 repaired response calibration using richer observable state. Freeze it and retest branch-aware acquisition against EIG without retuning.'
+       else: title='Empirical conformal intervention-response set diagnostic'; rationale='S71 falsified conditional Gaussian moment calibration. Test distribution-free empirical/conformal response sets using truth-free grouping; do not retune S70/S71 moment models.'
+       if not any(x.get('id')=='EXP-002S72' for x in q['queue']): q['queue'].append({'id':'EXP-002S72','title':title,'priority':39.8,'status':'PENDING','depends_on':['EXP-002S71'],'rationale':rationale})
+       finding=f"S71 disposition {d}. Held-out calibration: {z.get('heldout')}; coverage-error summary: {z.get('coverage_error')}."; q['established_findings'].append(finding) if finding not in q['established_findings'] else None; Path('EXP-002S71_EVALUATION.md').write_text('# EXP-002S71 Evaluation\n\n**Disposition:** '+d+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S71_EVALUATION.md'
+      q['version']='13.7'; p.write_text(json.dumps(q,indent=2))
+      PY
+      git add EXP-002S71_RESULT.json EXP-002S71_EVALUATION.md ../swarmite-queue/QUEUE.json 2>/dev/null || git add EXP-002S71_RESULT.json ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Complete EXP-002S71 and enqueue successor'; git push

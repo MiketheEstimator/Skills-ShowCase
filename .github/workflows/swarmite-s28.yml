@@ -1,0 +1,46 @@
+name: Swarmite S28 Selector Representation Diagnostic
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s28.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Execute preregistered S28 diagnostic
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s28_selector_diag as s28
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S28')
+          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S28_SELECTOR_REPRESENTATION_DIAGNOSTIC_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s28_selector_diag.py','runner_commit':'4723b3c69aef075af9e9ebab621e9e2931cc5c0f','checkpoint':{'state':'protocol_frozen','data':'S27 held-out confirmation rows only','next_stage':'diagnostic'}}); qp.write_text(json.dumps(q,indent=2))
+          res=s28.run(); Path('EXP-002S28_RESULT.json').write_text(json.dumps(res,indent=2)); item['result_artifact']='experiments/swarmite-exp002/EXP-002S28_RESULT.json'; item['result_summary']=res
+          if res['promising_representation']:
+            item['status']='COMPLETE_DIAGNOSTIC_SUPPORTED'; disposition='MULTIVARIATE_REPRESENTATION_PROMISING'; title='Fresh-world multivariate observable science selector'; rationale='S28 found preregistered multivariate observables prospectively more discriminative than tail alone on held-out S27 rows; train and validate a frozen multivariate selector only on entirely fresh worlds.'
+          else:
+            item['status']='COMPLETE_DIAGNOSTIC_FALSIFIED'; disposition='MULTIVARIATE_REPRESENTATION_NOT_SUPPORTED'; title='Direct predictive model-adequacy score diagnostic'; rationale='S28 did not show enough incremental selector information in posterior disagreement plus residual summaries; test a materially different observable model-adequacy representation rather than tuning classifiers or thresholds.'
+          item['checkpoint']={'state':'complete','disposition':disposition}
+          if not any(x.get('id')=='EXP-002S29' for x in q['queue']): q['queue'].append({'id':'EXP-002S29','title':title,'priority':53.75,'status':'PENDING','depends_on':['EXP-002S28'],'rationale':rationale})
+          finding=f"S28 {disposition}: tail-only CV AUC {res['tail_only_cv']['auc']:.3f}; multivariate CV AUC {res['multivariate_cv']['auc']:.3f}; gain {res['auc_gain']:.3f}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          q['version']='6.3'; qp.write_text(json.dumps(q,indent=2))
+          lines=['# EXP-002S28 Evaluation','',f'**Disposition:** {disposition}','',f"Tail-only CV AUC: {res['tail_only_cv']['auc']:.4f}",f"Multivariate CV AUC: {res['multivariate_cv']['auc']:.4f}",f"AUC gain: {res['auc_gain']:.4f}",f"Multivariate balanced accuracy: {res['multivariate_cv']['balanced_accuracy']:.4f}",'','## Regime error counts']
+          for reg,v in res['regime_errors'].items(): lines.append(f"- **{reg}**: n={v['n']}, beneficial={v['beneficial']}, FN={v['false_negative']}, FP={v['false_positive']}")
+          lines += ['','## Next',rationale]; Path('EXP-002S28_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S28_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
+          PY
+      - name: Persist result
+        run: |
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-exp002/EXP-002S28_* experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Complete EXP-002S28 selector representation diagnostic'
+          git push

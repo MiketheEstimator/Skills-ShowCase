@@ -1,0 +1,16 @@
+{
+  "selected": {"noisy_threshold":0.75,"coverage_threshold":0.90},
+  "test": {
+    "original": {
+      "model_aware": {"accuracy":0.9681481481,"precision":0.8729052377,"recall":0.9946029466,"f1":0.9271242579,"brier":0.0130646796,"efficiency":3.8701327238,"steps":8.56,"switches":0.0},
+      "info": {"f1":0.9196142814,"efficiency":3.8748874721,"steps":8.6633333333},
+      "novel": {"f1":0.9271242579,"efficiency":3.8701327238,"steps":8.56}
+    },
+    "transfer": {
+      "model_aware": {"accuracy":0.9497069597,"precision":0.8567606691,"recall":0.9582838859,"f1":0.9031695145,"brier":0.0348644048,"efficiency":2.1980842111,"steps":24.93,"switches":0.8833333333},
+      "info": {"f1":0.8982027889,"efficiency":2.2292511137,"steps":24.91},
+      "novel": {"f1":0.9042394939,"efficiency":2.1905872216,"steps":24.9333333333}
+    }
+  },
+  "finding": "Model-aware switching creates a Pareto compromise in noisy transfer worlds: nearly novelty-level F1 with improved efficiency, but it does not dominate pure novelty on F1."
+}

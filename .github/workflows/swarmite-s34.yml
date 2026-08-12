@@ -1,0 +1,76 @@
+name: Swarmite S34 Weight Attribution Diagnostic
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s34.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Checkpoint S34 RUNNING
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S34')
+          item.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S34_EXPANDED_CLASS_WEIGHT_DIAGNOSTIC_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s34_weight_diag.py','runner_commit':'11150fee536f88f0f078e4bd4c05cbca9ea1c890','checkpoint':{'state':'protocol_frozen','next_stage':'retrospective_diagnostic','seeds':[72111,72146]}})
+          q['version']='7.0'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json
+          git commit -m 'Checkpoint EXP-002S34 RUNNING'
+          git push
+      - name: Execute frozen S34 diagnostic
+        working-directory: experiments/swarmite-exp002
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s34_weight_diag as s34
+          rows=[s34.diagnose(s) for s in range(72111,72147)]; sm=s34.summarize(rows)
+          Path('EXP-002S34_RESULT.json').write_text(json.dumps({'rows':rows,'summary':sm},indent=2))
+          PY
+      - name: Evaluate and enqueue successor
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          ep=Path('experiments/swarmite-exp002'); qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); item=next(x for x in q['queue'] if x['id']=='EXP-002S34'); sm=json.loads((ep/'EXP-002S34_RESULT.json').read_text())['summary']; disp=sm['disposition']
+          item['result_artifact']='experiments/swarmite-exp002/EXP-002S34_RESULT.json'; item['result_summary']=sm
+          if not sm['mechanics_ok']:
+            item['status']='BLOCKED_EXECUTION_REPRODUCIBILITY'; disp='MECHANICS_BLOCKED'
+            succ={'id':'EXP-002S35','title':'S34 reproducibility recovery','priority':52.25,'status':'PENDING','depends_on':['EXP-002S34'],'rationale':'S34 reconstruction mechanics failed; recover exact diagnostic execution without changing the hypothesis.'}
+          else:
+            item['status']='COMPLETE_DIAGNOSTIC_SUPPORTED'; item['checkpoint']={'state':'complete','disposition':disp}
+            if disp=='PREDICTIVE_WEIGHT_MISALIGNMENT':
+              succ={'id':'EXP-002S35','title':'Structural-utility stacking without predictive-score weights','priority':52.25,'status':'PENDING','depends_on':['EXP-002S34'],'rationale':'S34 shows represented useful classes exist but predictive CV scores misrank structural utility; test a materially different training-only stacking objective based on terminal structural surrogate, with held-out validation and no truth at deployment.'}
+            elif disp=='CLASS_DILUTION':
+              succ={'id':'EXP-002S35','title':'Sparse posterior stacking screen','priority':52.25,'status':'PENDING','depends_on':['EXP-002S34'],'rationale':'S34 shows adequate score alignment but harmful dilution across classes; test sparse training-only posterior stacking rather than temperature retuning or hard selection.'}
+            elif disp=='MODEL_SET_INSUFFICIENCY':
+              succ={'id':'EXP-002S35','title':'Residual mechanism-class expansion diagnostic','priority':52.25,'status':'PENDING','depends_on':['EXP-002S34'],'rationale':'S34 shows the represented class set itself rarely beats S30; identify the missing mechanism family on fresh diagnostic worlds before adding another terminal class.'}
+            else:
+              succ={'id':'EXP-002S35','title':'Posterior-combination failure decomposition','priority':52.25,'status':'PENDING','depends_on':['EXP-002S34'],'rationale':'S34 yields mixed failure signals; decompose score ranking, dilution, and class coverage on a fresh factorial diagnostic before changing the model set or weighting rule.'}
+          if not any(x.get('id')=='EXP-002S35' for x in q['queue']): q['queue'].append(succ)
+          finding=f"S34 {disp}: represented-class coverage {sm['represented_class_beats_s30_rate']:.3f}, mean predictive-score/structural-utility Spearman {sm['mean_score_edge_spearman']:.3f}, top-weight/oracle match {sm['top_weight_oracle_match_rate']:.3f}, mixture regret vs represented oracle {sm['mean_mixture_regret_vs_oracle']:.3f}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          q['version']='7.1'; qp.write_text(json.dumps(q,indent=2))
+          lines=['# EXP-002S34 Evaluation','',f'**Disposition:** {disp}','',f"Represented class beats S30 rate: **{sm['represented_class_beats_s30_rate']:.3f}**",f"Mean within-world Spearman predictive score vs structural utility: **{sm['mean_score_edge_spearman']:.3f}**",f"Top-weight class equals oracle represented class: **{sm['top_weight_oracle_match_rate']:.3f}**",f"Mean expanded-mixture regret vs oracle represented class: **{sm['mean_mixture_regret_vs_oracle']:.3f}**",f"Mean S30 regret vs oracle represented class: **{sm['mean_s30_regret_vs_oracle']:.3f}**",'', '## Oracle class counts']
+          for k,v in sm['oracle_class_counts'].items(): lines.append(f'- **{k}**: {v}')
+          lines += ['', '## Top-weight class counts']
+          for k,v in sm['top_weight_class_counts'].items(): lines.append(f'- **{k}**: {v}')
+          lines += ['', '## Next',succ['rationale']]
+          (ep/'EXP-002S34_EVALUATION.md').write_text('\n'.join(lines)); item['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S34_EVALUATION.md'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-exp002/EXP-002S34_* experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Complete EXP-002S34 weight attribution diagnostic'
+          git push

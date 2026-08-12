@@ -1,0 +1,105 @@
+name: Swarmite S62 Posterior-Disagreement Parent Proposal Diagnostic
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s62.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install numpy
+      - name: Start S62
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          qp=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S62')
+          if it.get('status')=='PENDING':
+              it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S62_POSTERIOR_DISAGREEMENT_PARENT_PROPOSAL_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s62_posterior_disagreement_parent_proposal.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics','mechanics':'2 linear + 2 heteroskedastic','diagnostic':'64 + 64'}})
+              q['version']='11.8'
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker
+          git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Start EXP-002S62 posterior-disagreement diagnostic'
+          git push
+      - name: Mechanics
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s62_posterior_disagreement_parent_proposal as s62
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S62')
+          if it.get('status')!='RUNNING': raise SystemExit(0)
+          rows=s62.generate(95201,2); ok=s62.mechanics(rows,2)
+          Path('EXP-002S62_MECHANICS_RESULT.json').write_text(json.dumps({'passed':ok,'rows':rows},indent=2)); it['mechanics_artifact']='experiments/swarmite-exp002/EXP-002S62_MECHANICS_RESULT.json'
+          if ok: it['checkpoint']={'state':'mechanics_passed','next_stage':'diagnostic'}
+          else: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_mechanics','next_action':'repair S62 posterior-disagreement mechanics without exposing diagnostic panel'}
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S62_MECHANICS_RESULT.json ../swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S62 mechanics gate'
+          git push
+      - name: Diagnostic panel
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import swarmite_exp002_s62_posterior_disagreement_parent_proposal as s62
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S62')
+          if it.get('status')!='RUNNING' or it.get('checkpoint',{}).get('state')!='mechanics_passed': raise SystemExit(0)
+          rows=s62.generate(95301,64); ok=s62.mechanics(rows,64); ev=s62.evaluate(rows) if ok else None; disp=s62.disposition(ev) if ok else 'BLOCKED_EXECUTION_MECHANICS'
+          Path('EXP-002S62_DIAGNOSTIC_RESULT.json').write_text(json.dumps({'mechanics_ok':ok,'evaluation':ev,'disposition':disp,'node_rows':rows},indent=2)); it['result_artifact']='experiments/swarmite-exp002/EXP-002S62_DIAGNOSTIC_RESULT.json'
+          if not ok: it['status']='BLOCKED_EXECUTION_MECHANICS'; it['checkpoint']={'state':'blocked_diagnostic_mechanics','next_action':'repair S62 diagnostic mechanics'}
+          else:
+              it['status']='COMPLETE_DIAGNOSTIC_SUPPORTED' if disp=='POSTERIOR_DISAGREEMENT_ALIGNED' else ('COMPLETE_DIAGNOSTIC_PARTIAL' if disp in ('ERROR_LOCALIZATION_ONLY','PROPOSAL_ONLY') else 'COMPLETE_DIAGNOSTIC_FALSIFIED')
+              it['checkpoint']={'state':'complete','disposition':disp,'diagnostic':ev}; it['result_summary']=ev
+          qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S62_DIAGNOSTIC_RESULT.json ../swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Persist EXP-002S62 diagnostic result'
+          git push
+      - name: Evaluate and enqueue S63
+        if: always()
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); qp=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(qp.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S62'); cp=it.get('checkpoint',{}); disp=cp.get('disposition')
+          if not disp: qp.write_text(json.dumps(q,indent=2)); raise SystemExit(0)
+          ev=cp.get('diagnostic') or {}; sid='EXP-002S63'
+          if disp=='POSTERIOR_DISAGREEMENT_ALIGNED':
+              title='Posterior-mass counterfactual parent-family repair'
+              rationale='S62 supported both error localization and parent-family proposal. Prospectively test a bounded correction using S62 posterior-mass proposals, with fresh train/validation/confirmation panels and frozen S46/S30 controls.'
+          elif disp=='ERROR_LOCALIZATION_ONLY':
+              title='Set-valued counterfactual parent-family uncertainty diagnostic'
+              rationale='S62 localized anchor errors but single-family nomination remained unreliable. Replace a single competitor with a set-valued/top-family uncertainty representation and test whether truthful repair mass is captured without policy fitting.'
+          elif disp=='PROPOSAL_ONLY':
+              title='S60-localized S62-proposal structural repair'
+              rationale='S62 improved proposal direction without independently reliable localization. Combine the frozen S60 error-localization representation with the independently supported S62 proposal mechanism; do not retune either diagnostic.'
+          else:
+              title='Intervention-contrast invariance structural diagnostic'
+              rationale='S62 falsified leave-one-state-out local posterior disagreement as both locator and proposal mechanism. Change representation to intervention-contrast conditional independence/invariance rather than tuning posterior temperatures or thresholds.'
+          if not any(x.get('id')==sid for x in q['queue']): q['queue'].append({'id':sid,'title':title,'priority':42.3,'status':'PENDING','depends_on':['EXP-002S62'],'rationale':rationale})
+          finding=(f"S62 disposition {disp}. best posterior-disagreement AUC {ev.get('best_auc')}; bootstrap95 {ev.get('best_auc_bootstrap95')}; "
+                   f"best feature {ev.get('best_feature')}; competitor usefulness on anchor-error nodes {ev.get('competitor_useful_fraction_on_error_nodes')}; exact-truth nomination {ev.get('competitor_exact_truth_fraction_on_error_nodes')}.")
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          Path('EXP-002S62_EVALUATION.md').write_text('# EXP-002S62 Evaluation\n\n**Disposition:** '+str(disp)+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S62_EVALUATION.md'; q['version']='11.9'; qp.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S62_EVALUATION.md ../swarmite-queue/QUEUE.json
+          git diff --cached --quiet || git commit -m 'Evaluate EXP-002S62 and enqueue successor'
+          git push

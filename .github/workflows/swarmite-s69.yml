@@ -1,0 +1,56 @@
+name: Swarmite S69 Predictive Calibration
+on:
+  push:
+    paths: ['.github/workflows/swarmite-s69.yml']
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install numpy
+      - name: Start S69
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('experiments/swarmite-queue/QUEUE.json'); q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S69')
+          if it.get('status')=='PENDING':
+            it.update({'status':'RUNNING','protocol':'experiments/swarmite-exp002/EXP-002S69_INTERVENTION_RESPONSE_PREDICTIVE_CALIBRATION_PROTOCOL.md','runner':'experiments/swarmite-exp002/swarmite_exp002_s69_predictive_calibration.py','checkpoint':{'state':'protocol_frozen','next_stage':'mechanics_then_diagnostic','mechanics':'2+2','diagnostic':'64+64'}}); q['version']='13.2'; p.write_text(json.dumps(q,indent=2))
+          PY
+          git config user.name swarmite-worker; git config user.email swarmite-worker@users.noreply.github.com
+          git add experiments/swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Start EXP-002S69 predictive calibration'; git push
+      - name: Execute S69
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python swarmite_exp002_s69_predictive_calibration.py > EXP-002S69_RESULT.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); p=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S69'); z=json.loads(Path('EXP-002S69_RESULT.json').read_text()); d=z.get('disposition','BLOCKED_EXECUTION_UNKNOWN'); it['result_artifact']='experiments/swarmite-exp002/EXP-002S69_RESULT.json'; it['result_summary']=z.get('diagnostic',{}); it['checkpoint']={'state':'blocked' if d.startswith('BLOCKED') else 'complete','disposition':d,'next_stage':'repair_execution' if d.startswith('BLOCKED') else 'evaluate_enqueue'}; it['status']=('BLOCKED_'+d.removeprefix('BLOCKED_')) if d.startswith('BLOCKED') else 'COMPLETE_'+d; p.write_text(json.dumps(q,indent=2))
+          PY
+          git add EXP-002S69_RESULT.json ../swarmite-queue/QUEUE.json; git diff --cached --quiet || git commit -m 'Persist EXP-002S69 diagnostic'; git push
+      - name: Evaluate and enqueue S70
+        if: always()
+        working-directory: experiments/swarmite-exp002
+        run: |
+          git pull --rebase
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('../..'); p=root/'experiments/swarmite-queue/QUEUE.json'; q=json.loads(p.read_text()); it=next(x for x in q['queue'] if x['id']=='EXP-002S69'); d=it.get('checkpoint',{}).get('disposition'); ev=it.get('result_summary',{})
+          if not d or d.startswith('BLOCKED'): raise SystemExit(0)
+          if d=='PREDICTIVE_CALIBRATION_SUPPORTED': title='Set-valued calibrated branch utility diagnostic'; rationale='S69 found intervention-response posterior prediction adequately calibrated in both regimes. Redirect from model repair to non-scalar/set-valued acquisition utility using frozen calibrated branches.'
+          else: title='Cross-fitted intervention-response calibration layer'; rationale='S69 directly identified posterior-predictive intervention-response miscalibration. Build a cross-fitted regime-agnostic bias/dispersion calibration layer and retest predictive coverage before any planner promotion.'
+          if not any(x.get('id')=='EXP-002S70' for x in q['queue']): q['queue'].append({'id':'EXP-002S70','title':title,'priority':40.0,'status':'PENDING','depends_on':['EXP-002S69'],'rationale':rationale})
+          finding=f"S69 disposition {d}. Predictive intervention-response calibration by regime: {ev.get('by_regime')}."
+          if finding not in q['established_findings']: q['established_findings'].append(finding)
+          Path('EXP-002S69_EVALUATION.md').write_text('# EXP-002S69 Evaluation\n\n**Disposition:** '+d+'\n\n'+finding+'\n\n## Next\n'+rationale+'\n'); it['evaluation_artifact']='experiments/swarmite-exp002/EXP-002S69_EVALUATION.md'; q['version']='13.3'; p.write_text(json.dumps(q,indent=2))
+          PY
+          git add ../swarmite-queue/QUEUE.json; test ! -f EXP-002S69_EVALUATION.md || git add EXP-002S69_EVALUATION.md; git diff --cached --quiet || git commit -m 'Evaluate EXP-002S69 and enqueue successor'; git push

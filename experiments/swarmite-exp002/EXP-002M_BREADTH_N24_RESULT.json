@@ -1,0 +1,22 @@
+{
+  "experiment": "EXP-002M",
+  "status": "COMPLETE_PROMISING_UNRESOLVED",
+  "design": "RNG-isolated progressive root proposal widening: width-1 vs width-2, with width-4 screened and dropped",
+  "n_worlds": 24,
+  "primary": {
+    "metric": "paired edge error",
+    "width_1": 1.0598851223629324,
+    "width_2": 0.9761163944773448,
+    "delta": -0.08376872788558781,
+    "ci95": [-0.2251571506982076, 0.04218085836397299]
+  },
+  "secondary": {
+    "true_mass": {"w1": 0.31911532274292137, "w2": 0.3494387351748176, "delta": 0.030323412431896162, "ci95": [-0.022346404178778277, 0.08534844879308566]},
+    "map_accuracy": {"w1": 0.7916666666666666, "w2": 0.9166666666666666, "delta": 0.125, "ci95": [-0.041666666666666664, 0.2916666666666667]},
+    "posterior_entropy": {"w1": 2.983577060152689, "w2": 2.8368290207600277, "delta": -0.1467480393926615, "ci95": [-0.31614401348942145, 0.0008171980009514695]},
+    "compute_seconds": {"w1": 0.8673990468184153, "w2": 1.7159604926904042, "ratio": 1.978277318861601}
+  },
+  "width_4_screen": "No consistent benefit in the six-world screen; width-4 was more expensive and often worse than width-2.",
+  "interpretation": "Moderate breadth is the first compute-expansion strategy to show a coherent recovery signal without the ~9x cost of two-step depth. The primary CI remains unresolved at n=24, so powered replication is required.",
+  "next": "EXP-002M2 powered width-1 vs width-2 replication to n=48"
+}

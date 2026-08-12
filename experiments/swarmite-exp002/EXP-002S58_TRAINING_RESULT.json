@@ -1,0 +1,36 @@
+{
+  "mechanics_ok": true,
+  "evaluation": {
+    "coverage": 0.859375,
+    "control_hybrid_mean_edge_delta": -0.38414632407904903,
+    "candidate_hybrid_mean_edge_delta": 0.12600162526018532,
+    "paired_mean_edge_difference": 0.5101479493392345,
+    "bootstrap95_paired_edge_difference": [
+      0.40476249033225986,
+      0.6189732396167584
+    ],
+    "control_hybrid_mean_brier_delta": -0.00257581879726514,
+    "candidate_hybrid_mean_brier_delta": 0.0035483150933496082,
+    "control_promoted_large_harms": 0,
+    "candidate_promoted_large_harms": 11,
+    "mean_abs_family_score_adjustment": 1.7943561217967567,
+    "mean_fraction_adjusted_families": 0.98974609375,
+    "by_regime": {
+      "linear": {
+        "n": 64,
+        "coverage": 0.8125,
+        "control_hybrid_mean_edge_delta": 0.00481941202083873,
+        "candidate_hybrid_mean_edge_delta": 0.09535962722390745,
+        "paired_mean_edge_difference": 0.09054021520306874
+      },
+      "heteroskedastic": {
+        "n": 64,
+        "coverage": 0.90625,
+        "control_hybrid_mean_edge_delta": -0.7731120601789369,
+        "candidate_hybrid_mean_edge_delta": 0.15664362329646314,
+        "paired_mean_edge_difference": 0.9297556834753999
+      }
+    },
+    "mechanics_ok": true
+  }
+}
