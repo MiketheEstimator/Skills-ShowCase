@@ -1,5 +1,5 @@
 {
-  "version": "11.9",
+  "version": "12.0",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4450,11 +4450,21 @@
       "id": "EXP-002S63",
       "title": "Posterior-mass counterfactual parent-family repair",
       "priority": 42.3,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S62"
       ],
-      "rationale": "S62 supported both error localization and parent-family proposal. Prospectively test a bounded correction using S62 posterior-mass proposals, with fresh train/validation/confirmation panels and frozen S46/S30 controls."
+      "rationale": "S62 supported both error localization and parent-family proposal. Prospectively test a bounded correction using S62 posterior-mass proposals, with fresh train/validation/confirmation panels and frozen S46/S30 controls.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S63_POSTERIOR_MASS_PARENT_REPAIR_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s63_posterior_mass_parent_repair.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "training": "64 + 64",
+        "validation": "32 + 32",
+        "confirmation": "64 + 64"
+      }
     }
   ],
   "established_findings": [
