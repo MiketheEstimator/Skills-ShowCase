@@ -1,5 +1,5 @@
 {
-  "version": "14.1",
+  "version": "14.2",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -5174,11 +5174,17 @@
       "id": "EXP-002S74",
       "title": "Observed intervention-response acquisition model diagnostic",
       "priority": 39.6,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S73"
       ],
-      "rationale": "S73 falsified posterior-predictive structural-family acquisition utility after S67/S68 and S70-S72 failures. Abandon posterior-predictive branch summaries and learn acquisition value directly from accumulated observable intervention-response transitions."
+      "rationale": "S73 falsified posterior-predictive structural-family acquisition utility after S67/S68 and S70-S72 failures. Abandon posterior-predictive branch summaries and learn acquisition value directly from accumulated observable intervention-response transitions.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S74_OBSERVED_RESPONSE_ACQUISITION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s74_observed_response_acquisition.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics_training_heldout"
+      }
     }
   ],
   "established_findings": [
