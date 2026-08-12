@@ -1,0 +1,102 @@
+{
+  "mechanics_ok": true,
+  "model": {
+    "feature_names": [
+      "logvar",
+      "absfit_absres_corr",
+      "logvar_slope",
+      "hi_lo_var_ratio",
+      "tail_frac",
+      "mean_absz",
+      "bin_var_dispersion",
+      "target_interventions",
+      "n_residual"
+    ],
+    "mean": [
+      -0.46961351232697357,
+      0.03408898186314452,
+      0.004156857904032573,
+      0.04678717981486909,
+      0.045204167631047155,
+      0.7998649173874939,
+      0.4149085345532491,
+      2.1296875,
+      38.51875
+    ],
+    "std": [
+      0.5549357109212909,
+      0.16669923615732846,
+      0.4607881439997995,
+      0.6179923373821732,
+      0.02312260239573472,
+      0.03363486589948099,
+      0.19575691306002801,
+      2.520613745170753,
+      2.9942066457577687
+    ],
+    "gain_beta": [
+      -0.16150042753752955,
+      -0.022208217284498753,
+      -0.02027450752310028,
+      0.054660199697942106,
+      -0.011441035408512212,
+      0.007167312732428356,
+      0.028920648880217847,
+      0.01890248063834953,
+      -0.019121216582979158,
+      -0.01906108117080014
+    ],
+    "win_beta": [
+      -0.8295167468396629,
+      0.46913706341437833,
+      -0.34375298046558284,
+      0.34414760040721215,
+      0.04300496569566251,
+      0.05551903612367753,
+      0.14140039387112202,
+      0.05652589597335866,
+      -0.07839477580541596,
+      -0.0006165444271420026
+    ],
+    "train_win_prevalence": 0.3159126365054602,
+    "gain_scale": 0.25,
+    "ridge_lambda": 5.0
+  },
+  "evaluation": {
+    "coverage": 0.828125,
+    "mean_node_specialist_mass": 0.00017965051798812099,
+    "control_hybrid_mean_edge_delta": -0.3911786848546411,
+    "candidate_hybrid_mean_edge_delta": -0.49994488946299964,
+    "paired_mean_edge_difference": -0.10876620460835856,
+    "bootstrap95_paired_edge_difference": [
+      -0.124658619843995,
+      -0.09302235872844095
+    ],
+    "control_hybrid_mean_brier_delta": -0.002345194896954084,
+    "candidate_hybrid_mean_brier_delta": -0.0017501641790402438,
+    "control_promoted_large_harms": 0,
+    "candidate_promoted_large_harms": 0,
+    "node_specialist_win_auc": 0.6520412315204123,
+    "node_specialist_win_brier": 0.20296171938872742,
+    "constant_prevalence_brier": 0.21600594210975926,
+    "by_regime": {
+      "linear": {
+        "n": 64,
+        "coverage": 0.765625,
+        "control_hybrid_mean_edge_delta": -0.0050951289275374505,
+        "candidate_hybrid_mean_edge_delta": -0.13300947080513,
+        "paired_mean_edge_difference": -0.12791434187759254,
+        "mean_node_specialist_mass": 0.0
+      },
+      "heteroskedastic": {
+        "n": 64,
+        "coverage": 0.890625,
+        "control_hybrid_mean_edge_delta": -0.7772622407817447,
+        "candidate_hybrid_mean_edge_delta": -0.8668803081208691,
+        "paired_mean_edge_difference": -0.0896180673391246,
+        "mean_node_specialist_mass": 0.00035930103597624197
+      }
+    },
+    "mechanics_ok": true
+  }
+}
