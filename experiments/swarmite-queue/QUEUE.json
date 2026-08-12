@@ -1,5 +1,5 @@
 {
-  "version": "12.9",
+  "version": "13.0",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4822,11 +4822,19 @@
       "id": "EXP-002S68",
       "title": "Sequential branch-aware value-of-information diagnostic",
       "priority": 41.0,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S67"
       ],
-      "rationale": "S67 falsified both terminal localization reuse and static posterior-response disagreement as scalar acquisition scores. Redirect to explicit sequential outcome-branch value-of-information before changing planning or terminal inference."
+      "rationale": "S67 falsified both terminal localization reuse and static posterior-response disagreement as scalar acquisition scores. Redirect to explicit sequential outcome-branch value-of-information before changing planning or terminal inference.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S68_SEQUENTIAL_BRANCH_AWARE_VOI_DIAGNOSTIC_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s68_sequential_branch_voi.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics_then_heldout_diagnostic",
+        "mechanics": "2+2",
+        "diagnostic": "64+64"
+      }
     }
   ],
   "established_findings": [
