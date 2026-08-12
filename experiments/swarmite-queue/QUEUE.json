@@ -1,5 +1,5 @@
 {
-  "version": "10.9",
+  "version": "11.0",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3774,11 +3774,21 @@
       "id": "EXP-002S58",
       "title": "Intervention-conditional residual-process likelihood",
       "priority": 45.0,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S57"
       ],
-      "rationale": "S57 retained nontrivial robust variance evidence but did not qualify structurally. Abandon fitted-magnitude slope as the primary residual representation and model residual scale by intervention/noise state; do not retune S56/S57 likelihood grids."
+      "rationale": "S57 retained nontrivial robust variance evidence but did not qualify structurally. Abandon fitted-magnitude slope as the primary residual representation and model residual scale by intervention/noise state; do not retune S56/S57 likelihood grids.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S58_INTERVENTION_CONDITIONAL_RESIDUAL_PROCESS_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s58_intervention_conditional_residual_process.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "training": "64 + 64",
+        "validation": "32 + 32",
+        "confirmation": "64 + 64"
+      }
     }
   ],
   "established_findings": [
