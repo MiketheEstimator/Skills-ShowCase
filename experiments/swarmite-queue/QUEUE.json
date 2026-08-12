@@ -1,5 +1,5 @@
 {
-  "version": "12.1",
+  "version": "12.2",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4546,11 +4546,21 @@
       "id": "EXP-002S64",
       "title": "Constrained local posterior projection repair",
       "priority": 42.2,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S63"
       ],
-      "rationale": "S63 retained supported localization/proposal but falsified exponential tilt geometry. Preserve S62 evidence and replace tilt with a constrained local posterior projection/replacement; do not tune lambda."
+      "rationale": "S63 retained supported localization/proposal but falsified exponential tilt geometry. Preserve S62 evidence and replace tilt with a constrained local posterior projection/replacement; do not tune lambda.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S64_CONSTRAINED_LOCAL_POSTERIOR_PROJECTION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s64_constrained_local_posterior_projection.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2+2",
+        "training": "64+64",
+        "validation": "32+32",
+        "confirmation": "64+64"
+      }
     }
   ],
   "established_findings": [
