@@ -1,5 +1,5 @@
 {
-  "version": "12.6",
+  "version": "12.7",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -4772,7 +4772,18 @@
             "paired_difference": -0.0013357136757471957
           }
         }
-      }
+      },
+      "evaluation_artifact": "experiments/swarmite-exp002/EXP-002S66_EVALUATION.md"
+    },
+    {
+      "id": "EXP-002S67",
+      "title": "Intervention-response disagreement acquisition diagnostic",
+      "priority": 41.5,
+      "status": "PENDING",
+      "depends_on": [
+        "EXP-002S66"
+      ],
+      "rationale": "S66 falsified scalar localization as an acquisition signal. Redirect to a materially different intervention-response disagreement representation before modifying planning or terminal inference."
     }
   ],
   "established_findings": [
@@ -4838,7 +4849,8 @@
     "S62 disposition POSTERIOR_DISAGREEMENT_ALIGNED. best posterior-disagreement AUC 0.695745061409436; bootstrap95 [0.6571494758783214, 0.7371545607808339]; best feature competitor_mean_mass; competitor usefulness on anchor-error nodes 0.5935251798561151; exact-truth nomination 0.4028776978417266.",
     "S63 disposition FALSIFIED_CORRECTION_GEOMETRY_AT_TRAINING. paired edge difference 0.002843099932126928; AUC 0.7125447591145834; competitor usefulness 0.60546875; promoted harms candidate/control 1/1.",
     "S64 disposition FALSIFIED_PROJECTION_GEOMETRY_AT_TRAINING. paired edge difference 0.02564153260106894; AUC 0.7108021390374332; proposal usefulness 0.5686274509803921; IPF residual 0.01046516765930532; harms candidate/control 0/0.",
-    "S65 disposition FALSIFIED_ACTION_GEOMETRY_AT_TRAINING. paired action-edge difference 0.140625; AUC 0.7186628143647177; proposal usefulness 0.6415770609318996; action-change fraction 0.25; harms candidate/control 2/0."
+    "S65 disposition FALSIFIED_ACTION_GEOMETRY_AT_TRAINING. paired action-edge difference 0.140625; AUC 0.7186628143647177; proposal usefulness 0.6415770609318996; action-change fraction 0.25; harms candidate/control 2/0.",
+    "S66 disposition ALLOCATION_SIGNAL_FALSIFIED. positive acquisition-value AUC 0.5450620615218564; Spearman 0.11592870404957047; evidence/EIG mean value-per-cost 0.06819125610406981/0.07862152696859487; paired difference -0.010430270864525054; evidence-beats-EIG fraction 0.328125."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
