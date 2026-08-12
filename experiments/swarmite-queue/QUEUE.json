@@ -1,5 +1,5 @@
 {
-  "version": "10.1",
+  "version": "10.2",
   "mode": "endless_improvement",
   "status": "ACTIVE",
   "worker_policy": {
@@ -3557,11 +3557,21 @@
       "id": "EXP-002S54",
       "title": "Nodewise residual-process posterior composition",
       "priority": 47.5,
-      "status": "PENDING",
+      "status": "RUNNING",
       "depends_on": [
         "EXP-002S53"
       ],
-      "rationale": "S53 falsified continuous graph-level soft averaging despite useful S52 latent discrimination. Change representation granularity: infer residual-process adequacy nodewise and compose terminal structure locally rather than retuning graph-level caps or temperatures."
+      "rationale": "S53 falsified continuous graph-level soft averaging despite useful S52 latent discrimination. Change representation granularity: infer residual-process adequacy nodewise and compose terminal structure locally rather than retuning graph-level caps or temperatures.",
+      "protocol": "experiments/swarmite-exp002/EXP-002S54_NODEWISE_RESIDUAL_COMPOSITION_PROTOCOL.md",
+      "runner": "experiments/swarmite-exp002/swarmite_exp002_s54_nodewise_residual_composition.py",
+      "checkpoint": {
+        "state": "protocol_frozen",
+        "next_stage": "mechanics",
+        "mechanics": "2 linear + 2 heteroskedastic",
+        "training": "64 + 64",
+        "validation": "32 + 32",
+        "confirmation": "64 + 64"
+      }
     }
   ],
   "established_findings": [
@@ -3614,7 +3624,8 @@
     "S50 FALSIFIED_AT_TRAINING: bounded per-world S30/P_HET model uncertainty tested using cross-fitted observable variance evidence while preserving baseline-only planning and frozen S46 adjudication.",
     "S51 ADJUDICATION_DOMINANT: heteroskedastic oracle two-posterior headroom 0.133 with 95% bootstrap [0.04402237771386583, 0.24754094497894613]; q_het specialist-win AUC 0.3783783783783784.",
     "S52 was falsified at training: the 42-feature latent residual-state model showed useful specialist-win discrimination (training AUC 0.8360836083608361, Brier 0.12439288888984713 versus constant 0.1664478922540713) but every preregistered hard-selection rule used the specialist zero times, so no rule qualified. Hard selection, not the latent representation itself, is the immediate failure mode.",
-    "S53 disposition FALSIFIED_AT_TRAINING. Continuous terminal-only averaging driven by the frozen S52 latent residual-state model was tested prospectively against the frozen S46/S30 matched control with planning unchanged."
+    "S53 disposition FALSIFIED_AT_TRAINING. Continuous terminal-only averaging driven by the frozen S52 latent residual-state model was tested prospectively against the frozen S46/S30 matched control with planning unchanged.",
+    "S53 was falsified at training: continuous graph-level posterior averaging driven by the S52 latent residual-state model did not qualify. Because S52 retained useful latent discrimination, the next justified change is node-local residual-process composition rather than graph-level cap, temperature, or threshold retuning."
   ],
   "dynamic_enqueue_rules": [
     "Every completed experiment must generate at least one next candidate unless a stronger queued candidate already tests the same uncertainty.",
